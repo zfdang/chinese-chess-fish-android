@@ -32,16 +32,17 @@ import java.util.Arrays;
 import java.util.Locale;
 
 import android.os.Environment;
+import android.util.Log;
 
 import org.petero.droidfish.EngineOptions;
 
 /** Stockfish engine running as process, started from assets resource. */
-public class InternalStockFish extends ExternalEngine {
-    private static final String[] defaultNets = {"nn-b1a57edbea57.nnue", "nn-baff1ede1f90.nnue"};
+public class InternalPikaFish extends ExternalEngine {
+    private static final String[] defaultNets = {"pikafish.nnue", "pikafish.ini", "version.txt"};
     private static final String[] netOptions = {"evalfile", "evalfilesmall"};
-    private final File[] defaultNetFiles = {null, null}; // Full path of the copied default network files
+    private final File[] defaultNetFiles = {null, null, null}; // Full path of the copied default network files
 
-    public InternalStockFish(Report report, String workDir) {
+    public InternalPikaFish(Report report, String workDir) {
         super("", workDir, report);
     }
 
@@ -106,7 +107,7 @@ public class InternalStockFish extends ExternalEngine {
     @Override
     protected String copyFile(File from, File exeDir) throws IOException {
         File to = new File(exeDir, "engine.exe");
-        final String sfExe = EngineUtil.internalStockFishName();
+        final String sfExe = "pikafish";
 
         // The checksum test is to avoid writing to /data unless necessary,
         // on the assumption that it will reduce memory wear.
@@ -122,13 +123,15 @@ public class InternalStockFish extends ExternalEngine {
 
     /** Copy the Stockfish default network files to "exeDir" if they are not already there. */
     private void copyNetFiles(File exeDir) throws IOException {
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < defaultNets.length; i++) {
             defaultNetFiles[i] = new File(exeDir, defaultNets[i]);
             if (!defaultNetFiles[i].exists()) {
                 File tmpFile = new File(exeDir, defaultNets[i] + ".tmp");
                 copyAssetFile(defaultNets[i], tmpFile);
                 if (!tmpFile.renameTo(defaultNetFiles[i]))
                     throw new IOException("Rename failed");
+            } else {
+                Log.d("DroidFish", "Network file " + defaultNets[i] + " already exists");
             }
         }
     }

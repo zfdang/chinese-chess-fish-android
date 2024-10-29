@@ -1,4 +1,4 @@
-package com.zfdang.chess.data;
+package com.zfdang.chess.gamelogic;
 
 import java.io.Serializable;
 import java.util.ArrayList;

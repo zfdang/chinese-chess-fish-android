@@ -7,8 +7,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
-import com.zfdang.chess.data.ChessStatus
-import com.zfdang.chess.data.Position
+import com.zfdang.chess.gamelogic.ChessStatus
+import com.zfdang.chess.gamelogic.Position
 import com.zfdang.chess.databinding.ActivityPlayBinding
 import com.zfdang.chess.views.ChessView
 

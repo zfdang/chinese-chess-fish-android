@@ -33,6 +33,7 @@ import com.zfdang.chess.R;
 import org.petero.droidfish.EngineOptions;
 
 import android.content.Context;
+import android.util.Log;
 
 /** Engine running as a process started from an external resource. */
 public class ExternalEngine extends UCIEngineBase {
@@ -160,6 +161,7 @@ public class ExternalEngine extends UCIEngineBase {
             stdErrThread.start();
         } catch (IOException | SecurityException ex) {
             report.reportError(ex.getMessage());
+            Log.d("ExternalEngine", "Failed to start engine", ex);
         }
     }
 
@@ -190,7 +192,7 @@ public class ExternalEngine extends UCIEngineBase {
     }
 
     private boolean keepExeDirFile(File f) {
-        return InternalStockFish.keepExeDirFile(f);
+        return InternalPikaFish.keepExeDirFile(f);
     }
 
     private int hashMB = -1;

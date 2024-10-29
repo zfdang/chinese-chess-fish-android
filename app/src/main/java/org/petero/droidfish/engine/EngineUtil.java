@@ -18,65 +18,17 @@
 
 package org.petero.droidfish.engine;
 
+import android.os.Build;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import com.kalab.chess.enginesupport.ChessEngine;
-
-import android.os.Build;
-
 public class EngineUtil {
     static {
         System.loadLibrary("nativeutil");
-    }
-
-    /** Return file name of the internal stockfish executable. */
-    public static String internalStockFishName() {
-        String abi = Build.CPU_ABI;
-        if (!"x86".equals(abi) &&
-                !"x86_64".equals(abi) &&
-                !"arm64-v8a".equals(abi)) {
-            abi = "armeabi-v7a"; // Unknown ABI, assume 32-bit arm
-        }
-        return abi + "/stockfish" + (isSimdSupported() ? "" : "_nosimd");
-    }
-
-    /** Return true if file "engine" is a network engine. */
-    public static boolean isNetEngine(String engine) {
-        boolean netEngine = false;
-        try (InputStream inStream = new FileInputStream(engine);
-             InputStreamReader inFile = new InputStreamReader(inStream)) {
-            char[] buf = new char[4];
-            if ((inFile.read(buf) == 4) && "NETE".equals(new String(buf)))
-                netEngine = true;
-        } catch (IOException ignore) {
-        }
-        return netEngine;
-    }
-
-    public static final String openExchangeDir = "oex";
-
-    /** Return true if file "engine" is an open exchange engine. */
-    public static boolean isOpenExchangeEngine(String engine) {
-        File parent = new File(engine).getParentFile();
-        if (parent == null)
-            return false;
-        String parentDir = parent.getName();
-        return openExchangeDir.equals(parentDir);
-    }
-
-    /** Return a filename (without path) representing an open exchange engine. */
-    public static String openExchangeFileName(ChessEngine engine) {
-        String ret = "";
-        if (engine.getPackageName() != null)
-            ret += sanitizeString(engine.getPackageName());
-        ret += "-";
-        if (engine.getFileName() != null)
-            ret += sanitizeString(engine.getFileName());
-        return ret;
     }
 
     /** Remove characters from s that are not safe to use in a filename. */

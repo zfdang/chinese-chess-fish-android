@@ -7,6 +7,12 @@ android {
     namespace = "com.zfdang.chess"
     compileSdk = 34
 
+    externalNativeBuild {
+        ndkBuild {
+            path = file("src/main/cpp/Android.mk")
+        }
+    }
+
     defaultConfig {
         applicationId = "com.zfdang.chess"
         minSdk = 26
@@ -15,6 +21,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        externalNativeBuild {
+            cmake {
+                cppFlags += ""
+            }
+        }
     }
 
     buildTypes {
@@ -33,6 +44,8 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    ndkVersion = "25.1.8937393"
+
 }
 
 dependencies {

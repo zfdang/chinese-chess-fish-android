@@ -2,11 +2,13 @@ package com.zfdang.chess
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import org.petero.droidfish.engine.DroidComputerPlayer
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +42,22 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonAbout.setOnClickListener {
-            // Handle button about click
+            // get filepath of assets file
+            // open file from assets
+            val inputStream = assets.open("version.txt")
+            val size = inputStream.available()
+            val buffer = ByteArray(size)
+            inputStream.read(buffer)
+            inputStream.close()
+            Log.d("MainActivity", "Version: " + String(buffer))
+
+            // create instance of DroidComputerPlayer
+            val droidComputerPlayer = DroidComputerPlayer()
+//            Log.d("MainActivity", "DroidComputerPlayer version: " + droidComputerPlayer.version)
+            droidComputerPlayer.queueStartEngine(   // Start the engine
+                1024,
+                "pikafish"
+            )
         }
     }
 }
