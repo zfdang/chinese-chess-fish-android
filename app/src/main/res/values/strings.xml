@@ -3,4 +3,9 @@
     <string name="title_activity_play">PlayActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="engine_terminated">Engine terminated</string>
+    <string name="uci_protocol_error">UCI protocol error</string>
+    <string name="failed_to_start_engine">Failed to start engine</string>
+
 </resources>
