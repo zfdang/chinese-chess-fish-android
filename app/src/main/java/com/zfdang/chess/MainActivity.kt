@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import org.petero.droidfish.engine.DroidComputerPlayer
@@ -52,12 +53,20 @@ class MainActivity : AppCompatActivity() {
             Log.d("MainActivity", "Version: " + String(buffer))
 
             // create instance of DroidComputerPlayer
-            val droidComputerPlayer = DroidComputerPlayer()
-//            Log.d("MainActivity", "DroidComputerPlayer version: " + droidComputerPlayer.version)
-            droidComputerPlayer.queueStartEngine(   // Start the engine
-                1024,
-                "pikafish"
-            )
         }
+
+        // start initEngineFile after 1 second
+        Thread(Runnable {
+            Thread.sleep(1000)
+            initEngineFile()
+        }).start()
     }
+
+    fun initEngineFile(): Unit {
+        // prepare engine files
+        val droidComputerPlayer = DroidComputerPlayer()
+        droidComputerPlayer.queueStartEngine(1024,"pikafish")
+        droidComputerPlayer.getUCIOptions()
+    }
+
 }
