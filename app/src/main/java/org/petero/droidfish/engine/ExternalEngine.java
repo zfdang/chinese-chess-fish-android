@@ -33,6 +33,7 @@ import com.zfdang.chess.R;
 import org.petero.droidfish.EngineOptions;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 /** Engine running as a process started from an external resource. */
@@ -73,10 +74,14 @@ public class ExternalEngine extends UCIEngineBase {
     @Override
     protected void startProcess() {
         try {
-            File exeDir = new File(context.getFilesDir(), "engine");
+            File exeDir = new File(Environment.getDataDirectory(), "ChineseChess");
             exeDir.mkdir();
             String exePath = copyFile(engineFileName, exeDir);
-            chmod(exePath);
+            try {
+                chmod(exePath);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
             cleanUpExeDir(exeDir, exePath);
             ProcessBuilder pb = new ProcessBuilder(exePath);
             if (engineWorkDir.canRead() && engineWorkDir.isDirectory())
@@ -312,8 +317,31 @@ public class ExternalEngine extends UCIEngineBase {
         return to.getAbsolutePath();
     }
 
-    private void chmod(String exePath) throws IOException {
-        if (!EngineUtil.chmod(exePath))
-            throw new IOException("chmod failed");
+    // https://stackoverflow.com/questions/24917927/how-to-execute-a-chmod-in-android-api-8
+    /**
+     * Change files to "0777"
+     * @param path Path to file
+     */
+    public void changeFilePermission(final String path) {
+        final File file = new File(path);
+        file.setReadable(true, false);
+        file.setExecutable(true, false);
+        file.setWritable(true, false);
     }
+
+    void chmod(String exePath) throws Exception {
+        try{
+            changeFilePermission(exePath);
+//            Runtime.getRuntime().exec("chmod 777 " + exePath);
+        }catch (Exception e){
+            Log.d("ExternalEngine", "Failed to chmod " + exePath);
+            throw new Exception("chmod failed");
+        }
+//        if (!EngineUtil.chmod(exePath)){
+//            Log.d("ExternalEngine", "Failed to chmod " + exePath);
+//            throw new IOException("chmod failed");
+//        }
+    }
+
+
 }
