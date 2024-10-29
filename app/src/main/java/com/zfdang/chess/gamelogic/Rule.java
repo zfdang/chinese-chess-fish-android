@@ -1,8 +1,6 @@
-package com.zfdang.chess.rules;
+package com.zfdang.chess.gamelogic;
 
 import android.util.Log;
-
-import com.zfdang.chess.data.Position;
 
 import java.util.ArrayList;
 import java.util.Iterator;

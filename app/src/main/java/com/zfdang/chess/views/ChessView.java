@@ -15,8 +15,8 @@ import android.view.SurfaceView;
 import androidx.annotation.NonNull;
 
 import com.zfdang.chess.R;
-import com.zfdang.chess.data.ChessStatus;
-import com.zfdang.chess.data.Position;
+import com.zfdang.chess.gamelogic.ChessStatus;
+import com.zfdang.chess.gamelogic.Position;
 
 import org.jetbrains.annotations.NotNull;
 
