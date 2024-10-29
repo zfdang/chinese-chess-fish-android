@@ -48,8 +48,8 @@ public class InternalPikaFish extends ExternalEngine {
 
     @Override
     protected File getOptionsFile() {
-        File extDir = Environment.getExternalStorageDirectory();
-        return new File(extDir, "/DroidFish/uci/stockfish.ini");
+        File extDir = Environment.getDataDirectory();
+        return new File(extDir, "pikafish.ini");
     }
 
     @Override
@@ -81,7 +81,6 @@ public class InternalPikaFish extends ExternalEngine {
     }
 
     private long computeAssetsCheckSum(String sfExe) {
-
         try (InputStream is = context.getAssets().open(sfExe)) {
             MessageDigest md = MessageDigest.getInstance("SHA-1");
             byte[] buf = new byte[8192];

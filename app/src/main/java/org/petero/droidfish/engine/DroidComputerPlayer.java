@@ -18,6 +18,8 @@
 
 package org.petero.droidfish.engine;
 
+import android.util.Log;
+
 import com.zfdang.chess.gamelogic.Move;
 import com.zfdang.chess.gamelogic.Position;
 
@@ -258,6 +260,7 @@ public class DroidComputerPlayer {
             if (o != null)
                 o.setFromString(e.getValue());
         }
+        Log.d("DroidFish", "getUCIOptions: " + opts.toString());
         return opts;
     }
 
@@ -704,6 +707,8 @@ public class DroidComputerPlayer {
 
         uciEngine.clearOptions();
         uciEngine.writeLineToEngine("uci");
+//        uciEngine.writeLineToEngine("setoption name EvalFile value pikafish.nnue");
+//        uciEngine.writeLineToEngine("isready");
         maxPV = 1;
         engineState.engine = searchRequest.engine;
         engineState.setState(MainState.READ_OPTIONS);
@@ -719,6 +724,7 @@ public class DroidComputerPlayer {
             if (Thread.currentThread().isInterrupted())
                 return;
             String s = uci.readLineFromEngine(timeout);
+            Log.d(  "DroidFish", "monitorLoop: " + s);
             long t0 = System.currentTimeMillis();
             while (s != null && !s.isEmpty()) {
                 if (Thread.currentThread().isInterrupted())

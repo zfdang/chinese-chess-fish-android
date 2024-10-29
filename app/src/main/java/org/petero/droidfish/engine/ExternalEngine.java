@@ -74,7 +74,7 @@ public class ExternalEngine extends UCIEngineBase {
     @Override
     protected void startProcess() {
         try {
-            File exeDir = new File(Environment.getDataDirectory(), "ChineseChess");
+            File exeDir = new File(context.getFilesDir(), "pikafish");
             exeDir.mkdir();
             String exePath = copyFile(engineFileName, exeDir);
             try {
@@ -317,31 +317,10 @@ public class ExternalEngine extends UCIEngineBase {
         return to.getAbsolutePath();
     }
 
-    // https://stackoverflow.com/questions/24917927/how-to-execute-a-chmod-in-android-api-8
-    /**
-     * Change files to "0777"
-     * @param path Path to file
-     */
-    public void changeFilePermission(final String path) {
-        final File file = new File(path);
-        file.setReadable(true, false);
-        file.setExecutable(true, false);
-        file.setWritable(true, false);
-    }
-
     void chmod(String exePath) throws Exception {
-        try{
-            changeFilePermission(exePath);
-//            Runtime.getRuntime().exec("chmod 777 " + exePath);
-        }catch (Exception e){
+        if (!EngineUtil.chmod(exePath)){
             Log.d("ExternalEngine", "Failed to chmod " + exePath);
-            throw new Exception("chmod failed");
+            throw new IOException("chmod failed");
         }
-//        if (!EngineUtil.chmod(exePath)){
-//            Log.d("ExternalEngine", "Failed to chmod " + exePath);
-//            throw new IOException("chmod failed");
-//        }
     }
-
-
 }
