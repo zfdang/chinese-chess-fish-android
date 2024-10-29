@@ -117,6 +117,11 @@ public class InternalPikaFish extends ExternalEngine {
             copyAssetFile(sfExe, to);
             writeCheckSum(new File(internalSFPath()), newCSum);
         }
+        try {
+            chmod(to.getAbsolutePath());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         copyNetFiles(exeDir);
         return to.getAbsolutePath();
     }
