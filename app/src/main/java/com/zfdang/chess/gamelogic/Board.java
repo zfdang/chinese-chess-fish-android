@@ -19,17 +19,17 @@ public class Board implements Cloneable, Serializable {
     // do not access piece value directly, use getPieceByPosition instead
     // it's easy to make mistake with values of (x,y)
     private int[][] piece = new int[][]{
-            {12, 11, 10, 9, 8, 9, 10, 11, 12},
+            {Piece.BJU, Piece.BMA, Piece.BXIANG, Piece.BSHI, Piece.BJIANG, Piece.BSHI, Piece.BXIANG, Piece.BMA, Piece.BJU},
             {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 13, 0, 0, 0, 0, 0, 13, 0},
-            {14, 0, 14, 0, 14, 0, 14, 0, 14},
+            {0, Piece.BPAO, 0, 0, 0, 0, 0, Piece.BPAO, 0},
+            {Piece.BZU, 0, Piece.BZU, 0, Piece.BZU, 0, Piece.BZU, 0, Piece.BZU},
             {0, 0, 0, 0, 0, 0, 0, 0, 0},
 
             {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {7, 0, 7, 0, 7, 0, 7, 0, 7},
-            {0, 6, 0, 0, 0, 0, 0, 6, 0},
+            {Piece.WBING, 0, Piece.WBING, 0, Piece.WBING, 0, Piece.WBING, 0, Piece.WBING},
+            {0, Piece.WPAO, 0, 0, 0, 0, 0, Piece.WPAO, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0},
-            {5, 4, 3, 2, 1, 2, 3, 4, 5},
+            {Piece.WJU, Piece.WMA, Piece.WXIANG, Piece.WSHI, Piece.WSHUAI, Piece.WSHI, Piece.WXIANG, Piece.WMA, Piece.WJU},
     };
 
     public Board() {
@@ -42,6 +42,25 @@ public class Board implements Cloneable, Serializable {
         this.rounds = board.rounds;
         for (int i = 0; i < this.piece.length; i++) {
             this.piece[i] = board.piece[i].clone();
+        }
+    }
+
+    public boolean setPieceByPosition(Position pos, int value){
+
+        if (pos.x >= 0 && pos.x <= BOARD_PIECE_WIDTH && pos.y >= 0 && pos.y <= BOARD_PIECE_HEIGHT && Piece.isValid(value)) {
+            piece[pos.y][pos.x] = value;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean setPieceByPosition(int x, int y, int value){
+        if (x >= 0 && x <= BOARD_PIECE_WIDTH && y >= 0 && y <= BOARD_PIECE_HEIGHT && Piece.isValid(value)) {
+            piece[y][x] = value;
+            return true;
+        } else {
+            return false;
         }
     }
 

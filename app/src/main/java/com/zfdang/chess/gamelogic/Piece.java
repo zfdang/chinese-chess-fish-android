@@ -50,7 +50,6 @@ public class Piece {
 
     public static final int nPieceTypes = 15;
 
-    // Create HashMap for piece names and piece values
     public static final HashMap<Integer, Character> pieceCharMap = new HashMap<>();
     static {
         pieceCharMap.put(WSHUAI, 'K');
@@ -68,6 +67,25 @@ public class Piece {
         pieceCharMap.put(BJU, 'r');
         pieceCharMap.put(BPAO, 'c');
         pieceCharMap.put(BZU, 'p');
+    }
+
+    public static final HashMap<Integer, Character> pieceNameMap = new HashMap<>();
+    static {
+        pieceNameMap.put(WSHUAI, '帅');
+        pieceNameMap.put(WSHI, '仕');
+        pieceNameMap.put(WXIANG, '相');
+        pieceNameMap.put(WMA, '马');
+        pieceNameMap.put(WJU, '车');
+        pieceNameMap.put(WPAO, '炮');
+        pieceNameMap.put(WBING, '兵');
+
+        pieceNameMap.put(BJIANG, '将');
+        pieceNameMap.put(BSHI, '士');
+        pieceNameMap.put(BXIANG, '象');
+        pieceNameMap.put(BMA, '马');
+        pieceNameMap.put(BJU, '车');
+        pieceNameMap.put(BPAO, '炮');
+        pieceNameMap.put(BZU, '卒');
     }
 
     public static final HashMap<Character, Integer> pieceValueMap = new HashMap<>();
@@ -97,6 +115,12 @@ public class Piece {
     public static boolean isBlack(int pType) {
         return pType <= BZU && pType >= BJIANG;
     }
+    public static boolean isValid(int pType) {
+        return pType <= BZU && pType >= WSHUAI;
+    }
+    public static boolean isDiagonalPiece(int pType) {
+        return pType == WXIANG || pType == BXIANG || pType == WSHI || pType == BSHI || pType == WMA || pType == BMA;
+    }
 
     public static int swapColor(int pType) {
         if (pType == EMPTY)
@@ -109,6 +133,16 @@ public class Piece {
         // find in pieceByteMap
         if(pieceCharMap.containsKey(i)){
             return pieceCharMap.get(i);
+        } else {
+            return EMPTY_CHAR;
+        }
+    }
+
+    // return piece name by piece value
+    static public Character getNameByValue(int i){
+        // find in pieceNameMap
+        if(pieceNameMap.containsKey(i)){
+            return pieceNameMap.get(i);
         } else {
             return EMPTY_CHAR;
         }
