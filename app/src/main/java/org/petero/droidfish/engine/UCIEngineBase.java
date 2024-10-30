@@ -18,6 +18,8 @@
 
 package org.petero.droidfish.engine;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -40,7 +42,7 @@ public abstract class UCIEngineBase implements UCIEngine {
     public static UCIEngine getEngine(String engine,
                                       EngineOptions engineOptions, Report report) {
         if ("pikafish".equals(engine)) {
-            return new InternalPikafish(report, engineOptions.workDir);
+            return new ExternalPikafishEngine(report, engineOptions.workDir);
         } else {
             return new ExternalEngine(engine, engineOptions.workDir, report);
         }
@@ -74,6 +76,7 @@ public abstract class UCIEngineBase implements UCIEngine {
         try (FileInputStream is = new FileInputStream(optionsFile)) {
             iniOptions.load(is);
         } catch (IOException | IllegalArgumentException ignore) {
+            Log.d("UCEngineBase", "Failed to read options file " + optionsFile);
         }
         Map<String, String> opts = new TreeMap<>();
         for (Map.Entry<Object, Object> ent : iniOptions.entrySet()) {

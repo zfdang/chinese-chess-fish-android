@@ -202,7 +202,7 @@ public class ExternalEngine extends UCIEngineBase {
     }
 
     private boolean keepExeDirFile(File f) {
-        return InternalPikafish.keepExeDirFile(f);
+        return ExternalPikafishEngine.keepExeDirFile(f);
     }
 
     private int hashMB = -1;
