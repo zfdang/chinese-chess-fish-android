@@ -40,7 +40,7 @@ public abstract class UCIEngineBase implements UCIEngine {
     public static UCIEngine getEngine(String engine,
                                       EngineOptions engineOptions, Report report) {
         if ("pikafish".equals(engine)){
-            return new InternalPikaFish(report, engineOptions.workDir);
+            return new InternalPikafish(report, engineOptions.workDir);
         } else {
             return new ExternalEngine(engine, engineOptions.workDir, report);
         }

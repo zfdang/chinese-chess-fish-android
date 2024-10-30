@@ -33,7 +33,6 @@ import com.zfdang.chess.R;
 import org.petero.droidfish.EngineOptions;
 
 import android.content.Context;
-import android.os.Environment;
 import android.util.Log;
 
 /** Engine running as a process started from an external resource. */
@@ -67,8 +66,8 @@ public class ExternalEngine extends UCIEngineBase {
         isRunning = false;
     }
 
-    protected String internalSFPath() {
-        return context.getFilesDir().getAbsolutePath() + "/internal_sf";
+    protected String engineCheckSumFilePath() {
+        return context.getFilesDir().getAbsolutePath() + "/checksum";
     }
 
     @Override
@@ -197,7 +196,7 @@ public class ExternalEngine extends UCIEngineBase {
     }
 
     private boolean keepExeDirFile(File f) {
-        return InternalPikaFish.keepExeDirFile(f);
+        return InternalPikafish.keepExeDirFile(f);
     }
 
     private int hashMB = -1;
@@ -301,7 +300,7 @@ public class ExternalEngine extends UCIEngineBase {
 
     protected String copyFile(File from, File exeDir) throws IOException {
         File to = new File(exeDir, "engine.exe");
-        new File(internalSFPath()).delete();
+        new File(engineCheckSumFilePath()).delete();
         if (to.exists() && (from.length() == to.length()) && (from.lastModified() == to.lastModified()))
             return to.getAbsolutePath();
         try (FileInputStream fis = new FileInputStream(from);
