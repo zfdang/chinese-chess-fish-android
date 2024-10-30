@@ -38,14 +38,14 @@ import org.petero.droidfish.EngineOptions;
 /**
  * Stockfish engine running as process, started from assets resource.
  */
-public class InternalPikafish extends ExternalEngine {
+public class ExternalPikafishEngine extends ExternalEngine {
     private static final String[] defaultNetworkFiles = {"pikafish.nnue", "pikafish.ini", "version.txt"};
     private static final String engineFile = "pikafish";
 
     private final File[] defaultDestNetworkFiles = {null, null, null}; // Full path of the copied default network files
     private static final String[] netOptions = {"evalfile", "evalfilesmall"};
 
-    public InternalPikafish(Report report, String workDir) {
+    public ExternalPikafishEngine(Report report, String workDir) {
         super("pikafish", workDir, report);
     }
 
