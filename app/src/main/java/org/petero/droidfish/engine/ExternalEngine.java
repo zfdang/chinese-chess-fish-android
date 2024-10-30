@@ -75,7 +75,7 @@ public class ExternalEngine extends UCIEngineBase {
     @Override
     protected void startProcess() {
         try {
-            File exeDir = new File(context.getFilesDir(), "pikafish");
+            File exeDir = new File(context.getFilesDir(), "engine");
             exeDir.mkdir();
             String exePath = copyFile(engineFileName, exeDir);
             try {

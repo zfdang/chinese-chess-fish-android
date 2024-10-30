@@ -43,22 +43,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonAbout.setOnClickListener {
-            // get filepath of assets file
-            // open file from assets
-            val inputStream = assets.open("version.txt")
-            val size = inputStream.available()
-            val buffer = ByteArray(size)
-            inputStream.read(buffer)
-            inputStream.close()
-            Log.d("MainActivity", "Version: " + String(buffer))
-
-            // create instance of DroidComputerPlayer
+            initEngineFile()
         }
 
         // start initEngineFile after 1 second
         Thread(Runnable {
             Thread.sleep(1000)
-            initEngineFile()
+//            initEngineFile()
         }).start()
     }
 

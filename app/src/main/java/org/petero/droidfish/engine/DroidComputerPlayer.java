@@ -291,7 +291,7 @@ public class DroidComputerPlayer {
             if (o != null)
                 o.setFromString(e.getValue());
         }
-        Log.d("DroidFish", "getUCIOptions: " + opts.toString());
+        Log.d("DroidComputerPlayer", "getUCIOptions: " + opts.toString());
         return opts;
     }
 
@@ -791,7 +791,7 @@ public class DroidComputerPlayer {
             if (Thread.currentThread().isInterrupted())
                 return;
             String s = uci.readLineFromEngine(timeout);
-            Log.d("DroidFish", "monitorLoop: " + s);
+            Log.d("DroidComputerPlayer", "monitorLoop: " + s);
             long t0 = System.currentTimeMillis();
             while (s != null && !s.isEmpty()) {
                 if (Thread.currentThread().isInterrupted())

@@ -40,7 +40,10 @@ import org.petero.droidfish.EngineOptions;
  */
 public class ExternalPikafishEngine extends ExternalEngine {
     private static final String[] defaultNetworkFiles = {"pikafish.nnue", "pikafish.ini", "version.txt"};
-    private static final String engineFile = "pikafish-armv8";
+
+    // PikafishEngineFile: the name of the engine file in the assets directory
+    // ChineseChess/app/src/main/assets/pikafish-armv8
+    private static final String PikafishEngineFile = "pikafish-armv8";
 
     private final File[] defaultDestNetworkFiles = {null, null, null}; // Full path of the copied default network files
     private static final String[] netOptions = {"evalfile", "evalfilesmall"};
@@ -51,7 +54,7 @@ public class ExternalPikafishEngine extends ExternalEngine {
 
     @Override
     protected File getOptionsFile() {
-        File extDir = context.getFilesDir();
+        File extDir = new File(context.getFilesDir(), "pikafish");
         return new File(extDir, "pikafish.ini");
     }
 
@@ -108,20 +111,24 @@ public class ExternalPikafishEngine extends ExternalEngine {
 
     @Override
     protected String copyFile(File from, File exeDir) throws IOException {
-        File to = new File(exeDir, "engine.exe");
+        // from is ignore, we always use the embedded engine: PikafishEngineFile
+        File to = new File(exeDir, "pikafish");
 
         // The checksum test is to avoid writing to /data unless necessary,
         // on the assumption that it will reduce memory wear.
         long oldCSum = readCheckSum(new File(engineCheckSumFilePath()));
-        long newCSum = computeAssetsCheckSum(engineFile);
+        long newCSum = computeAssetsCheckSum(PikafishEngineFile);
         if (oldCSum != newCSum) {
-            copyAssetFile(engineFile, to);
+            copyAssetFile(PikafishEngineFile, to);
             writeCheckSum(new File(engineCheckSumFilePath()), newCSum);
+            Log.d("ExternalPikafishEngine", "Copied " + PikafishEngineFile + " to " + to);
+        } else {
+            Log.d("ExternalPikafishEngine", "Checksum match, not copying " + PikafishEngineFile);
         }
         try {
             chmod(to.getAbsolutePath());
         } catch (Exception e) {
-            Log.d("InternalPikafish", "chmod failed: " + e);
+            Log.d("ExternalPikafishEngine", "chmod failed: " + e);
             throw new RuntimeException(e);
         }
         copyNetworkFiles(exeDir);
@@ -138,11 +145,11 @@ public class ExternalPikafishEngine extends ExternalEngine {
                 File tmpFile = new File(exeDir, defaultNetworkFiles[i] + ".tmp");
                 copyAssetFile(defaultNetworkFiles[i], tmpFile);
                 if (!tmpFile.renameTo(defaultDestNetworkFiles[i])) {
-                    Log.d("InternalPikafish", "Rename failed " + defaultDestNetworkFiles[i]);
+                    Log.d("ExternalPikafishEngine", "Rename failed " + defaultDestNetworkFiles[i]);
                     throw new IOException("Rename failed");
                 }
             } else {
-                Log.d("InternalPikafish", "Network file " + defaultNetworkFiles[i] + " already exists");
+                Log.d("ExternalPikafishEngine", "Network file " + defaultNetworkFiles[i] + " already exists");
             }
         }
     }
