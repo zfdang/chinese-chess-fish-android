@@ -12,7 +12,22 @@
 
 	https://github.com/official-pikafish/Pikafish/wiki/Pikafish-FAQ#optimal-settings
 	
-	
+
+## 引擎文件的更新
+
+引擎下载：
+
+	https://github.com/official-pikafish/Pikafish/releases
+
+Networks下载：
+
+	https://github.com/official-pikafish/Networks/releases
+
+
+下载之后放到程序目录：
+
+	app/src/main/assets/ 
+
 ## pikafish的setoption
 
 命令格式：setoption name id [ value x ]
