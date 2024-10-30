@@ -46,7 +46,7 @@ public class Board implements Cloneable, Serializable {
     }
 
     public int getPieceByPosition(Position pos) {
-        if(pos.x >=0 && pos.x <= 8 && pos.y >= 0 && pos.y <= 9) {
+        if (pos.x >= 0 && pos.x <= 8 && pos.y >= 0 && pos.y <= 9) {
             return piece[pos.y][pos.x];
         } else {
             return -1;
@@ -54,14 +54,14 @@ public class Board implements Cloneable, Serializable {
     }
 
     public int getPieceByPosition(int x, int y) {
-        if(x >=0 && x <= 8 && y >= 0 && y <= 9) {
+        if (x >= 0 && x <= 8 && y >= 0 && y <= 9) {
             return piece[y][x];
         } else {
             return -1;
         }
     }
 
-    public String convertToFEN(){
+    public String convertToFEN() {
         // https://www.xqbase.com/protocol/pgnfen2.htm
         // https://www.xqbase.com/protocol/cchess_fen.htm
         // 按白方视角，描述由上至下、由左至右的盘面，以/符号来分隔相邻横列。白方大写字母、黑方小写字母。
@@ -72,7 +72,7 @@ public class Board implements Cloneable, Serializable {
         for (int y = 0; y < BOARD_PIECE_HEIGHT; y++) {
             String row = "";
             int zeros = 0;
-            for(int x = 0; x < BOARD_PIECE_WIDTH; x++) {
+            for (int x = 0; x < BOARD_PIECE_WIDTH; x++) {
                 int piece = getPieceByPosition(x, y);
                 if (piece != 0) {
                     // if zeros > 0, add zeros to fen
@@ -82,27 +82,81 @@ public class Board implements Cloneable, Serializable {
                     }
                     // convert piece to FEN
                     char fenPiece = Piece.pieceCharMap.get(piece);
-                    row += (char)(fenPiece);
+                    row += (char) (fenPiece);
                 } else {
-                    zeros ++;
+                    zeros++;
                 }
             }
             if (zeros > 0) {
                 row += zeros;
             }
             fen += row;
-            if(y < BOARD_PIECE_HEIGHT - 1) {
+            if (y < BOARD_PIECE_HEIGHT - 1) {
                 // add / to separate rows
                 fen += "/";
             }
-//            Log.d("Board", "fen: " + fen);
         }
         String result = String.format("%s %s - - %s %s", fen, bRedGo ? "w" : "b", 0, rounds);
-        Log.d("Board", "FEN: " + result);
+//        Log.d("Board", "FEN: " + result);
         return result;
     }
 
-    public boolean restoreFromFEN(String fenString){
-        return false;
+    public boolean restoreFromFEN(String fenString) {
+        fenString = fenString.trim();
+        String[] parts = fenString.split(" ");
+        if (parts.length != 6) {
+            return false;
+        }
+
+        // parse isRedGo
+        String side = parts[1].toLowerCase();
+        if(side.equals("w") || side.equals("r")) {
+            // white or red, both are valid
+            bRedGo = true;
+        } else if(side.equals("b")) {
+            bRedGo = false;
+        } else {
+            return false;
+        }
+
+        // parse rounds
+        String part5 = parts[5];
+        try {
+            rounds = Integer.parseInt(part5);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        // parse fen string
+        String fen = parts[0];
+        int x = 0;
+        int y = 0;
+        for (int i = 0; i < fen.length(); i++) {
+            char c = fen.charAt(i);
+            if (c == '/') {
+                // next row
+                x = 0;
+                y++;
+            } else if (c >= '0' && c <= '9') {
+                for (int k = 0; k < c - '0'; k++) {
+                    piece[y][x] = 0;
+                    x++;
+                }
+            } else {
+                int value = Piece.pieceValueMap.get(c);
+                piece[y][x] = value;
+                x++;
+            }
+        }
+        return true;
+    }
+
+    public void randomizePieces(){
+        // randomize values for all pieces
+        for (int y = 0; y < BOARD_PIECE_HEIGHT; y++) {
+            for (int x = 0; x < BOARD_PIECE_WIDTH; x++) {
+                piece[y][x] = (int) (Math.random() * 14);
+            }
+        }
     }
 }
