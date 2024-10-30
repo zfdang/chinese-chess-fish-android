@@ -25,4 +25,18 @@ public class BoardTest {
         assertTrue(result);
         assertEquals(fenString, board.convertToFEN());
     }
+
+    public void testGetPieceByPosition() {
+        Board board = new Board();
+
+        assertEquals(Piece.BJU, board.getPieceByPosition(0, 0));
+
+        assertEquals(Piece.BJIANG, board.getPieceByPosition(0, 4));
+
+        assertEquals(Piece.WSHUAI, board.getPieceByPosition(9, 4));
+
+    }
+
+    public void testTestGetPieceByPosition() {
+    }
 }

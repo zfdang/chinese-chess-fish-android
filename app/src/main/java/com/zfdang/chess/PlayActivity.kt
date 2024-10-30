@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.zfdang.chess.gamelogic.Board
 import com.zfdang.chess.gamelogic.Position
 import com.zfdang.chess.databinding.ActivityPlayBinding
+import com.zfdang.chess.gamelogic.Game
+import com.zfdang.chess.gamelogic.Piece
 import com.zfdang.chess.views.ChessView
 
 
@@ -24,7 +26,7 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
     private lateinit var chessLayout: FrameLayout
 
     // 棋盘状态
-    private lateinit var chessStatus: Board
+    private lateinit var game: Game;
     private lateinit var chessView: ChessView
 
     @SuppressLint("ClickableViewAccessibility")
@@ -36,12 +38,10 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
 
         chessLayout = binding.chesslayout
 
-        chessStatus = Board()
-        // for testing purpose
-//        chessStatus.selectedPosition = Position(8,9)
+        game = Game()
 
         // 初始化棋盘
-        chessView = ChessView(this, chessStatus)
+        chessView = ChessView(this, game)
         chessView.setOnTouchListener(this)
 
         chessLayout.addView(chessView)
@@ -50,7 +50,7 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
         binding.button6.setOnClickListener {
             // Handle button click
             Log.v("PlayActivity", "button6 clicked")
-            chessStatus.convertToFEN();
+            game.currentBoard.convertToFEN();
         }
 
     }
@@ -68,7 +68,30 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
             val x = event!!.x
             val y = event!!.y
             val pos = chessView.getPosByCoord(x, y)
-//            chessStatus.setSelectedPosition(pos)
+            if(pos == null) {
+                // pos is not valid
+                return false
+            }
+            if(game.startPos == null) {
+                // start position is empty
+                if(Piece.isValid(game.currentBoard.getPieceByPosition(pos))){
+                    // and the piece is valid
+                    game.startPos = pos
+                }
+            } else {
+                // startPos is not empty
+                if(game.startPos == pos) {
+                    // click the same position
+                    game.startPos = null
+                    game.endPos = null
+                    return false
+                }
+                game.endPos = pos
+                game.movePiece()
+                game.startPos = null
+                game.endPos = null
+            }
+
 
             Log.v("PlayActivity", "onTouch: x = $x, y = $y, pos = " + pos.toString())
         }

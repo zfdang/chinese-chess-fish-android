@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Created by zfdang on 2016-4-17.
  * This class represents the chess board data, basically it's represention of FEN string;
  */
-public class Board implements Cloneable, Serializable {
+public class Board {
     private static final long serialVersionUID = 2194052829642412444L;
 
     public boolean bRedGo = true;
@@ -37,11 +37,11 @@ public class Board implements Cloneable, Serializable {
         rounds = 0;
     }
 
-    public void setInfo(Board board) throws CloneNotSupportedException {
-        this.bRedGo = board.bRedGo;
-        this.rounds = board.rounds;
+    public Board(Board b) {
+        this.bRedGo = b.bRedGo;
+        this.rounds = b.rounds;
         for (int i = 0; i < this.piece.length; i++) {
-            this.piece[i] = board.piece[i].clone();
+            this.piece[i] = b.piece[i].clone();
         }
     }
 
@@ -54,6 +54,17 @@ public class Board implements Cloneable, Serializable {
             return false;
         }
     }
+
+    public boolean clearPieceByPosition(Position pos){
+
+        if (pos.x >= 0 && pos.x <= BOARD_PIECE_WIDTH && pos.y >= 0 && pos.y <= BOARD_PIECE_HEIGHT) {
+            piece[pos.y][pos.x] = Piece.EMPTY;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
     public boolean setPieceByPosition(int x, int y, int value){
         if (x >= 0 && x <= BOARD_PIECE_WIDTH && y >= 0 && y <= BOARD_PIECE_HEIGHT && Piece.isValid(value)) {
