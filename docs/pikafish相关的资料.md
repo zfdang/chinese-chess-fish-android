@@ -50,6 +50,31 @@ option name UCI_ShowWDL type check default false
 option name EvalFile type string default pikafish.nnue
 ```
 
+例子：
+
+```
+设置为6线程，一般为cpu核心数-2
+> setoption name Threads value 6
+
+在结果里显示approximate WDL statistics 
+> setoption name UCI_ShowWDL value true
+
+设置 NNUE evaluation 
+> setoption name EvalFile value pikafish.nnue
+
+设置hash表的大小
+> setoption name Hash value 128
+
+允许机器在人下棋的时候思考
+> setoption name ponder value true
+
+输出多条最优路径，会增加运算量
+> setoption name MultiPV value 3
+
+清空哈希表
+> setoption name Clear Hash
+```
+
 ## uci协议
 
 	https://backscattering.de/chess/uci/#gui-isready
