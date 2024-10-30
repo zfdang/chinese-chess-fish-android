@@ -36,6 +36,16 @@ public class Move implements Serializable {
         this.board =  board;
     }
 
+    public boolean setFromPosition(Position fromPosition) {
+        this.fromPosition = fromPosition;
+        return true;
+    }
+
+    public boolean setToPosition(Position toPosition) {
+        this.toPosition = toPosition;
+        return true;
+    }
+
     // h2e2
     public String getCoordDescription(){
         char s, e;
