@@ -35,7 +35,9 @@ import org.petero.droidfish.EngineOptions;
 import android.content.Context;
 import android.util.Log;
 
-/** Engine running as a process started from an external resource. */
+/**
+ * Engine running as a process started from an external resource.
+ */
 public class ExternalEngine extends UCIEngineBase {
     protected final Context context;
 
@@ -169,7 +171,9 @@ public class ExternalEngine extends UCIEngineBase {
         }
     }
 
-    /** Try to lower the engine process priority. */
+    /**
+     * Try to lower the engine process priority.
+     */
     private void reNice() {
         try {
             java.lang.reflect.Field f = engineProc.getClass().getDeclaredField("pid");
@@ -180,7 +184,9 @@ public class ExternalEngine extends UCIEngineBase {
         }
     }
 
-    /** Remove all files except exePath from exeDir. */
+    /**
+     * Remove all files except exePath from exeDir.
+     */
     private void cleanUpExeDir(File exeDir, String exePath) {
         try {
             exePath = new File(exePath).getCanonicalPath();
@@ -221,11 +227,13 @@ public class ExternalEngine extends UCIEngineBase {
         return new File(engineFileName.getAbsolutePath() + ".ini");
     }
 
-    /** Reduce too large hash sizes. */
+    /**
+     * Reduce too large hash sizes.
+     */
     private static int getHashMB(EngineOptions engineOptions) {
         int hashMB = engineOptions.hashMB;
         if (hashMB > 16 && !engineOptions.unSafeHash) {
-            int maxMem = (int)(Runtime.getRuntime().maxMemory() / (1024*1024));
+            int maxMem = (int) (Runtime.getRuntime().maxMemory() / (1024 * 1024));
             if (maxMem < 16)
                 maxMem = 16;
             if (hashMB > maxMem)
@@ -286,7 +294,10 @@ public class ExternalEngine extends UCIEngineBase {
                     engineProc.exitValue();
                     break;
                 } catch (IllegalThreadStateException e) {
-                    try { Thread.sleep(10); } catch (InterruptedException ignore) { }
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException ignore) {
+                    }
                 }
             }
             engineProc.destroy();
@@ -317,7 +328,7 @@ public class ExternalEngine extends UCIEngineBase {
     }
 
     void chmod(String exePath) throws Exception {
-        if (!EngineUtil.chmod(exePath)){
+        if (!EngineUtil.chmod(exePath)) {
             Log.d("ExternalEngine", "Failed to chmod " + exePath);
             throw new IOException("chmod failed");
         }

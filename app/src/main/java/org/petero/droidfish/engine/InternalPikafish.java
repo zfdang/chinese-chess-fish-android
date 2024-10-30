@@ -35,7 +35,9 @@ import android.util.Log;
 
 import org.petero.droidfish.EngineOptions;
 
-/** Stockfish engine running as process, started from assets resource. */
+/**
+ * Stockfish engine running as process, started from assets resource.
+ */
 public class InternalPikafish extends ExternalEngine {
     private static final String[] defaultNetworkFiles = {"pikafish.nnue", "pikafish.ini", "version.txt"};
     private static final String engineFile = "pikafish";
@@ -59,7 +61,7 @@ public class InternalPikafish extends ExternalEngine {
         if (!super.editableOption(name))
             return false;
         if (name.equals("skill level") || name.equals("write debug log") ||
-            name.equals("write search log"))
+                name.equals("write search log"))
             return false;
         return true;
     }
@@ -94,7 +96,7 @@ public class InternalPikafish extends ExternalEngine {
             byte[] digest = md.digest(new byte[]{0});
             long ret = 0;
             for (int i = 0; i < 8; i++) {
-                ret ^= ((long)digest[i]) << (i * 8);
+                ret ^= ((long) digest[i]) << (i * 8);
             }
             return ret;
         } catch (IOException e) {
@@ -126,7 +128,9 @@ public class InternalPikafish extends ExternalEngine {
         return to.getAbsolutePath();
     }
 
-    /** Copy the Stockfish default network files to "exeDir" if they are not already there. */
+    /**
+     * Copy the Stockfish default network files to "exeDir" if they are not already there.
+     */
     private void copyNetworkFiles(File exeDir) throws IOException {
         for (int i = 0; i < defaultNetworkFiles.length; i++) {
             defaultDestNetworkFiles[i] = new File(exeDir, defaultNetworkFiles[i]);
@@ -143,8 +147,10 @@ public class InternalPikafish extends ExternalEngine {
         }
     }
 
-    /** Copy a file resource from the AssetManager to the file system,
-     *  so it can be used by native code like the Stockfish engine. */
+    /**
+     * Copy a file resource from the AssetManager to the file system,
+     * so it can be used by native code like the Stockfish engine.
+     */
     private void copyAssetFile(String assetName, File targetFile) throws IOException {
         try (InputStream is = context.getAssets().open(assetName);
              OutputStream os = new FileOutputStream(targetFile)) {
@@ -158,10 +164,12 @@ public class InternalPikafish extends ExternalEngine {
         }
     }
 
-    /** Return true if file "f" should be kept in the exeDir directory.
-     *  It would be inefficient to remove the network file every time
-     *  an engine different from Stockfish is used, so this is a static
-     *  check performed for all engines. */
+    /**
+     * Return true if file "f" should be kept in the exeDir directory.
+     * It would be inefficient to remove the network file every time
+     * an engine different from Stockfish is used, so this is a static
+     * check performed for all engines.
+     */
     public static boolean keepExeDirFile(File f) {
         return Arrays.asList(defaultNetworkFiles).contains(f.getName());
     }
@@ -176,13 +184,15 @@ public class InternalPikafish extends ExternalEngine {
         }
     }
 
-    /** Handles setting the EvalFile UCI option to a full path if needed,
-     *  pointing to the network file embedded in DroidFish. */
+    /**
+     * Handles setting the EvalFile UCI option to a full path if needed,
+     * pointing to the network file embedded in DroidFish.
+     */
     @Override
     public boolean setOption(String name, String value) {
         for (int i = 0; i < 2; i++) {
             if (name.toLowerCase(Locale.US).equals(netOptions[i]) &&
-                (defaultNetworkFiles[i].equals(value) || value.isEmpty())) {
+                    (defaultNetworkFiles[i].equals(value) || value.isEmpty())) {
                 getUCIOptions().getOption(name).setFromString(value);
                 value = defaultDestNetworkFiles[i].getAbsolutePath();
                 writeLineToEngine(String.format(Locale.US, "setoption name %s value %s", name, value));
