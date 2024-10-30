@@ -40,7 +40,7 @@ import org.petero.droidfish.EngineOptions;
  */
 public class ExternalPikafishEngine extends ExternalEngine {
     private static final String[] defaultNetworkFiles = {"pikafish.nnue", "pikafish.ini", "version.txt"};
-    private static final String engineFile = "pikafish";
+    private static final String engineFile = "pikafish-armv8";
 
     private final File[] defaultDestNetworkFiles = {null, null, null}; // Full path of the copied default network files
     private static final String[] netOptions = {"evalfile", "evalfilesmall"};
