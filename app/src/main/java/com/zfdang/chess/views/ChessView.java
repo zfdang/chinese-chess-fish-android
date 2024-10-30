@@ -16,10 +16,9 @@ import androidx.annotation.NonNull;
 
 import com.zfdang.chess.R;
 import com.zfdang.chess.gamelogic.Board;
+import com.zfdang.chess.gamelogic.Game;
 import com.zfdang.chess.gamelogic.Piece;
 import com.zfdang.chess.gamelogic.Position;
-
-import org.jetbrains.annotations.NotNull;
 
 
 public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
@@ -46,16 +45,16 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     public int Board_width, Board_height;
     public float scaleRatio;
 
-    public Board board;
+    public Game game;
 
     public String[] thinkMood = new String[]{"😀", "🙂", "😶", "😣", "😵", "😭"};
     public int thinkIndex = 0;
     public int thinkFlag = 0;
     public String thinkContent = "😀·····";
 
-    public ChessView(Context context, Board board) {
+    public ChessView(Context context, Game game) {
         super(context);
-        this.board = board;
+        this.game = game;
         getHolder().addCallback(this);
         initBitmaps();
     }
@@ -91,6 +90,8 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         // draw chess board
         canvas.drawBitmap(ChessBoardBitmap, srcBoardRect, destBoardRect, null);
 
+        Board board = game.currentBoard;
+
         // draw piece
         Rect tempSrcRect, tempDesRect;
         for (int x = 0; x < Board.BOARD_PIECE_WIDTH; x++) {
@@ -108,12 +109,26 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         // draw selected piece
-        Position pos = new Position(0, 5);
-        int piece = board.getPieceByPosition(pos);
-        if (piece > 0) {
+        if(game.startPos != null) {
+            HighlighSelectedPiece(canvas);
+        }
+
+        // draw path of last move
+        if(game.historyRecords.size() > 1) {
+            DrawMoveHistory(canvas);
+        }
+    }
+
+    private void HighlighSelectedPiece(Canvas canvas) {
+        // draw selected piece
+        Board board = game.currentBoard;
+        Rect tempDesRect, tempSrcRect;
+        Position pos = game.startPos;
+        int piece = board.getPieceByPosition(game.startPos);
+        if (Piece.isValid(piece)) {
             // valid piece is selected
             tempDesRect = getDestRect(pos);
-            if(Piece.isRed(board.getPieceByPosition(pos))) {
+            if (Piece.isRed(board.getPieceByPosition(pos))) {
                 tempSrcRect = new Rect(0, 0, B_box.getWidth(), B_box.getHeight());
                 canvas.drawBitmap(B_box, tempSrcRect, tempDesRect, null);
             } else {
@@ -121,37 +136,31 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
                 canvas.drawBitmap(R_box, tempSrcRect, tempDesRect, null);
             }
         }
-
-//        if (chessStatus.prePosition.equals(new Position(-1, -1)) == false && chessStatus.IsChecked == false) {
-//            int real_curX = chessStatus.curPosition.x;
-//            int real_curY = chessStatus.curPosition.y;
-//
-//            Position realPre = Rule.reversePos(chessStatus.prePosition, chessStatus.IsReverse);
-//            Position realCur = Rule.reversePos(chessStatus.curPosition, chessStatus.IsReverse);
-//            int draw_preX = realPre.x;
-//            int draw_preY = realPre.y;
-//            int draw_curX = realCur.x;
-//            int draw_curY = realCur.y;
-//
-//            Rect tmpRect;
-//
-//            tempDesRect = new Rect(Scale(draw_curX * 85 + 3), Scale(draw_curY * 85 + 41), Scale(draw_curX * 85 + 83), Scale(draw_curY * 85 + 121));
-//            tmpRect = new Rect(Scale(draw_preX * 85 + 3), Scale(draw_preY * 85 + 41), Scale(draw_preX * 85 + 83), Scale(draw_preY * 85 + 121));
-//
-////            if (chessStatus.piece[real_curY][real_curX] >= 1 && chessStatus.piece[real_curY][real_curX] <= 7) {
-////                tempSrcRect = new Rect(0, 0, B_box.getWidth(), B_box.getHeight());
-////                canvas.drawBitmap(B_box, tempSrcRect, tempDesRect, null);
-////                canvas.drawBitmap(B_box, tempSrcRect, tmpRect, null);
-////            } else {
-////                tempSrcRect = new Rect(0, 0, R_box.getWidth(), R_box.getHeight());
-////                canvas.drawBitmap(R_box, tempSrcRect, tempDesRect, null);
-////                canvas.drawBitmap(R_box, tempSrcRect, tmpRect, null);
-////            }
-//        }
-
     }
 
-    @NonNull
+    private void DrawMoveHistory(Canvas canvas) {
+        Board board = game.currentBoard;
+        Rect tempDesRect, tempSrcRect;
+        Position from, to;
+        for (int i = 0; i < game.historyRecords.size() - 1; i++) {
+            if(game.historyRecords.get(i).move == null) {
+                continue;
+            }
+            from = game.historyRecords.get(i).move.fromPosition;
+            to = game.historyRecords.get(i).move.toPosition;
+            tempDesRect = getDestRect(from);
+            tempSrcRect = new Rect(0, 0, Pot.getWidth(), Pot.getHeight());
+            canvas.drawBitmap(Pot, tempSrcRect, tempDesRect, null);
+
+            tempDesRect = getDestRect(to);
+            tempSrcRect = new Rect(0, 0, Pot.getWidth(), Pot.getHeight());
+            canvas.drawBitmap(Pot, tempSrcRect, tempDesRect, null);
+        }
+    }
+
+
+
+        @NonNull
     private Rect getDestRect(Position pos) {
         return new Rect(
                 Scale(pos.x * BOARD_GRID_INTERVAL + BOARD_X_OFFSET),
@@ -190,7 +199,6 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
 
     }
 
-    @NotNull
     public Position getPosByCoord(float x, float y) {
         float vx = x / scaleRatio;
         float vy = y / scaleRatio;
@@ -206,7 +214,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
             Log.d("ChessView", "getPosByCoord: " + "out of bound");
         }
 
-        return new Position(-1, -1);
+        return null;
     }
 
     class ChessViewThread extends Thread {
