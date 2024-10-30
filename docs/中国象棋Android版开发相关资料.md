@@ -5,6 +5,21 @@
 	https://www.xqbase.com/computer/outline.htm
 	
 
+## 相关的技术文档
+
+### FEN记号法
+
+	https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation
+	
+### PGN格式
+
+	https://en.wikipedia.org/wiki/Portable_Game_Notation
+	
+### UCI协议
+
+	https://en.wikipedia.org/wiki/Universal_Chess_Interface
+
+
 ## 一些开源的Android版的象棋程序
 
 A. Droidfish
