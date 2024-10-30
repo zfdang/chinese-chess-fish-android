@@ -31,24 +31,25 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Locale;
 
-import android.os.Environment;
 import android.util.Log;
 
 import org.petero.droidfish.EngineOptions;
 
 /** Stockfish engine running as process, started from assets resource. */
-public class InternalPikaFish extends ExternalEngine {
-    private static final String[] defaultNets = {"pikafish.nnue", "pikafish.ini", "version.txt"};
-    private static final String[] netOptions = {"evalfile", "evalfilesmall"};
-    private final File[] defaultNetFiles = {null, null, null}; // Full path of the copied default network files
+public class InternalPikafish extends ExternalEngine {
+    private static final String[] defaultNetworkFiles = {"pikafish.nnue", "pikafish.ini", "version.txt"};
+    private static final String engineFile = "pikafish";
 
-    public InternalPikaFish(Report report, String workDir) {
-        super("", workDir, report);
+    private final File[] defaultDestNetworkFiles = {null, null, null}; // Full path of the copied default network files
+    private static final String[] netOptions = {"evalfile", "evalfilesmall"};
+
+    public InternalPikafish(Report report, String workDir) {
+        super("pikafish", workDir, report);
     }
 
     @Override
     protected File getOptionsFile() {
-        File extDir = Environment.getDataDirectory();
+        File extDir = context.getFilesDir();
         return new File(extDir, "pikafish.ini");
     }
 
@@ -106,36 +107,38 @@ public class InternalPikaFish extends ExternalEngine {
     @Override
     protected String copyFile(File from, File exeDir) throws IOException {
         File to = new File(exeDir, "engine.exe");
-        final String sfExe = "pikafish";
 
         // The checksum test is to avoid writing to /data unless necessary,
         // on the assumption that it will reduce memory wear.
-        long oldCSum = readCheckSum(new File(internalSFPath()));
-        long newCSum = computeAssetsCheckSum(sfExe);
+        long oldCSum = readCheckSum(new File(engineCheckSumFilePath()));
+        long newCSum = computeAssetsCheckSum(engineFile);
         if (oldCSum != newCSum) {
-            copyAssetFile(sfExe, to);
-            writeCheckSum(new File(internalSFPath()), newCSum);
+            copyAssetFile(engineFile, to);
+            writeCheckSum(new File(engineCheckSumFilePath()), newCSum);
         }
         try {
             chmod(to.getAbsolutePath());
         } catch (Exception e) {
+            Log.d("InternalPikafish", "chmod failed: " + e);
             throw new RuntimeException(e);
         }
-        copyNetFiles(exeDir);
+        copyNetworkFiles(exeDir);
         return to.getAbsolutePath();
     }
 
     /** Copy the Stockfish default network files to "exeDir" if they are not already there. */
-    private void copyNetFiles(File exeDir) throws IOException {
-        for (int i = 0; i < defaultNets.length; i++) {
-            defaultNetFiles[i] = new File(exeDir, defaultNets[i]);
-            if (!defaultNetFiles[i].exists()) {
-                File tmpFile = new File(exeDir, defaultNets[i] + ".tmp");
-                copyAssetFile(defaultNets[i], tmpFile);
-                if (!tmpFile.renameTo(defaultNetFiles[i]))
+    private void copyNetworkFiles(File exeDir) throws IOException {
+        for (int i = 0; i < defaultNetworkFiles.length; i++) {
+            defaultDestNetworkFiles[i] = new File(exeDir, defaultNetworkFiles[i]);
+            if (!defaultDestNetworkFiles[i].exists()) {
+                File tmpFile = new File(exeDir, defaultNetworkFiles[i] + ".tmp");
+                copyAssetFile(defaultNetworkFiles[i], tmpFile);
+                if (!tmpFile.renameTo(defaultDestNetworkFiles[i])) {
+                    Log.d("InternalPikafish", "Rename failed " + defaultDestNetworkFiles[i]);
                     throw new IOException("Rename failed");
+                }
             } else {
-                Log.d("DroidFish", "Network file " + defaultNets[i] + " already exists");
+                Log.d("InternalPikafish", "Network file " + defaultNetworkFiles[i] + " already exists");
             }
         }
     }
@@ -160,7 +163,7 @@ public class InternalPikaFish extends ExternalEngine {
      *  an engine different from Stockfish is used, so this is a static
      *  check performed for all engines. */
     public static boolean keepExeDirFile(File f) {
-        return Arrays.asList(defaultNets).contains(f.getName());
+        return Arrays.asList(defaultNetworkFiles).contains(f.getName());
     }
 
     @Override
@@ -179,9 +182,9 @@ public class InternalPikaFish extends ExternalEngine {
     public boolean setOption(String name, String value) {
         for (int i = 0; i < 2; i++) {
             if (name.toLowerCase(Locale.US).equals(netOptions[i]) &&
-                (defaultNets[i].equals(value) || value.isEmpty())) {
+                (defaultNetworkFiles[i].equals(value) || value.isEmpty())) {
                 getUCIOptions().getOption(name).setFromString(value);
-                value = defaultNetFiles[i].getAbsolutePath();
+                value = defaultDestNetworkFiles[i].getAbsolutePath();
                 writeLineToEngine(String.format(Locale.US, "setoption name %s value %s", name, value));
                 return true;
             }
