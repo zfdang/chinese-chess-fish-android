@@ -15,7 +15,7 @@ import android.view.SurfaceView;
 import androidx.annotation.NonNull;
 
 import com.zfdang.chess.R;
-import com.zfdang.chess.gamelogic.ChessStatus;
+import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Position;
 
 import org.jetbrains.annotations.NotNull;
@@ -45,16 +45,16 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     public int Board_width, Board_height;
     public float scaleRatio;
 
-    public ChessStatus chessStatus;
+    public Board board;
 
     public String[] thinkMood = new String[]{"😀", "🙂", "😶", "😣", "😵", "😭"};
     public int thinkIndex = 0;
     public int thinkFlag = 0;
     public String thinkContent = "😀·····";
 
-    public ChessView(Context context, ChessStatus chessStatus) {
+    public ChessView(Context context, Board board) {
         super(context);
-        this.chessStatus = chessStatus;
+        this.board = board;
         getHolder().addCallback(this);
         initBitmaps();
     }
@@ -91,10 +91,10 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
 
         // draw piece
         Rect tempSrcRect, tempDesRect;
-        for (int x = 0; x < ChessStatus.BOARD_PIECE_WIDTH; x++) {
-            for (int y = 0; y < ChessStatus.BOARD_PIECE_HEIGHT; y++) {
+        for (int x = 0; x < Board.BOARD_PIECE_WIDTH; x++) {
+            for (int y = 0; y < Board.BOARD_PIECE_HEIGHT; y++) {
                 Position pos = new Position(x, y);
-                int piece = chessStatus.getPieceByPosition(pos);
+                int piece = board.getPieceByPosition(pos);
                 if (piece > 0) {
                     // valid piece, draw the bitmap
                     Bitmap bitmap = PieceBitmaps[piece-1];
@@ -106,12 +106,12 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         // draw selected piece
-        Position pos = chessStatus.selectedPosition;
-        int piece = chessStatus.getPieceByPosition(pos);
+        Position pos = board.selectedPosition;
+        int piece = board.getPieceByPosition(pos);
         if (piece > 0) {
             // valid piece is selected
             tempDesRect = getDestRect(pos);
-            if(chessStatus.isPieceRed(pos)) {
+            if(board.isPieceRed(pos)) {
                 tempSrcRect = new Rect(0, 0, B_box.getWidth(), B_box.getHeight());
                 canvas.drawBitmap(B_box, tempSrcRect, tempDesRect, null);
             } else {
@@ -147,8 +147,8 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
 ////            }
 //        }
 
-        if (chessStatus.status == 1) {
-            if (chessStatus.isMachine == true) {
+        if (board.status == 1) {
+            if (board.isMachine == true) {
                 if (thinkFlag == 0) {
                     thinkContent = "";
                     for (int i = 0; i < thinkIndex; i++) {

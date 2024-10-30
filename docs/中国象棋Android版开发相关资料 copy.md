@@ -7,6 +7,10 @@
 
 ## 相关的技术文档
 
+### 棋盘着色
+
+	https://www.xqbase.com/protocol/cchess_move.htm
+
 ### FEN记号法
 
 	https://www.xqbase.com/protocol/cchess_fen.htm
@@ -19,6 +23,7 @@
 	
 ### UCI协议
 
+	https://www.xqbase.com/protocol/cchess_ucci.htm
 	https://en.wikipedia.org/wiki/Universal_Chess_Interface
 
 
