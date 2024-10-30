@@ -36,7 +36,7 @@
  * Method:    chmod
  * Signature: (Ljava/lang/String;)Z
  */
-extern "C" JNIEXPORT jboolean JNICALL Java_org_petero_droidfish_engine_EngineUtil_chmod
+extern "C" JNIEXPORT jboolean JNICALL Java_org_petero_droidfish_engine_NativeUtil_chmod
   (JNIEnv *env, jclass, jstring jExePath) {
     const char* exePath = env->GetStringUTFChars(jExePath, NULL);
     if (!exePath)
@@ -51,7 +51,7 @@ extern "C" JNIEXPORT jboolean JNICALL Java_org_petero_droidfish_engine_EngineUti
  * Method:    reNice
  * Signature: (II)V
  */
-extern "C" JNIEXPORT void JNICALL Java_org_petero_droidfish_engine_EngineUtil_reNice
+extern "C" JNIEXPORT void JNICALL Java_org_petero_droidfish_engine_NativeUtil_reNice
   (JNIEnv *env, jclass, jint pid, jint prio) {
     setpriority(PRIO_PROCESS, pid, prio);
 }
@@ -61,7 +61,7 @@ extern "C" JNIEXPORT void JNICALL Java_org_petero_droidfish_engine_EngineUtil_re
  * Method:    isSimdSupported
  * Signature: ()Z
  */
-extern "C" JNIEXPORT jboolean JNICALL Java_org_petero_droidfish_engine_EngineUtil_isSimdSupported
+extern "C" JNIEXPORT jboolean JNICALL Java_org_petero_droidfish_engine_NativeUtil_isSimdSupported
     (JNIEnv *env, jclass) {
 #if defined(__arm__)
     using namespace cpu_features;

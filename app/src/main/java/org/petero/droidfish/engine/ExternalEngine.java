@@ -87,7 +87,7 @@ public class ExternalEngine extends UCIEngineBase {
             ProcessBuilder pb = new ProcessBuilder(exePath);
             if (engineWorkDir.canRead() && engineWorkDir.isDirectory())
                 pb.directory(engineWorkDir);
-            synchronized (EngineUtil.nativeLock) {
+            synchronized (NativeUtil.nativeLock) {
                 engineProc = pb.start();
             }
             reNice();
@@ -179,7 +179,7 @@ public class ExternalEngine extends UCIEngineBase {
             java.lang.reflect.Field f = engineProc.getClass().getDeclaredField("pid");
             f.setAccessible(true);
             int pid = f.getInt(engineProc);
-            EngineUtil.reNice(pid, 10);
+            NativeUtil.reNice(pid, 10);
         } catch (Throwable ignore) {
         }
     }
@@ -328,7 +328,7 @@ public class ExternalEngine extends UCIEngineBase {
     }
 
     void chmod(String exePath) throws Exception {
-        if (!EngineUtil.chmod(exePath)) {
+        if (!NativeUtil.chmod(exePath)) {
             Log.d("ExternalEngine", "Failed to chmod " + exePath);
             throw new IOException("chmod failed");
         }
