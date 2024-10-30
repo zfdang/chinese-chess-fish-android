@@ -9,10 +9,12 @@
 
 ### FEN记号法
 
+	https://www.xqbase.com/protocol/cchess_fen.htm
 	https://en.wikipedia.org/wiki/Forsyth%E2%80%93Edwards_Notation
 	
 ### PGN格式
 
+	https://www.xqbase.com/protocol/cchess_pgn.htm
 	https://en.wikipedia.org/wiki/Portable_Game_Notation
 	
 ### UCI协议
