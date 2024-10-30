@@ -35,7 +35,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class FileUtil {
-    /** Read a text file. Return string array with one string per line. */
+    /**
+     * Read a text file. Return string array with one string per line.
+     */
     public static String[] readFile(String filename) throws IOException {
         ArrayList<String> ret = new ArrayList<>();
         try (InputStream inStream = new FileInputStream(filename);
@@ -48,7 +50,9 @@ public class FileUtil {
         }
     }
 
-    /** Read all data from an input stream. Return null if IO error. */
+    /**
+     * Read all data from an input stream. Return null if IO error.
+     */
     public static String readFromStream(InputStream is) {
         try (InputStreamReader isr = new InputStreamReader(is, "UTF-8");
              BufferedReader br = new BufferedReader(isr)) {
@@ -66,7 +70,9 @@ public class FileUtil {
         }
     }
 
-    /** Read data from input stream and write to file. */
+    /**
+     * Read data from input stream and write to file.
+     */
     public static void writeFile(InputStream is, String outFile) throws IOException {
         try (OutputStream os = new FileOutputStream(outFile)) {
             byte[] buffer = new byte[16384];
@@ -79,7 +85,9 @@ public class FileUtil {
         }
     }
 
-    /** Return the length of a file, or -1 if length can not be determined. */
+    /**
+     * Return the length of a file, or -1 if length can not be determined.
+     */
     public static long getFileLength(String filename) {
         try (RandomAccessFile raf = new RandomAccessFile(filename, "r")) {
             return raf.length();

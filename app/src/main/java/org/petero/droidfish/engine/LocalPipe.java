@@ -21,19 +21,25 @@ package org.petero.droidfish.engine;
 import java.util.LinkedList;
 import java.util.Locale;
 
-/** Implements line-based text communication between threads. */
+/**
+ * Implements line-based text communication between threads.
+ */
 public class LocalPipe {
     private LinkedList<String> lines = new LinkedList<>();
     private boolean closed = false;
 
-    /** Write a line to the pipe. */
+    /**
+     * Write a line to the pipe.
+     */
     public final synchronized void printLine(String format) {
         String s = String.format(Locale.US, format, new Object[]{});
         addLine(s);
     }
 
-    /** Write a line to the pipe. */
-    public final synchronized void printLine(String format, Object ... args) {
+    /**
+     * Write a line to the pipe.
+     */
+    public final synchronized void printLine(String format, Object... args) {
         String s = String.format(Locale.US, format, args);
         addLine(s);
     }
@@ -49,12 +55,16 @@ public class LocalPipe {
         notify();
     }
 
-    /** Read a line from the pipe. Returns null on failure. */
+    /**
+     * Read a line from the pipe. Returns null on failure.
+     */
     public final synchronized String readLine() {
         return readLine(-1);
     }
 
-    /** Read a line from the pipe. Returns null on failure. Returns empty string on timeout. */
+    /**
+     * Read a line from the pipe. Returns null on failure. Returns empty string on timeout.
+     */
     public final synchronized String readLine(int timeoutMillis) {
         if (closed)
             return null;
@@ -75,13 +85,17 @@ public class LocalPipe {
         }
     }
 
-    /** Close pipe. Makes readLine() return null. */
+    /**
+     * Close pipe. Makes readLine() return null.
+     */
     public final synchronized void close() {
         closed = true;
         notify();
     }
 
-    /** Return true if writer side has closed the pipe. */
+    /**
+     * Return true if writer side has closed the pipe.
+     */
     public final synchronized boolean isClosed() {
         return closed;
     }

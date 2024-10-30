@@ -39,7 +39,7 @@ public abstract class UCIEngineBase implements UCIEngine {
 
     public static UCIEngine getEngine(String engine,
                                       EngineOptions engineOptions, Report report) {
-        if ("pikafish".equals(engine)){
+        if ("pikafish".equals(engine)) {
             return new InternalPikafish(report, engineOptions.workDir);
         } else {
             return new ExternalEngine(engine, engineOptions.workDir, report);
@@ -73,13 +73,13 @@ public abstract class UCIEngineBase implements UCIEngine {
         Properties iniOptions = new Properties();
         try (FileInputStream is = new FileInputStream(optionsFile)) {
             iniOptions.load(is);
-        } catch (IOException|IllegalArgumentException ignore) {
+        } catch (IOException | IllegalArgumentException ignore) {
         }
-        Map<String,String> opts = new TreeMap<>();
-        for (Map.Entry<Object,Object> ent : iniOptions.entrySet()) {
+        Map<String, String> opts = new TreeMap<>();
+        for (Map.Entry<Object, Object> ent : iniOptions.entrySet()) {
             if (ent.getKey() instanceof String && ent.getValue() instanceof String) {
-                String key = ((String)ent.getKey()).toLowerCase(Locale.US);
-                String value = (String)ent.getValue();
+                String key = ((String) ent.getKey()).toLowerCase(Locale.US);
+                String value = (String) ent.getValue();
                 opts.put(key, value);
             }
         }
@@ -87,9 +87,9 @@ public abstract class UCIEngineBase implements UCIEngine {
     }
 
     @Override
-    public final boolean setUCIOptions(Map<String,String> uciOptions) {
+    public final boolean setUCIOptions(Map<String, String> uciOptions) {
         boolean modified = false;
-        for (Map.Entry<String,String> ent : uciOptions.entrySet()) {
+        for (Map.Entry<String, String> ent : uciOptions.entrySet()) {
             String key = ent.getKey().toLowerCase(Locale.US);
             String value = ent.getValue();
             if (configurableOption(key))
@@ -118,29 +118,35 @@ public abstract class UCIEngineBase implements UCIEngine {
         return options;
     }
 
-    /** Get engine UCI options file. */
+    /**
+     * Get engine UCI options file.
+     */
     protected abstract File getOptionsFile();
 
-    /** Return true if the UCI option can be edited in the "Engine Options" dialog. */
+    /**
+     * Return true if the UCI option can be edited in the "Engine Options" dialog.
+     */
     protected boolean editableOption(String name) {
         name = name.toLowerCase(Locale.US);
         if (name.startsWith("uci_")) {
             return false;
         } else {
-            String[] ignored = { "hash", "ponder", "multipv",
-                                 "gaviotatbpath", "syzygypath" };
+            String[] ignored = {"hash", "ponder", "multipv",
+                    "gaviotatbpath", "syzygypath"};
             return !Arrays.asList(ignored).contains(name);
         }
     }
 
-    /** Return true if the UCI option can be modified by the user, either directly
-     *  from the "Engine Options" dialog or indirectly, for example from the
-     *  "Set Engine Strength" dialog. */
+    /**
+     * Return true if the UCI option can be modified by the user, either directly
+     * from the "Engine Options" dialog or indirectly, for example from the
+     * "Set Engine Strength" dialog.
+     */
     private boolean configurableOption(String name) {
         if (editableOption(name))
             return true;
         name = name.toLowerCase(Locale.US);
-        String[] configurable = { "uci_limitstrength", "uci_elo" };
+        String[] configurable = {"uci_limitstrength", "uci_elo"};
         return Arrays.asList(configurable).contains(name);
     }
 
@@ -187,10 +193,10 @@ public abstract class UCIEngineBase implements UCIEngine {
                     else if (type.equals("combo"))
                         stop = "var";
                     defVal = "";
-                    while (i+1 < tokens.length && !tokens[i+1].equals(stop)) {
+                    while (i + 1 < tokens.length && !tokens[i + 1].equals(stop)) {
                         if (defVal.length() > 0)
                             defVal += " ";
-                        defVal += tokens[i+1];
+                        defVal += tokens[i + 1];
                         i++;
                     }
                 } else if (tokens[i].equals("min")) {
@@ -199,10 +205,10 @@ public abstract class UCIEngineBase implements UCIEngine {
                     maxVal = tokens[++i];
                 } else if (tokens[i].equals("var")) {
                     String value = "";
-                    while (i+1 < tokens.length && !tokens[i+1].equals("var")) {
+                    while (i + 1 < tokens.length && !tokens[i + 1].equals("var")) {
                         if (value.length() > 0)
                             value += " ";
-                        value += tokens[i+1];
+                        value += tokens[i + 1];
                         i++;
                     }
                     var.add(value);
@@ -253,7 +259,9 @@ public abstract class UCIEngineBase implements UCIEngine {
         return option;
     }
 
-    /** Return true if engine has option optName. */
+    /**
+     * Return true if engine has option optName.
+     */
     protected final boolean hasOption(String optName) {
         return options.contains(optName);
     }
@@ -267,7 +275,7 @@ public abstract class UCIEngineBase implements UCIEngine {
             // Don't use setOption() since this value reflects current search parameters,
             // not user specified strength settings, so should not be saved in .ini file.
             writeLineToEngine(String.format(Locale.US, "setoption name %s value %s",
-                                            lsName, limit ? "true" : "false"));
+                    lsName, limit ? "true" : "false"));
         }
         if (limit)
             setOption("UCI_Elo", elo);

@@ -31,14 +31,16 @@ public class EngineUtil {
         System.loadLibrary("nativeutil");
     }
 
-    /** Remove characters from s that are not safe to use in a filename. */
+    /**
+     * Remove characters from s that are not safe to use in a filename.
+     */
     private static String sanitizeString(String s) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length(); i++) {
             char ch = s.charAt(i);
             if (((ch >= 'A') && (ch <= 'Z')) ||
-                ((ch >= 'a') && (ch <= 'z')) ||
-                ((ch >= '0') && (ch <= '9')))
+                    ((ch >= 'a') && (ch <= 'z')) ||
+                    ((ch >= '0') && (ch <= '9')))
                 sb.append(ch);
             else
                 sb.append('_');
@@ -46,15 +48,23 @@ public class EngineUtil {
         return sb.toString();
     }
 
-    /** Executes chmod 744 exePath. */
+    /**
+     * Executes chmod 744 exePath.
+     */
     static native boolean chmod(String exePath);
 
-    /** Change the priority of a process. */
+    /**
+     * Change the priority of a process.
+     */
     static native void reNice(int pid, int prio);
 
-    /** Return true if the required SIMD instructions are supported by the CPU. */
+    /**
+     * Return true if the required SIMD instructions are supported by the CPU.
+     */
     static native boolean isSimdSupported();
 
-    /** For synchronizing non thread safe native calls. */
+    /**
+     * For synchronizing non thread safe native calls.
+     */
     public static final Object nativeLock = new Object();
 }

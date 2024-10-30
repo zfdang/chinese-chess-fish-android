@@ -18,7 +18,9 @@
 
 package org.petero.droidfish;
 
-/** Engine options, including endgame tablebase probing options. */
+/**
+ * Engine options, including endgame tablebase probing options.
+ */
 public final class EngineOptions {
     public int hashMB;          // Engine hash table size in MB
     public boolean unSafeHash;  // True if allocating very large hash is allowed
@@ -63,14 +65,18 @@ public final class EngineOptions {
         workDir = other.workDir;
     }
 
-    /** Get the GTB path for an engine. */
+    /**
+     * Get the GTB path for an engine.
+     */
     public String getEngineGtbPath(boolean networkEngine) {
         if (!engineProbe)
             return "";
         return networkEngine ? gtbPathNet : gtbPath;
     }
 
-    /** Get the RTB path for an engine. */
+    /**
+     * Get the RTB path for an engine.
+     */
     public String getEngineRtbPath(boolean networkEngine) {
         if (!engineProbe)
             return "";
@@ -81,7 +87,7 @@ public final class EngineOptions {
     public boolean equals(Object o) {
         if ((o == null) || (o.getClass() != this.getClass()))
             return false;
-        EngineOptions other = (EngineOptions)o;
+        EngineOptions other = (EngineOptions) o;
 
         return ((hashMB == other.hashMB) &&
                 (unSafeHash == other.unSafeHash) &&
