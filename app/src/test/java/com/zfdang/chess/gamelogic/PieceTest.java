@@ -33,16 +33,16 @@ public class PieceTest {
     }
 
     @Test
-    public void testGetByteByValue() {
-        assertEquals((byte) 'K', Piece.getByteByValue(Piece.WSHUAI));
-        assertEquals((byte) 'k', Piece.getByteByValue(Piece.BJIANG));
-        assertEquals(Piece.EMPTY_BYTE, Piece.getByteByValue(Piece.EMPTY));
+    public void testGetCharByValue() {
+        assertEquals(new Character('K'), Piece.getCharByValue(Piece.WSHUAI));
+        assertEquals(new Character('k'), Piece.getCharByValue(Piece.BJIANG));
+        assertEquals(Piece.EMPTY_CHAR, Piece.getCharByValue(Piece.EMPTY));
     }
 
     @Test
-    public void testGetValueByByte() {
-        assertEquals(Piece.WSHUAI, Piece.getValueByByte((byte) 'K'));
-        assertEquals(Piece.BJIANG, Piece.getValueByByte((byte) 'k'));
-        assertEquals(Piece.EMPTY, Piece.getValueByByte(Piece.EMPTY_BYTE));
+    public void testGetValueByChar() {
+        assertEquals(Piece.WSHUAI, Piece.getValueByChar('K'));
+        assertEquals(Piece.BJIANG, Piece.getValueByChar('k'));
+        assertEquals(Piece.EMPTY, Piece.getValueByChar(Piece.EMPTY_CHAR));
     }
 }

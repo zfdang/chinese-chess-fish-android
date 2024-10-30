@@ -38,13 +38,20 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
 
         chessStatus = Board()
         // for testing purpose
-        chessStatus.selectedPosition = Position(8,9)
+//        chessStatus.selectedPosition = Position(8,9)
 
         // 初始化棋盘
         chessView = ChessView(this, chessStatus)
         chessView.setOnTouchListener(this)
 
         chessLayout.addView(chessView)
+
+        // bind button id = button6
+        binding.button6.setOnClickListener {
+            // Handle button click
+            Log.v("PlayActivity", "button6 clicked")
+            chessStatus.convertToFEN();
+        }
 
     }
 
@@ -61,7 +68,7 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
             val x = event!!.x
             val y = event!!.y
             val pos = chessView.getPosByCoord(x, y)
-            chessStatus.setSelectedPosition(pos)
+//            chessStatus.setSelectedPosition(pos)
 
             Log.v("PlayActivity", "onTouch: x = $x, y = $y, pos = " + pos.toString())
         }
