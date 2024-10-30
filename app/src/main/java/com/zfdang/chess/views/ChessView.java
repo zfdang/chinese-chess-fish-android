@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 
 import com.zfdang.chess.R;
 import com.zfdang.chess.gamelogic.Board;
+import com.zfdang.chess.gamelogic.Piece;
 import com.zfdang.chess.gamelogic.Position;
 
 import org.jetbrains.annotations.NotNull;
@@ -67,20 +68,21 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         R_box = BitmapFactory.decodeResource(getResources(), R.drawable.r_box);
         Pot = BitmapFactory.decodeResource(getResources(), R.drawable.pot);
 
-        PieceBitmaps[0] = BitmapFactory.decodeResource(getResources(), R.drawable.b_jiang);
-        PieceBitmaps[1] = BitmapFactory.decodeResource(getResources(), R.drawable.b_shi);
-        PieceBitmaps[2] = BitmapFactory.decodeResource(getResources(), R.drawable.b_xiang);
-        PieceBitmaps[3] = BitmapFactory.decodeResource(getResources(), R.drawable.b_ma);
-        PieceBitmaps[4] = BitmapFactory.decodeResource(getResources(), R.drawable.b_ju);
-        PieceBitmaps[5] = BitmapFactory.decodeResource(getResources(), R.drawable.b_pao);
-        PieceBitmaps[6] = BitmapFactory.decodeResource(getResources(), R.drawable.b_zu);
-        PieceBitmaps[7] = BitmapFactory.decodeResource(getResources(), R.drawable.r_shuai);
-        PieceBitmaps[8] = BitmapFactory.decodeResource(getResources(), R.drawable.r_shi);
-        PieceBitmaps[9] = BitmapFactory.decodeResource(getResources(), R.drawable.r_xiang);
-        PieceBitmaps[10] = BitmapFactory.decodeResource(getResources(), R.drawable.r_ma);
-        PieceBitmaps[11] = BitmapFactory.decodeResource(getResources(), R.drawable.r_ju);
-        PieceBitmaps[12] = BitmapFactory.decodeResource(getResources(), R.drawable.r_pao);
-        PieceBitmaps[13] = BitmapFactory.decodeResource(getResources(), R.drawable.r_bing);
+        // these values should be consistent with Piece.java
+        PieceBitmaps[0] = BitmapFactory.decodeResource(getResources(), R.drawable.r_shuai);
+        PieceBitmaps[1] = BitmapFactory.decodeResource(getResources(), R.drawable.r_shi);
+        PieceBitmaps[2] = BitmapFactory.decodeResource(getResources(), R.drawable.r_xiang);
+        PieceBitmaps[3] = BitmapFactory.decodeResource(getResources(), R.drawable.r_ma);
+        PieceBitmaps[4] = BitmapFactory.decodeResource(getResources(), R.drawable.r_ju);
+        PieceBitmaps[5] = BitmapFactory.decodeResource(getResources(), R.drawable.r_pao);
+        PieceBitmaps[6] = BitmapFactory.decodeResource(getResources(), R.drawable.r_bing);
+        PieceBitmaps[7] = BitmapFactory.decodeResource(getResources(), R.drawable.b_jiang);
+        PieceBitmaps[8] = BitmapFactory.decodeResource(getResources(), R.drawable.b_shi);
+        PieceBitmaps[9] = BitmapFactory.decodeResource(getResources(), R.drawable.b_xiang);
+        PieceBitmaps[10] = BitmapFactory.decodeResource(getResources(), R.drawable.b_ma);
+        PieceBitmaps[11] = BitmapFactory.decodeResource(getResources(), R.drawable.b_ju);
+        PieceBitmaps[12] = BitmapFactory.decodeResource(getResources(), R.drawable.b_pao);
+        PieceBitmaps[13] = BitmapFactory.decodeResource(getResources(), R.drawable.b_zu);
     }
 
     public void Draw(Canvas canvas) {
@@ -106,12 +108,12 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         // draw selected piece
-        Position pos = board.selectedPosition;
+        Position pos = new Position(0, 5);
         int piece = board.getPieceByPosition(pos);
         if (piece > 0) {
             // valid piece is selected
             tempDesRect = getDestRect(pos);
-            if(board.isPieceRed(pos)) {
+            if(Piece.isRed(board.getPieceByPosition(pos))) {
                 tempSrcRect = new Rect(0, 0, B_box.getWidth(), B_box.getHeight());
                 canvas.drawBitmap(B_box, tempSrcRect, tempDesRect, null);
             } else {
@@ -147,26 +149,6 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
 ////            }
 //        }
 
-        if (board.status == 1) {
-            if (board.isMachine == true) {
-                if (thinkFlag == 0) {
-                    thinkContent = "";
-                    for (int i = 0; i < thinkIndex; i++) {
-                        thinkContent += '·';
-                    }
-                    thinkContent += thinkMood[thinkIndex];
-                    for (int i = thinkIndex + 1; i < 6; i++) {
-                        thinkContent += '·';
-                    }
-                    thinkIndex = (thinkIndex + 1) % 6;
-                }
-                thinkFlag = (thinkFlag + 1) % 5;
-                canvas.drawText(thinkContent, Board_width / 2, Board_height / 2 + Scale(57) * 7 / 20, paint);
-            } else {
-                thinkIndex = 0;
-                thinkContent = "😀·····";
-            }
-        }
     }
 
     @NonNull
@@ -192,8 +174,6 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
 
         destBoardRect = new Rect(0, 0, Board_width, Board_height);
         setMeasuredDimension(Board_width, Board_height);
-
-
     }
 
 

@@ -30,7 +30,7 @@ import java.util.HashMap;
  * */
 public class Piece {
     public static final int EMPTY = 0;
-    public static final byte EMPTY_BYTE = ' ';
+    public static final Character EMPTY_CHAR = ' ';
 
     public static final int WSHUAI = 1; // K, 帅
     public static final int WSHI = 2; // A, 仕
@@ -51,44 +51,43 @@ public class Piece {
     public static final int nPieceTypes = 15;
 
     // Create HashMap for piece names and piece values
-    public static final HashMap<Integer, Byte> pieceByteMap = new HashMap<>();
+    public static final HashMap<Integer, Character> pieceCharMap = new HashMap<>();
     static {
-        pieceByteMap.put(WSHUAI, (byte) 'K');
-        pieceByteMap.put(WSHI, (byte) 'R');
-        pieceByteMap.put(WXIANG, (byte) 'C');
-        pieceByteMap.put(WMA, (byte) 'N');
-        pieceByteMap.put(WJU, (byte) 'B');
-        pieceByteMap.put(WPAO, (byte) 'A');
-        pieceByteMap.put(WBING, (byte) 'P');
+        pieceCharMap.put(WSHUAI, 'K');
+        pieceCharMap.put(WSHI, 'A');
+        pieceCharMap.put(WXIANG, 'B');
+        pieceCharMap.put(WMA, 'N');
+        pieceCharMap.put(WJU, 'R');
+        pieceCharMap.put(WPAO, 'C');
+        pieceCharMap.put(WBING, 'P');
 
-        pieceByteMap.put(BJIANG, (byte) 'k');
-        pieceByteMap.put(BSHI, (byte) 'r');
-        pieceByteMap.put(BXIANG, (byte) 'c');
-        pieceByteMap.put(BMA, (byte) 'n');
-        pieceByteMap.put(BJU, (byte) 'b');
-        pieceByteMap.put(BPAO, (byte) 'a');
-        pieceByteMap.put(BZU, (byte) 'p');
+        pieceCharMap.put(BJIANG, 'k');
+        pieceCharMap.put(BSHI, 'a');
+        pieceCharMap.put(BXIANG, 'b');
+        pieceCharMap.put(BMA, 'n');
+        pieceCharMap.put(BJU, 'r');
+        pieceCharMap.put(BPAO, 'c');
+        pieceCharMap.put(BZU, 'p');
     }
 
-    public static final HashMap<Byte, Integer> pieceValueMap = new HashMap<>();
+    public static final HashMap<Character, Integer> pieceValueMap = new HashMap<>();
     static {
-        pieceValueMap.put((byte) 'K', WSHUAI);
-        pieceValueMap.put((byte) 'R', WSHI);
-        pieceValueMap.put((byte) 'C', WXIANG);
-        pieceValueMap.put((byte) 'N', WMA);
-        pieceValueMap.put((byte) 'B', WJU);
-        pieceValueMap.put((byte) 'A', WPAO);
-        pieceValueMap.put((byte) 'P', WBING);
+        pieceValueMap.put('K', WSHUAI);
+        pieceValueMap.put('A', WSHI);
+        pieceValueMap.put('B', WXIANG);
+        pieceValueMap.put('N', WMA);
+        pieceValueMap.put('R', WJU);
+        pieceValueMap.put('C', WPAO);
+        pieceValueMap.put('P', WBING);
 
-        pieceValueMap.put((byte) 'k', BJIANG);
-        pieceValueMap.put((byte) 'r', BSHI);
-        pieceValueMap.put((byte) 'c', BXIANG);
-        pieceValueMap.put((byte) 'n', BMA);
-        pieceValueMap.put((byte) 'b', BJU);
-        pieceValueMap.put((byte) 'a', BPAO);
-        pieceValueMap.put((byte) 'p', BZU);
+        pieceValueMap.put('k', BJIANG);
+        pieceValueMap.put('a', BSHI);
+        pieceValueMap.put('b', BXIANG);
+        pieceValueMap.put('n', BMA);
+        pieceValueMap.put('r', BJU);
+        pieceValueMap.put('c', BPAO);
+        pieceValueMap.put('p', BZU);
     }
-
 
     /**
      * Return true if p is a white piece, false otherwise.
@@ -98,6 +97,7 @@ public class Piece {
     public static boolean isBlack(int pType) {
         return pType <= BZU && pType >= BJIANG;
     }
+
     public static int swapColor(int pType) {
         if (pType == EMPTY)
             return EMPTY;
@@ -105,17 +105,17 @@ public class Piece {
     }
 
     // Return piece byte value by piece type
-    static public byte getByteByValue(int i){
+    static public Character getCharByValue(int i){
         // find in pieceByteMap
-        if(pieceByteMap.containsKey(i)){
-            return pieceByteMap.get(i);
+        if(pieceCharMap.containsKey(i)){
+            return pieceCharMap.get(i);
         } else {
-            return EMPTY_BYTE;
+            return EMPTY_CHAR;
         }
     }
 
     // return piece value by piece byte
-    static public int getValueByByte(byte b){
+    static public int getValueByChar(char b){
         // find in pieceValueMap
         if(pieceValueMap.containsKey(b)){
             return pieceValueMap.get(b);
