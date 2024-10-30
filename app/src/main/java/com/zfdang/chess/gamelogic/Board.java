@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ChessStatus implements Cloneable, Serializable {
+public class Board implements Cloneable, Serializable {
     private static final long serialVersionUID = 2194052829642412444L;
 
     public Position selectedPosition = new Position(-1,-1);
@@ -38,28 +38,28 @@ public class ChessStatus implements Cloneable, Serializable {
     public int attackNum_B = 11;
     public boolean isMachine = false;
 
-    public ChessStatus() {
+    public Board() {
 
     }
 
 
-    public void setInfo(ChessStatus chessStatus) throws CloneNotSupportedException {
-        this.selectedPosition = chessStatus.selectedPosition;
-        this.IsRedGo = chessStatus.IsRedGo;
-        this.IsChecked = chessStatus.IsChecked;
-        this.prePosition = (Position) chessStatus.prePosition.clone();
-        this.curPosition = (Position) chessStatus.curPosition.clone();
-        this.status = chessStatus.status;
-        this.ret = new ArrayList<Position>(chessStatus.ret);
+    public void setInfo(Board board) throws CloneNotSupportedException {
+        this.selectedPosition = board.selectedPosition;
+        this.IsRedGo = board.IsRedGo;
+        this.IsChecked = board.IsChecked;
+        this.prePosition = (Position) board.prePosition.clone();
+        this.curPosition = (Position) board.curPosition.clone();
+        this.status = board.status;
+        this.ret = new ArrayList<Position>(board.ret);
         for (int i = 0; i < this.piece.length; i++) {
-            this.piece[i] = chessStatus.piece[i].clone();
+            this.piece[i] = board.piece[i].clone();
         }
-        this.ZobristKey = chessStatus.ZobristKey;
-        this.ZobristKeyCheck = chessStatus.ZobristKeyCheck;
-        this.peaceRound = chessStatus.peaceRound;
-        this.attackNum_R = chessStatus.attackNum_R;
-        this.attackNum_B = chessStatus.attackNum_B;
-        this.isMachine = chessStatus.isMachine;
+        this.ZobristKey = board.ZobristKey;
+        this.ZobristKeyCheck = board.ZobristKeyCheck;
+        this.peaceRound = board.peaceRound;
+        this.attackNum_R = board.attackNum_R;
+        this.attackNum_B = board.attackNum_B;
+        this.isMachine = board.isMachine;
     }
 
     public boolean isPieceRed(Position pos){
@@ -108,5 +108,21 @@ public class ChessStatus implements Cloneable, Serializable {
         } else if (toID >= 11 && toID <= 14) {
             attackNum_R--;
         }
+    }
+
+    public String convertToFEN(){
+        // https://www.xqbase.com/protocol/pgnfen2.htm
+        // https://www.xqbase.com/protocol/cchess_fen.htm
+        // 按白方视角，描述由上至下、由左至右的盘面，以/符号来分隔相邻横列。白方大写字母、黑方小写字母。
+        // 棋盘的编号：从左到右为a-i，从下到上为0-9
+        // FEN字符串中棋子的位置的顺序是从左到右，从上到下，空格用数字表示:
+        // a9-i9, a8-i8, ..., a1-i1, a0-i0
+
+
+        return "";
+    }
+
+    public boolean restoreFromFEN(String fenString){
+        return false;
     }
 }

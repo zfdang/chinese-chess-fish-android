@@ -7,7 +7,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
-import com.zfdang.chess.gamelogic.ChessStatus
+import com.zfdang.chess.gamelogic.Board
 import com.zfdang.chess.gamelogic.Position
 import com.zfdang.chess.databinding.ActivityPlayBinding
 import com.zfdang.chess.views.ChessView
@@ -24,7 +24,7 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
     private lateinit var chessLayout: FrameLayout
 
     // 棋盘状态
-    private lateinit var chessStatus: ChessStatus
+    private lateinit var chessStatus: Board
     private lateinit var chessView: ChessView
 
     @SuppressLint("ClickableViewAccessibility")
@@ -36,7 +36,7 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
 
         chessLayout = binding.chesslayout
 
-        chessStatus = ChessStatus()
+        chessStatus = Board()
         // for testing purpose
         chessStatus.selectedPosition = Position(8,9)
 
