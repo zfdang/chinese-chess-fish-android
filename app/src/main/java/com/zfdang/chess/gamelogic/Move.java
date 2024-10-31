@@ -7,8 +7,6 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 public class Move implements Serializable {
-    private static final long serialVersionUID = -1608509463525143473L;
-
     private Board board = null;
 
     public Position fromPosition;
