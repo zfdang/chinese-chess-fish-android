@@ -154,8 +154,18 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         Paint p = new Paint();
         p.setStyle(Paint.Style.FILL);
         p.setAntiAlias(true);
+        p.setColor(Color.RED);
 
-        DrawArrow(canvas, crd0, crd1, p);
+        // draw arrow for the last 3 moves in historyMoves
+        for(int i = game.historyRecords.size() - 1; i >= 0 && i >= game.historyRecords.size() - 3; i--) {
+            Game.HistoryRecord record = game.historyRecords.get(i);
+            crd0 = getCoordByPosition(record.move.fromPosition);
+            crd1 = getCoordByPosition(record.move.toPosition);
+
+            // transparency
+            p.setAlpha(100 - (game.historyRecords.size() - i - 1) * 20);
+            DrawArrow(canvas, crd0, crd1, p);
+        }
     }
 
     void DrawArrow(Canvas canvas, XYCoord crd0, XYCoord crd1, Paint p) {
