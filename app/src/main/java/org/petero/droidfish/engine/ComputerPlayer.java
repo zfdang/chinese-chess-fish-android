@@ -132,7 +132,7 @@ public class ComputerPlayer {
         int bInc;               // Black time increment per move, milliseconds
         int movesToGo;          // Number of moves to next time control
 
-        String engine;          // Engine name (identifier)
+        String engineName;          // Engine name (identifier)
         int numPV;              // Number of PV lines to compute
 
         boolean ponderEnabled;  // True if pondering enabled, for engine time management
@@ -153,7 +153,7 @@ public class ComputerPlayer {
             sr.searchId = id;
             sr.isSearch = false;
             sr.isAnalyze = false;
-            sr.engine = engine;
+            sr.engineName = engine;
             sr.posHashList = null;
             sr.posHashListSize = 0;
             return sr;
@@ -191,7 +191,7 @@ public class ComputerPlayer {
             sr.wInc = wInc;
             sr.bInc = bInc;
             sr.movesToGo = movesToGo;
-            sr.engine = engine;
+            sr.engineName = engine;
             sr.numPV = 1;
             sr.ponderEnabled = ponderEnabled;
             sr.ponderMove = ponderMove;
@@ -227,7 +227,7 @@ public class ComputerPlayer {
             sr.isSearch = false;
             sr.isAnalyze = true;
             sr.wTime = sr.bTime = sr.wInc = sr.bInc = sr.movesToGo = 0;
-            sr.engine = engine;
+            sr.engineName = engine;
             sr.numPV = numPV;
             sr.ponderEnabled = false;
             sr.ponderMove = null;
@@ -588,7 +588,7 @@ public class ComputerPlayer {
             return;
 
         // Make sure correct engine is running
-        if ((uciEngine == null) || !engineState.engine.equals(sr.engine)) {
+        if ((uciEngine == null) || !engineState.engine.equals(sr.engineName)) {
             shutdownEngine();
             startEngine();
             return;
@@ -709,12 +709,12 @@ public class ComputerPlayer {
         myAssert(searchRequest != null);
 
         engineName = "Computer";
-        uciEngine = UCIEngineBase.getEngine(searchRequest.engine,
+        uciEngine = UCIEngineBase.getEngine(searchRequest.engineName,
                 engineOptions,
                 errMsg -> {
                     if (errMsg == null)
                         errMsg = "";
-//                    listener.reportEngineError(errMsg);
+                    listener.reportEngineError(errMsg);
                 });
         uciEngine.initialize();
 
@@ -727,7 +727,7 @@ public class ComputerPlayer {
         uciEngine.writeLineToEngine("setoption name EvalFile value pikafish.nnue");
         uciEngine.writeLineToEngine("isready");
         maxPV = 1;
-        engineState.engine = searchRequest.engine;
+        engineState.engine = searchRequest.engineName;
         engineState.setState(MainState.READ_OPTIONS);
     }
 
