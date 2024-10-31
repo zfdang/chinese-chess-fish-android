@@ -7,8 +7,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
-import com.zfdang.chess.gamelogic.Board
-import com.zfdang.chess.gamelogic.Position
+import com.zfdang.chess.adapters.MoveHistoryAdapter
 import com.zfdang.chess.databinding.ActivityPlayBinding
 import com.zfdang.chess.gamelogic.Game
 import com.zfdang.chess.gamelogic.Piece
@@ -28,6 +27,8 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
     // 棋盘状态
     private lateinit var game: Game;
     private lateinit var chessView: ChessView
+    private lateinit var moveHistoryAdapter: MoveHistoryAdapter
+
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +54,10 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
             game.currentBoard.convertToFEN();
         }
 
+        // Bind historyTable and initialize it with dummy data
+        val historyTable = binding.historyTable
+        moveHistoryAdapter = MoveHistoryAdapter(this, historyTable, game)
+        moveHistoryAdapter.populateTable()
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
@@ -88,6 +93,9 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
                 }
                 game.endPos = pos
                 game.movePiece()
+                moveHistoryAdapter.populateTable()
+
+
                 game.startPos = null
                 game.endPos = null
             }
