@@ -18,7 +18,7 @@
 
 package org.petero.droidfish.engine;
 
-public class NativeUtil {
+public class EngineUtil {
     static {
         System.loadLibrary("nativeutil");
     }
