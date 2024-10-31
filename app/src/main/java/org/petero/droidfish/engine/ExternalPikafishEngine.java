@@ -202,11 +202,11 @@ public class ExternalPikafishEngine extends ExternalEngine {
     @Override
     public boolean setOption(String name, String value) {
         for (int i = 0; i < 2; i++) {
-            if (name.toLowerCase(Locale.US).equals(networkOptions[i]) &&
-                    (networkAsssetFiles[i].equals(value) || value.isEmpty())) {
+            if (name.toLowerCase(Locale.US).equals(networkOptions[i]) && networkAsssetFiles[i].equals(value)) {
                 getUCIOptions().getOption(name).setFromString(value);
                 value = networkFiles[i].getAbsolutePath();
                 writeLineToEngine(String.format(Locale.US, "setoption name %s value %s", name, value));
+                Log.d(  "ExternalPikafishEngine", "setOption: " + name + " " + value);
                 return true;
             }
         }
