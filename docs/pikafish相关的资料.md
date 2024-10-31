@@ -15,6 +15,14 @@
 
 ## 引擎文件的更新
 
+
+直接从官网上下载：
+
+	https://www.pikafish.com/
+
+
+下面单独下载的两个文件，貌似有问题，无法正常运行。
+
 引擎下载：
 
 	https://github.com/official-pikafish/Pikafish/releases
