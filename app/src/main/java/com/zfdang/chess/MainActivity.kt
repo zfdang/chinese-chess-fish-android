@@ -2,14 +2,11 @@ package com.zfdang.chess
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import org.petero.droidfish.engine.DroidComputerPlayer
+import org.petero.droidfish.engine.ComputerPlayer
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,9 +55,9 @@ class MainActivity : AppCompatActivity() {
 
     fun initEngineFile(): Unit {
         // prepare engine files
-        val droidComputerPlayer = DroidComputerPlayer()
-        droidComputerPlayer.queueStartEngine(1024,"pikafish")
-        droidComputerPlayer.getUCIOptions()
+        val computerPlayer = ComputerPlayer(null)
+        computerPlayer.queueStartEngine(1024,"pikafish")
+        computerPlayer.getUCIOptions()
     }
 
 }
