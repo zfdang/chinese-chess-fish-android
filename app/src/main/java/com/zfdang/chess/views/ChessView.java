@@ -19,6 +19,8 @@ import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Game;
 import com.zfdang.chess.gamelogic.Piece;
 import com.zfdang.chess.gamelogic.Position;
+import com.zfdang.chess.utils.ArrowShape;
+
 import android.graphics.Path;
 import android.graphics.Matrix;
 
@@ -148,6 +150,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         Board board = game.currentBoard;
         XYCoord crd0 = getCoordByPosition(game.currentMove.fromPosition);
         XYCoord crd1 = getCoordByPosition(game.currentMove.toPosition);
+
         Paint p = new Paint();
         p.setStyle(Paint.Style.FILL);
         p.setAntiAlias(true);
@@ -156,52 +159,16 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     void DrawArrow(Canvas canvas, XYCoord crd0, XYCoord crd1, Paint p) {
-        float sqSize = 150;
-        // outer height of arrow
-        float h = (float) (sqSize / 2.0);
-        // inner height of arrow
-        float d = (float) (sqSize / 8.0);
-        // 90 the the angle degree of the arrow, the narrower the sharper
-        double v = 90 / 360.0 * Math.PI;
-        double cosv = Math.cos(v);
-        double sinv = Math.sin(v);
-        double tanv = Math.tan(v);
-
-        // draw arrow from crd0 => crd1
-
-        float x0 = crd0.x;
-        float y0 = crd0.y;
-        float x1 = crd1.x;
-        float y1 = crd1.y;
-
-        float x2 = (float) (Math.hypot(x1 - x0, y1 - y0) + d);
-        float y2 = 0;
-        float x3 = (float) (x2 - h * cosv);
-        float y3 = (float) (y2 - h * sinv);
-        float x4 = (float) (x3 - d * sinv);
-        float y4 = (float) (y3 + d * cosv);
-        float x5 = (float) (x4 + (-d / 2 - y4) / tanv);
-        float y5 = -d / 2;
-        float x6 = 0;
-        float y6 = y5 / 2;
+        ArrowShape arrow = new ArrowShape();
         Path path = new Path();
-        path.moveTo(x2, y2);
-        path.lineTo(x3, y3);
-        path.lineTo(x5, y5);
-        path.lineTo(x6, y6);
-        path.lineTo(x6, -y6);
-        path.lineTo(x5, -y5);
-        path.lineTo(x3, -y3);
-        path.close();
-
-        Matrix mtx = new Matrix();
-        mtx.postRotate((float) (Math.atan2(y1 - y0, x1 - x0) * 180 / Math.PI));
-        mtx.postTranslate(x0, y0);
-        path.transform(mtx);
+        arrow.getTransformedPath(path, crd0.x, crd0.y, crd1.x, crd1.y);
 
         canvas.drawPath(path, p);
     }
 
+    public int Scale(int x) {
+        return (int)(x * scaleRatio);
+    }
 
         @NonNull
     private Rect getDestRect(Position pos) {
@@ -212,9 +179,12 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
                 Scale(pos.y * BOARD_GRID_INTERVAL + BOARD_Y_OFFSET + BOARD_PIECE_SIZE));
     }
 
-    public int Scale(int x) {
-        return (int)(x * scaleRatio);
+
+    public XYCoord getCoordByPosition(Position pos) {
+        Rect r = getDestRect(pos);
+        return new XYCoord(r.centerX(), r.centerY());
     }
+
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -258,12 +228,6 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         return null;
-    }
-
-    public XYCoord getCoordByPosition(Position pos) {
-        int x = (int) ((pos.x * BOARD_GRID_INTERVAL + BOARD_X_OFFSET + BOARD_GRID_INTERVAL / 2 ) * scaleRatio);
-        int y = (int) ((pos.y * BOARD_GRID_INTERVAL + BOARD_Y_OFFSET + BOARD_GRID_INTERVAL / 2) * scaleRatio);
-        return new XYCoord(x, y);
     }
 
     class ChessViewThread extends Thread {
