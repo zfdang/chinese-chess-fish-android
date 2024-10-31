@@ -16,12 +16,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.petero.droidfish.engine;
+package org.petero.droidfish.player;
 
 import android.util.Log;
 
 import com.zfdang.chess.gamelogic.Move;
 import com.zfdang.chess.gamelogic.Position;
+import com.zfdang.chess.gamelogic.PvInfo;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -29,12 +30,16 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.petero.droidfish.EngineOptions;
+import org.petero.droidfish.engine.UCIEngine;
+import org.petero.droidfish.engine.UCIEngineBase;
+import org.petero.droidfish.engine.UCIOptions;
 
 /**
  * A computer algorithm player.
  */
 public class ComputerPlayer {
-    private Listener listener = null;
+    private EngineListener engineListener = null;
+    private SearchListener searchListener = null;
     private UCIEngine uciEngine = null;
 
     private EngineOptions engineOptions = new EngineOptions();
@@ -54,207 +59,13 @@ public class ComputerPlayer {
     private int maxPV = 1;
     private String engineName = "Computer";
 
-    /**
-     * Engine state.
-     */
-    private enum MainState {
-        READ_OPTIONS,  // "uci" command sent, waiting for "option" and "uciok" response.
-        WAIT_READY,    // "isready" sent, waiting for "readyok".
-        IDLE,          // engine not searching.
-        SEARCH,        // "go" sent, waiting for "bestmove"
-        PONDER,        // "go" sent, waiting for "bestmove"
-        ANALYZE,       // "go" sent, waiting for "bestmove" (which will be ignored)
-        STOP_SEARCH,   // "stop" sent, waiting for "bestmove"
-        DEAD,          // engine process has terminated
-    }
-
-    /**
-     * Engine state details.
-     */
-    private static final class EngineState {
-        String engine;
-
-        /**
-         * Current engine state.
-         */
-        MainState state;
-
-        /**
-         * ID of current search job.
-         */
-        int searchId;
-
-        /**
-         * Default constructor.
-         */
-        EngineState() {
-            engine = "";
-            setState(MainState.DEAD);
-            searchId = -1;
-        }
-
-        final void setState(MainState s) {
-//            System.out.printf("state: %s -> %s\n",
-//                              (state != null) ? state.toString() : "(null)",
-//                              s.toString());
-            state = s;
-        }
-    }
-
-    // create a public class listener
-    public interface Listener {
-        void reportEngineError(String errMsg);
-
-        void notifyEngineName(String engineName);
-
-        void notifySearchResult(int searchId, String bestMove, Move nextPonderMove);
-
-        void notifyEngineInitialized();
-    }
-
-    /**
-     * Information about current/next engine search task.
-     */
-    public static final class SearchRequest {
-        int searchId;           // Unique identifier for this search request
-        long startTime;         // System time (milliseconds) when search request was created
-
-        Position prevPos;       // Position at last null move
-        ArrayList<Move> mList;  // Moves after prevPos, including ponderMove
-        Position currPos;       // currPos = prevPos + mList - ponderMove
-        boolean drawOffer;      // True if other side made draw offer
-
-        boolean isSearch;       // True if regular search or ponder search
-        boolean isAnalyze;      // True if analysis search
-        int wTime;              // White remaining time, milliseconds
-        int bTime;              // Black remaining time, milliseconds
-        int wInc;               // White time increment per move, milliseconds
-        int bInc;               // Black time increment per move, milliseconds
-        int movesToGo;          // Number of moves to next time control
-
-        String engineName;          // Engine name (identifier)
-        int numPV;              // Number of PV lines to compute
-
-        boolean ponderEnabled;  // True if pondering enabled, for engine time management
-        Move ponderMove;        // Ponder move, or null if not a ponder search
-
-        long[] posHashList;     // For draw decision after completed search
-        int posHashListSize;    // For draw decision after completed search
-        ArrayList<Move> searchMoves; // Moves to search, or null to search all moves
-
-        /**
-         * Create a request to start an engine.
-         *
-         * @param id     Search ID.
-         * @param engine Chess engine to use for searching.
-         */
-        public static SearchRequest startRequest(int id, String engine) {
-            SearchRequest sr = new SearchRequest();
-            sr.searchId = id;
-            sr.isSearch = false;
-            sr.isAnalyze = false;
-            sr.engineName = engine;
-            sr.posHashList = null;
-            sr.posHashListSize = 0;
-            return sr;
-        }
-
-        /**
-         * Create a search request object.
-         *
-         * @param id            Search ID.
-         * @param now           Current system time.
-         * @param mList         List of moves to go from the earlier position to the current position.
-         *                      This list makes it possible for the computer to correctly handle draw
-         *                      by repetition/50 moves.
-         * @param ponderEnabled True if pondering is enabled in the GUI. Can affect time management.
-         * @param ponderMove    Move to ponder, or null for non-ponder search.
-         * @param engine        Chess engine to use for searching.
-         */
-        public static SearchRequest searchRequest(int id, long now,
-                                                  Position prevPos, ArrayList<Move> mList,
-                                                  Position currPos, boolean drawOffer,
-                                                  int wTime, int bTime, int wInc, int bInc, int movesToGo,
-                                                  boolean ponderEnabled, Move ponderMove,
-                                                  String engine) {
-            SearchRequest sr = new SearchRequest();
-            sr.searchId = id;
-            sr.startTime = now;
-            sr.prevPos = prevPos;
-            sr.mList = mList;
-            sr.currPos = currPos;
-            sr.drawOffer = drawOffer;
-            sr.isSearch = true;
-            sr.isAnalyze = false;
-            sr.wTime = wTime;
-            sr.bTime = bTime;
-            sr.wInc = wInc;
-            sr.bInc = bInc;
-            sr.movesToGo = movesToGo;
-            sr.engineName = engine;
-            sr.numPV = 1;
-            sr.ponderEnabled = ponderEnabled;
-            sr.ponderMove = ponderMove;
-            sr.posHashList = null;
-            sr.posHashListSize = 0;
-            return sr;
-        }
-
-        /**
-         * Create an analysis request object.
-         *
-         * @param id        Search ID.
-         * @param prevPos   Position corresponding to last irreversible move.
-         * @param mList     List of moves from prevPos to currPos.
-         * @param currPos   Position to analyze.
-         * @param drawOffer True if other side have offered draw.
-         * @param engine    Chess engine to use for searching
-         * @param numPV     Multi-PV mode.
-         */
-        public static SearchRequest analyzeRequest(int id, Position prevPos,
-                                                   ArrayList<Move> mList,
-                                                   Position currPos,
-                                                   boolean drawOffer,
-                                                   String engine,
-                                                   int numPV) {
-            SearchRequest sr = new SearchRequest();
-            sr.searchId = id;
-            sr.startTime = System.currentTimeMillis();
-            sr.prevPos = prevPos;
-            sr.mList = mList;
-            sr.currPos = currPos;
-            sr.drawOffer = drawOffer;
-            sr.isSearch = false;
-            sr.isAnalyze = true;
-            sr.wTime = sr.bTime = sr.wInc = sr.bInc = sr.movesToGo = 0;
-            sr.engineName = engine;
-            sr.numPV = numPV;
-            sr.ponderEnabled = false;
-            sr.ponderMove = null;
-            sr.posHashList = null;
-            sr.posHashListSize = 0;
-            return sr;
-        }
-
-        /**
-         * Update data for ponder hit.
-         */
-        final void ponderHit() {
-            if (ponderMove == null)
-                return;
-//            UndoInfo ui = new UndoInfo();
-//            currPos.makeMove(ponderMove, ui);
-//            ponderMove = null;
-        }
-    }
-
     private EngineState engineState = new EngineState();
     private SearchRequest searchRequest = null;
     private Thread engineMonitor;
 
     // new constructor to accept listener
-    public ComputerPlayer(Listener listener) {
-        this.listener = listener;
+    public ComputerPlayer(EngineListener engineListener) {
+        this.engineListener = engineListener;
     }
 
     /**
@@ -276,8 +87,8 @@ public class ComputerPlayer {
      * Return true if computer player has been loaded.
      */
     public final synchronized boolean computerLoaded() {
-        return (engineState.state != MainState.READ_OPTIONS) &&
-                (engineState.state != MainState.DEAD);
+        return (engineState.state != EngineStateValue.READ_OPTIONS) &&
+                (engineState.state != EngineStateValue.DEAD);
     }
 
     public final synchronized UCIOptions getUCIOptions() {
@@ -308,12 +119,6 @@ public class ComputerPlayer {
         return maxPV;
     }
 
-    /**
-     * Set opening book options.
-     */
-//    public final void setBookOptions(BookOptions options) {
-//        book.setOptions(options);
-//    }
     public final void setEngineOptions(EngineOptions options) {
         engineOptions = options;
     }
@@ -335,7 +140,7 @@ public class ComputerPlayer {
     public synchronized void setEngineUCIOptions(Map<String, String> uciOptions) {
         pendingOptions.putAll(uciOptions);
         boolean modified = true;
-        if (engineState.state == MainState.IDLE)
+        if (engineState.state == EngineStateValue.IDLE)
             modified = applyPendingOptions();
         if (modified) {
             UCIEngine uci = uciEngine;
@@ -344,14 +149,6 @@ public class ComputerPlayer {
         }
     }
 
-
-
-
-    /** Return all book moves, both as a formatted string and as a list of moves. */
-//    public final Pair<String, ArrayList<Move>> getBookHints(BookPosInput posInput,
-//                                                            boolean localized) {
-//        return book.getAllBookMoves(posInput, localized);
-//    }
 
     /**
      * Get engine reported name.
@@ -377,13 +174,13 @@ public class ComputerPlayer {
             return;
 
         searchRequest.ponderHit();
-        if (engineState.state != MainState.PONDER)
+        if (engineState.state != EngineStateValue.PONDER)
             searchRequest.startTime = System.currentTimeMillis();
 
-        if (engineState.state == MainState.PONDER) {
+        if (engineState.state == EngineStateValue.PONDER) {
             uciEngine.writeLineToEngine("ponderhit");
-            engineState.setState(MainState.SEARCH);
-            pvModified = true;
+            engineState.setState(EngineStateValue.SEARCH);
+//            pvModified = true;
             notifyListener();
         }
     }
@@ -398,7 +195,7 @@ public class ComputerPlayer {
             uciEngine.shutDown();
             uciEngine = null;
         }
-        engineState.setState(MainState.DEAD);
+        engineState.setState(EngineStateValue.DEAD);
     }
 
     /**
@@ -412,9 +209,11 @@ public class ComputerPlayer {
         handleQueue();
     }
 
-    /** Decide what moves to search. Filters out non-optimal moves if tablebases are used. */
-//    private ArrayList<Move> movesToSearch(SearchRequest sr) {
-//        ArrayList<Move> moves = null;
+    /**
+     * Decide what moves to search. Filters out non-optimal moves if tablebases are used.
+     */
+    private ArrayList<Move> movesToSearch(SearchRequest sr) {
+        ArrayList<Move> moves = sr.searchMoves;
 //        ArrayList<Move> legalMoves = new MoveGen().legalMoves(sr.currPos);
 //        if (engineOptions.rootProbe)
 //            moves = Probe.getInstance().removeNonOptimal(sr.currPos, legalMoves);
@@ -424,8 +223,8 @@ public class ComputerPlayer {
 //            moves = legalMoves;
 //            sr.searchMoves = null;
 //        }
-//        return moves;
-//    }
+        return moves;
+    }
 
     /**
      * Start a search. Search result is returned to the search listener object.
@@ -433,85 +232,60 @@ public class ComputerPlayer {
      * and the turn goes over to the other player. The result can also be a special
      * command, such as "draw" and "resign".
      */
-//    public final synchronized void queueSearchRequest(SearchRequest sr) {
-//        killOldEngine(sr.engine);
-//        stopSearch();
-//
-//        if (sr.ponderMove != null)
-//            sr.mList.add(sr.ponderMove);
-//
-//        // Set up for draw detection
-//        long[] posHashList = new long[sr.mList.size()+1];
-//        int posHashListSize = 0;
-//        Position p = new Position(sr.prevPos);
-//        UndoInfo ui = new UndoInfo();
-//        for (int i = 0; i < sr.mList.size(); i++) {
-//            posHashList[posHashListSize++] = p.zobristHash();
-//            p.makeMove(sr.mList.get(i), ui);
-//        }
-//
-//        if (sr.ponderMove == null) {
-//            // If we have a book move, play it.
-//            BookPosInput posInput = new BookPosInput(sr.currPos, sr.prevPos, sr.mList);
-//            Move bookMove = book.getBookMove(posInput);
-//            if (bookMove != null) {
-//                if (canClaimDraw(sr.currPos, posHashList, posHashListSize, bookMove).isEmpty()) {
-//                    listener.notifySearchResult(sr.searchId,
-//                                                TextIO.moveToString(sr.currPos, bookMove, false, false),
-//                                                null);
-//                    return;
-//                }
-//            }
-//
-//            ArrayList<Move> moves = movesToSearch(sr);
-//            // Check if user set up a position where computer has no valid moves
-//            if (moves.size() == 0) {
-//                listener.notifySearchResult(sr.searchId, "", null);
-//                return;
-//            }
-//            // If only one move to search, play it without searching
-//            if (moves.size() == 1) {
-//                Move bestMove = moves.get(0);
-//                if (canClaimDraw(sr.currPos, posHashList, posHashListSize, bestMove).isEmpty()) {
-//                    listener.notifySearchResult(sr.searchId, TextIO.moveToUCIString(bestMove), null);
-//                    return;
-//                }
-//            }
-//        }
-//
-//        sr.posHashList = posHashList;
-//        sr.posHashListSize = posHashListSize;
-//
-//        searchRequest = sr;
-//        handleQueue();
-//    }
+    public final synchronized void queueSearchRequest(SearchRequest sr) {
+        killOldEngine(sr.engineName);
+        stopSearch();
+
+        if (sr.ponderMove != null)
+            sr.mList.add(sr.ponderMove);
+
+        if (sr.ponderMove == null) {
+            ArrayList<Move> moves = movesToSearch(sr);
+            // Check if user set up a position where computer has no valid moves
+            if (moves.size() == 0) {
+                searchListener.notifySearchResult(sr.searchId, "", null);
+                return;
+            }
+            // If only one move to search, play it without searching
+            if (moves.size() == 1) {
+                Move bestMove = moves.get(0);
+                // todo
+                searchListener.notifySearchResult(sr.searchId, null, null);
+                return;
+            }
+        }
+
+        searchRequest = sr;
+        handleQueue();
+    }
 
     /**
      * Start analyzing a position.
      */
-//    public final synchronized void queueAnalyzeRequest(SearchRequest sr) {
-//        killOldEngine(sr.engine);
-//        stopSearch();
-//
-//        // If no legal moves, there is nothing to analyze
-//        ArrayList<Move> moves = movesToSearch(sr);
-//        if (moves.size() == 0)
-//            return;
-//
-//        searchRequest = sr;
-//        handleQueue();
-//    }
+    public final synchronized void queueAnalyzeRequest(SearchRequest sr) {
+        killOldEngine(sr.engineName);
+        stopSearch();
+
+        // If no legal moves, there is nothing to analyze
+        ArrayList<Move> moves = movesToSearch(sr);
+        if (moves.size() == 0)
+            return;
+
+        searchRequest = sr;
+        handleQueue();
+    }
+
     private void handleQueue() {
-        if (engineState.state == MainState.DEAD) {
-            engineState.engine = "";
-            engineState.setState(MainState.IDLE);
+        if (engineState.state == EngineStateValue.DEAD) {
+            engineState.engineName = "";
+            engineState.setState(EngineStateValue.IDLE);
         }
-        if (engineState.state == MainState.IDLE)
+        if (engineState.state == EngineStateValue.IDLE)
             handleIdleState();
     }
 
     private void killOldEngine(String engine) {
-        boolean needShutDown = !engine.equals(engineState.engine);
+        boolean needShutDown = !engine.equals(engineState.engineName);
         if (!needShutDown) {
             UCIEngine uci = uciEngine;
             if (uci != null)
@@ -531,7 +305,7 @@ public class ComputerPlayer {
             case PONDER:
             case ANALYZE:
                 uciEngine.writeLineToEngine("stop");
-                engineState.setState(MainState.STOP_SEARCH);
+                engineState.setState(EngineStateValue.STOP_SEARCH);
                 return true;
             default:
                 return false;
@@ -542,7 +316,7 @@ public class ComputerPlayer {
      * Tell engine to move now.
      */
     public void moveNow() {
-        if (engineState.state == MainState.SEARCH)
+        if (engineState.state == EngineStateValue.SEARCH)
             uciEngine.writeLineToEngine("stop");
     }
 
@@ -588,7 +362,7 @@ public class ComputerPlayer {
             return;
 
         // Make sure correct engine is running
-        if ((uciEngine == null) || !engineState.engine.equals(sr.engineName)) {
+        if ((uciEngine == null) || !engineState.engineName.equals(sr.engineName)) {
             shutdownEngine();
             startEngine();
             return;
@@ -598,7 +372,7 @@ public class ComputerPlayer {
         if (newGame) {
             uciEngine.writeLineToEngine("ucinewgame");
             uciEngine.writeLineToEngine("isready");
-            engineState.setState(MainState.WAIT_READY);
+            engineState.setState(EngineStateValue.WAIT_READY);
             newGame = false;
             return;
         }
@@ -606,7 +380,7 @@ public class ComputerPlayer {
         // Apply pending UCI option changes
         if (applyPendingOptions()) {
             uciEngine.writeLineToEngine("isready");
-            engineState.setState(MainState.WAIT_READY);
+            engineState.setState(EngineStateValue.WAIT_READY);
             return;
         }
 
@@ -638,74 +412,75 @@ public class ComputerPlayer {
             uciEngine.setOption("MultiPV", num);
         }
 
-//        if (isSearch) { // Search or ponder search
-//            StringBuilder posStr = new StringBuilder();
-//            posStr.append("position fen ");
+        if (isSearch) { // Search or ponder search
+            StringBuilder posStr = new StringBuilder();
+            posStr.append("position fen ");
 //            posStr.append(TextIO.toFEN(sr.prevPos));
-//            int nMoves = sr.mList.size();
-//            if (nMoves > 0) {
-//                posStr.append(" moves");
-//                for (int i = 0; i < nMoves; i++) {
-//                    posStr.append(" ");
+            int nMoves = sr.mList.size();
+            if (nMoves > 0) {
+                posStr.append(" moves");
+                for (int i = 0; i < nMoves; i++) {
+                    posStr.append(" ");
 //                    posStr.append(TextIO.moveToUCIString(sr.mList.get(i)));
-//                }
-//            }
-//            uciEngine.setOption("Ponder", sr.ponderEnabled);
-//            uciEngine.setOption("UCI_AnalyseMode", false);
-//            uciEngine.writeLineToEngine(posStr.toString());
-//            if (sr.wTime < 1) sr.wTime = 1;
-//            if (sr.bTime < 1) sr.bTime = 1;
-//            StringBuilder goStr = new StringBuilder(96);
-//            goStr.append(String.format(Locale.US, "go wtime %d btime %d", sr.wTime, sr.bTime));
-//            if (sr.wInc > 0)
-//                goStr.append(String.format(Locale.US, " winc %d", sr.wInc));
-//            if (sr.bInc > 0)
-//                goStr.append(String.format(Locale.US, " binc %d", sr.bInc));
-//            if (sr.movesToGo > 0)
-//                goStr.append(String.format(Locale.US, " movestogo %d", sr.movesToGo));
-//            if (sr.ponderMove != null)
-//                goStr.append(" ponder");
-//            if (sr.searchMoves != null) {
-//                goStr.append(" searchmoves");
-//                for (Move m : sr.searchMoves) {
-//                    goStr.append(' ');
-//                    goStr.append(TextIO.moveToUCIString(m));
-//                }
-//            }
-//            uciEngine.writeLineToEngine(goStr.toString());
-//            engineState.setState((sr.ponderMove == null) ? MainState.SEARCH : MainState.PONDER);
-//        } else { // Analyze
-//            StringBuilder posStr = new StringBuilder();
-//            posStr.append("position fen ");
-//            posStr.append(TextIO.toFEN(sr.prevPos));
-//            int nMoves = sr.mList.size();
-//            if (nMoves > 0) {
-//                posStr.append(" moves");
-//                for (int i = 0; i < nMoves; i++) {
-//                    posStr.append(" ");
-//                    posStr.append(TextIO.moveToUCIString(sr.mList.get(i)));
-//                }
-//            }
-//            uciEngine.writeLineToEngine(posStr.toString());
-        uciEngine.setOption("UCI_AnalyseMode", true);
-        StringBuilder goStr = new StringBuilder(96);
-        goStr.append("go infinite");
-        if (sr.searchMoves != null) {
-            goStr.append(" searchmoves");
-            for (Move m : sr.searchMoves) {
-                goStr.append(' ');
-//                    goStr.append(TextIO.moveToUCIString(m));
+                }
             }
+            uciEngine.setOption("Ponder", sr.ponderEnabled);
+            uciEngine.setOption("UCI_AnalyseMode", false);
+            uciEngine.writeLineToEngine(posStr.toString());
+            if (sr.wTime < 1) sr.wTime = 1;
+            if (sr.bTime < 1) sr.bTime = 1;
+            StringBuilder goStr = new StringBuilder(96);
+            goStr.append(String.format(Locale.US, "go wtime %d btime %d", sr.wTime, sr.bTime));
+            if (sr.wInc > 0)
+                goStr.append(String.format(Locale.US, " winc %d", sr.wInc));
+            if (sr.bInc > 0)
+                goStr.append(String.format(Locale.US, " binc %d", sr.bInc));
+            if (sr.movesToGo > 0)
+                goStr.append(String.format(Locale.US, " movestogo %d", sr.movesToGo));
+            if (sr.ponderMove != null)
+                goStr.append(" ponder");
+            if (sr.searchMoves != null) {
+                goStr.append(" searchmoves");
+                for (Move m : sr.searchMoves) {
+                    goStr.append(' ');
+//                    goStr.append(TextIO.moveToUCIString(m));
+                }
+            }
+            uciEngine.writeLineToEngine(goStr.toString());
+            engineState.setState((sr.ponderMove == null) ? EngineStateValue.SEARCH : EngineStateValue.PONDER);
+        } else { // Analyze
+            StringBuilder posStr = new StringBuilder();
+            posStr.append("position fen ");
+//            posStr.append(TextIO.toFEN(sr.prevPos));
+            int nMoves = sr.mList.size();
+            if (nMoves > 0) {
+                posStr.append(" moves");
+                for (int i = 0; i < nMoves; i++) {
+                    posStr.append(" ");
+//                    posStr.append(TextIO.moveToUCIString(sr.mList.get(i)));
+                }
+            }
+            uciEngine.writeLineToEngine(posStr.toString());
+            uciEngine.setOption("UCI_AnalyseMode", true);
+            StringBuilder goStr = new StringBuilder(96);
+            goStr.append("go infinite");
+            if (sr.searchMoves != null) {
+                goStr.append(" searchmoves");
+                for (Move m : sr.searchMoves) {
+                    goStr.append(' ');
+//                    goStr.append(TextIO.moveToUCIString(m));
+                }
+            }
+            uciEngine.writeLineToEngine(goStr.toString());
+            engineState.setState(EngineStateValue.ANALYZE);
         }
-        uciEngine.writeLineToEngine(goStr.toString());
-        engineState.setState(MainState.ANALYZE);
     }
 
 
     private void startEngine() {
         myAssert(uciEngine == null);
         myAssert(engineMonitor == null);
-        myAssert(engineState.state == MainState.DEAD);
+        myAssert(engineState.state == EngineStateValue.DEAD);
         myAssert(searchRequest != null);
 
         engineName = "Computer";
@@ -714,7 +489,7 @@ public class ComputerPlayer {
                 errMsg -> {
                     if (errMsg == null)
                         errMsg = "";
-                    listener.reportEngineError(errMsg);
+                    engineListener.reportEngineError(errMsg);
                 });
         uciEngine.initialize();
 
@@ -727,8 +502,8 @@ public class ComputerPlayer {
         uciEngine.writeLineToEngine("setoption name EvalFile value pikafish.nnue");
         uciEngine.writeLineToEngine("isready");
         maxPV = 1;
-        engineState.engine = searchRequest.engineName;
-        engineState.setState(MainState.READ_OPTIONS);
+        engineState.engineName = searchRequest.engineName;
+        engineState.setState(EngineStateValue.READ_OPTIONS);
     }
 
 
@@ -787,14 +562,14 @@ public class ComputerPlayer {
                     uci.applyIniFile();
                     uci.writeLineToEngine("ucinewgame");
                     uci.writeLineToEngine("isready");
-                    engineState.setState(MainState.WAIT_READY);
-//                listener.notifyEngineInitialized();
+                    engineState.setState(EngineStateValue.WAIT_READY);
+                    engineListener.notifyEngineInitialized();
                 }
                 break;
             }
             case WAIT_READY: {
                 if ("readyok".equals(s)) {
-                    engineState.setState(MainState.IDLE);
+                    engineState.setState(EngineStateValue.IDLE);
                     handleIdleState();
                 }
                 break;
@@ -808,16 +583,18 @@ public class ComputerPlayer {
                     if (tokens[0].equals("info")) {
                         parseInfoCmd(tokens);
                     } else if (tokens[0].equals("bestmove")) {
-                        String bestMove = nTok > 1 ? tokens[1] : "";
+                        String bestMoveStr = nTok > 1 ? tokens[1] : "";
+                        Log.d("ComputerPlayer", "bestmove: " + bestMoveStr);
                         String nextPonderMoveStr = "";
-                        if ((nTok >= 4) && (tokens[2].equals("ponder")))
+                        if ((nTok >= 4) && (tokens[2].equals("ponder"))) {
                             nextPonderMoveStr = tokens[3];
-//                    Move nextPonderMove = TextIO.UCIstringToMove(nextPonderMoveStr);
-//
-//                    if (engineState.state == MainState.SEARCH)
-//                        reportMove(bestMove, nextPonderMove);
+                            Log.d("ComputerPlayer", "nextPonderMoveStr: " + nextPonderMoveStr);
+                        }
 
-                        engineState.setState(MainState.IDLE);
+                        if (engineState.state == EngineStateValue.SEARCH)
+                            reportMove(bestMoveStr, nextPonderMoveStr);
+
+                        engineState.setState(EngineStateValue.IDLE);
                         searchRequest = null;
                         handleIdleState();
                     }
@@ -828,7 +605,7 @@ public class ComputerPlayer {
                 String[] tokens = tokenize(s);
                 if (tokens[0].equals("bestmove")) {
                     uci.writeLineToEngine("isready");
-                    engineState.setState(MainState.WAIT_READY);
+                    engineState.setState(EngineStateValue.WAIT_READY);
                 }
                 break;
             }
@@ -852,7 +629,7 @@ public class ComputerPlayer {
                         engineName += " ";
                     engineName += tokens[i];
                 }
-//                listener.notifyEngineName(engineName);
+                engineListener.notifyEngineName(engineName);
             }
         } else if (tokens[0].equals("option")) {
             UCIOptions.OptionBase o = uci.registerOption(tokens);
@@ -863,10 +640,10 @@ public class ComputerPlayer {
         return false;
     }
 
-//    private void reportMove(String bestMove, Move nextPonderMove) {
-//        SearchRequest sr = searchRequest;
-//        boolean canPonder = true;
-//
+    private void reportMove(String bestMoveStr, String nextPonderMoveStr) {
+        SearchRequest sr = searchRequest;
+        boolean canPonder = true;
+
 //        // Claim draw if appropriate
 //        if (statScore <= 0) {
 //            String drawClaim = canClaimDraw(sr.currPos, sr.posHashList, sr.posHashListSize,
@@ -901,8 +678,9 @@ public class ComputerPlayer {
 //        }
 //        if (!canPonder)
 //            nextPonderMove = null;
-//        listener.notifySearchResult(sr.searchId, bestMove, nextPonderMove);
-//    }
+
+        engineListener.notifySearchResult(sr.searchId, bestMoveStr, nextPonderMoveStr);
+    }
 
     /**
      * Convert a string to tokens by splitting at whitespace characters.
@@ -974,7 +752,7 @@ public class ComputerPlayer {
     private String statCurrMove = "";
     private int statCurrMoveNr = 0;
 
-//    private ArrayList<PvInfo> statPvInfo = new ArrayList<>();
+    private ArrayList<PvInfo> statPvInfo = new ArrayList<>();
 
     private boolean depthModified = false;
     private boolean currMoveModified = false;
