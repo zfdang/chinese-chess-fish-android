@@ -724,8 +724,8 @@ public class ComputerPlayer {
 
         uciEngine.clearOptions();
         uciEngine.writeLineToEngine("uci");
-//        uciEngine.writeLineToEngine("setoption name EvalFile value pikafish.nnue");
-//        uciEngine.writeLineToEngine("isready");
+        uciEngine.writeLineToEngine("setoption name EvalFile value pikafish.nnue");
+        uciEngine.writeLineToEngine("isready");
         maxPV = 1;
         engineState.engine = searchRequest.engine;
         engineState.setState(MainState.READ_OPTIONS);
@@ -738,6 +738,7 @@ public class ComputerPlayer {
     private void monitorLoop(UCIEngine uci) {
         while (true) {
             int timeout = getReadTimeout();
+            Log.d("ComputerPlayer", "monitorLoop: timeout = " + timeout);
             if (Thread.currentThread().isInterrupted())
                 return;
             String s = uci.readLineFromEngine(timeout);
@@ -1099,6 +1100,7 @@ public class ComputerPlayer {
      * Notify GUI about search statistics.
      */
     private synchronized void notifyListener() {
+        Log.d("ComputerPlayer", "notifyListener");
         if (Thread.currentThread().isInterrupted())
             return;
 
@@ -1140,5 +1142,12 @@ public class ComputerPlayer {
     private static void myAssert(boolean b) {
         if (!b)
             throw new RuntimeException();
+    }
+
+    public void sendToEngine(String command) {
+        if (uciEngine != null) {
+            uciEngine.writeLineToEngine(command);
+            Log.d("ComputerPlayer", "sendToEngine: " + command);
+        }
     }
 }
