@@ -31,6 +31,8 @@ jobs:
       uses: actions/setup-java@v4
       with:
         java-version: '17'
+        distribution: 'temurin'
+        cache: gradle        
 
     - name: Assemble Release APK
       run: ./gradlew assembleRelease --stacktrace
