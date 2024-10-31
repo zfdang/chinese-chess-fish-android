@@ -1,5 +1,6 @@
 package org.petero.droidfish.player;
 
+import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Move;
 import com.zfdang.chess.gamelogic.Position;
 
@@ -13,9 +14,10 @@ public class SearchRequest {
     int searchId;           // Unique identifier for this search request
     long startTime;         // System time (milliseconds) when search request was created
 
-    Position prevPos;       // Position at last null move
-    ArrayList<Move> mList;  // Moves after prevPos, including ponderMove
-    Position currPos;       // currPos = prevPos + mList - ponderMove
+    Board prevBoard;       // Board at last null move
+    ArrayList<Move> mList;  // Moves after prevBoard, including ponderMove
+    Move ponderMove;        // Ponder move, or null if not a ponder search
+    Board currBoard;       // currBoard = prevboard + mList - ponderMove
     boolean drawOffer;      // True if other side made draw offer
 
     boolean isSearch;       // True if regular search or ponder search
@@ -30,10 +32,7 @@ public class SearchRequest {
     int numPV;              // Number of PV lines to compute
 
     boolean ponderEnabled;  // True if pondering enabled, for engine time management
-    Move ponderMove;        // Ponder move, or null if not a ponder search
 
-    long[] posHashList;     // For draw decision after completed search
-    int posHashListSize;    // For draw decision after completed search
     ArrayList<Move> searchMoves; // Moves to search, or null to search all moves
 
     /**
@@ -48,8 +47,6 @@ public class SearchRequest {
         sr.isSearch = false;
         sr.isAnalyze = false;
         sr.engineName = engine;
-        sr.posHashList = null;
-        sr.posHashListSize = 0;
         return sr;
     }
 
@@ -58,7 +55,7 @@ public class SearchRequest {
      *
      * @param id            Search ID.
      * @param now           Current system time.
-     * @param mList         List of moves to go from the earlier position to the current position.
+     * @param mList         List of moves to go from the earlier board to the current board.
      *                      This list makes it possible for the computer to correctly handle draw
      *                      by repetition/50 moves.
      * @param ponderEnabled True if pondering is enabled in the GUI. Can affect time management.
@@ -66,17 +63,17 @@ public class SearchRequest {
      * @param engine        Chess engine to use for searching.
      */
     public static SearchRequest searchRequest(int id, long now,
-                                              Position prevPos, ArrayList<Move> mList,
-                                              Position currPos, boolean drawOffer,
+                                              Board prevBoard, ArrayList<Move> mList,
+                                              Board currBoard, boolean drawOffer,
                                               int wTime, int bTime, int wInc, int bInc, int movesToGo,
                                               boolean ponderEnabled, Move ponderMove,
                                               String engine) {
         SearchRequest sr = new SearchRequest();
         sr.searchId = id;
         sr.startTime = now;
-        sr.prevPos = prevPos;
+        sr.prevBoard = prevBoard;
         sr.mList = mList;
-        sr.currPos = currPos;
+        sr.currBoard = currBoard;
         sr.drawOffer = drawOffer;
         sr.isSearch = true;
         sr.isAnalyze = false;
@@ -89,8 +86,6 @@ public class SearchRequest {
         sr.numPV = 1;
         sr.ponderEnabled = ponderEnabled;
         sr.ponderMove = ponderMove;
-        sr.posHashList = null;
-        sr.posHashListSize = 0;
         return sr;
     }
 
@@ -98,25 +93,25 @@ public class SearchRequest {
      * Create an analysis request object.
      *
      * @param id        Search ID.
-     * @param prevPos   Position corresponding to last irreversible move.
+     * @param prevBoard   Position corresponding to last irreversible move.
      * @param mList     List of moves from prevPos to currPos.
-     * @param currPos   Position to analyze.
+     * @param currBoard   Position to analyze.
      * @param drawOffer True if other side have offered draw.
      * @param engine    Chess engine to use for searching
      * @param numPV     Multi-PV mode.
      */
-    public static SearchRequest analyzeRequest(int id, Position prevPos,
+    public static SearchRequest analyzeRequest(int id, Board prevBoard,
                                                ArrayList<Move> mList,
-                                               Position currPos,
+                                               Board currBoard,
                                                boolean drawOffer,
                                                String engine,
                                                int numPV) {
         SearchRequest sr = new SearchRequest();
         sr.searchId = id;
         sr.startTime = System.currentTimeMillis();
-        sr.prevPos = prevPos;
+        sr.prevBoard = prevBoard;
         sr.mList = mList;
-        sr.currPos = currPos;
+        sr.currBoard = currBoard;
         sr.drawOffer = drawOffer;
         sr.isSearch = false;
         sr.isAnalyze = true;
@@ -125,8 +120,6 @@ public class SearchRequest {
         sr.numPV = numPV;
         sr.ponderEnabled = false;
         sr.ponderMove = null;
-        sr.posHashList = null;
-        sr.posHashListSize = 0;
         return sr;
     }
 
@@ -134,10 +127,11 @@ public class SearchRequest {
      * Update data for ponder hit.
      */
     final void ponderHit() {
-        if (ponderMove == null)
+        if (ponderMove == null) {
             return;
-//            UndoInfo ui = new UndoInfo();
-//            currPos.makeMove(ponderMove, ui);
-//            ponderMove = null;
+        }
+//        UndoInfo ui = new UndoInfo();
+//        currPos.makeMove(ponderMove, ui);
+        ponderMove = null;
     }
 }
