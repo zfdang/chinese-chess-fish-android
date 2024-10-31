@@ -30,7 +30,7 @@ import java.nio.channels.FileChannel;
 import com.zfdang.chess.ChessApp;
 import com.zfdang.chess.R;
 
-import org.petero.droidfish.EngineOptions;
+import org.petero.droidfish.utils.LocalPipe;
 
 import android.content.Context;
 import android.util.Log;

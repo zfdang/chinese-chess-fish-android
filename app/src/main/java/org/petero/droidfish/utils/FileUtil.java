@@ -16,7 +16,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-package org.petero.droidfish;
+package org.petero.droidfish.utils;
 
 import android.net.Uri;
 import android.os.Environment;

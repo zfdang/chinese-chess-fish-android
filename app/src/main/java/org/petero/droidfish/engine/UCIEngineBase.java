@@ -31,8 +31,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 
-import org.petero.droidfish.EngineOptions;
-
 public abstract class UCIEngineBase implements UCIEngine {
 
     private boolean processAlive;

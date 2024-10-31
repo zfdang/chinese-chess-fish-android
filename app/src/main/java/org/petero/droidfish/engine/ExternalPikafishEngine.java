@@ -28,12 +28,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Locale;
 
 import android.util.Log;
-
-import org.petero.droidfish.EngineOptions;
 
 /**
  * Stockfish engine running as process, started from assets resource.
