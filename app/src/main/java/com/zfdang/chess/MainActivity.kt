@@ -40,6 +40,9 @@ class MainActivity : AppCompatActivity() {
 
         buttonSetting.setOnClickListener {
             // Handle button setting click
+            // launch promptactivity
+            val intent = Intent(this, PromptActivity::class.java)
+            startActivity(intent)
         }
 
         buttonAbout.setOnClickListener {
