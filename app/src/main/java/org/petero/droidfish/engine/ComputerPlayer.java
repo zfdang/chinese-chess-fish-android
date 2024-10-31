@@ -33,8 +33,10 @@ import org.petero.droidfish.EngineOptions;
 /**
  * A computer algorithm player.
  */
-public class DroidComputerPlayer {
+public class ComputerPlayer {
+    private Listener listener = null;
     private UCIEngine uciEngine = null;
+
     private EngineOptions engineOptions = new EngineOptions();
     /**
      * Pending UCI options to send when engine becomes idle.
@@ -97,6 +99,17 @@ public class DroidComputerPlayer {
 //                              s.toString());
             state = s;
         }
+    }
+
+    // create a public class listener
+    public interface Listener {
+        void reportEngineError(String errMsg);
+
+        void notifyEngineName(String engineName);
+
+        void notifySearchResult(int searchId, String bestMove, Move nextPonderMove);
+
+        void notifyEngineInitialized();
     }
 
     /**
@@ -243,12 +256,9 @@ public class DroidComputerPlayer {
     private SearchRequest searchRequest = null;
     private Thread engineMonitor;
 
-    /**
-     * Constructor. Starts engine process if not already started.
-     */
-    public DroidComputerPlayer() {
-//        this.listener = listener;
-//        book = DroidBook.getInstance();
+    // new constructor to accept listener
+    public ComputerPlayer(Listener listener) {
+        this.listener = listener;
     }
 
     /**
