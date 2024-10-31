@@ -75,8 +75,9 @@ public abstract class UCIEngineBase implements UCIEngine {
         Properties iniOptions = new Properties();
         try (FileInputStream is = new FileInputStream(optionsFile)) {
             iniOptions.load(is);
-        } catch (IOException | IllegalArgumentException ignore) {
-            Log.d("UCEngineBase", "Failed to read options file " + optionsFile);
+        } catch (IOException | IllegalArgumentException e) {
+            Log.d("UCIEngineBase", "Failed to read options file: " + optionsFile);
+            Log.d("UCIEngineBase", e.toString());
         }
         Map<String, String> opts = new TreeMap<>();
         for (Map.Entry<Object, Object> ent : iniOptions.entrySet()) {

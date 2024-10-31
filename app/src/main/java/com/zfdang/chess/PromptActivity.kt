@@ -45,20 +45,20 @@ class PromptActivity : AppCompatActivity(), ComputerPlayer.Listener
     }
 
     override fun reportEngineError(errMsg: String?) {
-        TODO("Not yet implemented")
+        // UCIEngine.Report.reportError
+        Log.d(  "PromptActivity", "Engine error: $errMsg")
     }
 
     override fun notifyEngineName(engineName: String?) {
-        TODO("Not yet implemented")
+        Log.d(  "PromptActivity", "Engine name: $engineName")
     }
 
     override fun notifySearchResult(searchId: Int, bestMove: String?, nextPonderMove: Move?) {
-        TODO("Not yet implemented")
+        Log.d(  "PromptActivity", "Search result: $searchId, $bestMove, $nextPonderMove")
     }
 
     override fun notifyEngineInitialized() {
         Log.d(  "PromptActivity", "Engine initialized")
-        TODO("Not yet implemented")
     }
 
 }

@@ -68,22 +68,35 @@ public class ExternalEngine extends UCIEngineBase {
         isRunning = false;
     }
 
-    protected String engineCheckSumFilePath() {
-        return context.getFilesDir().getAbsolutePath() + "/checksum";
-    }
 
     @Override
     protected void startProcess() {
         try {
             File exeDir = new File(context.getFilesDir(), "engine");
-            exeDir.mkdir();
+            if(exeDir.exists() && !exeDir.isDirectory()){
+                exeDir.delete();
+            }
+            if(!exeDir.exists() && !exeDir.mkdir()) {
+                Log.d("ExternalEngine", "Failed to create engine directory");
+                Log.d("ExternalEngine", exeDir.getAbsolutePath());
+            }
+
+            // exact engine might override this method
             String exePath = copyFile(engineFileName, exeDir);
+
             try {
                 chmod(exePath);
             } catch (Exception e) {
+                Log.d("ExternalEngine", "Failed to chmod " + exePath);
                 throw new RuntimeException(e);
             }
-            cleanUpExeDir(exeDir, exePath);
+
+            // change engineWorkDir if necessary
+            if(!engineWorkDir.exists()){
+                engineWorkDir = new File(exePath).getParentFile();
+                Log.d("ExternalEngine", "Engine work dir does not exist, using engine dir: " + engineWorkDir.getAbsolutePath());
+            }
+
             ProcessBuilder pb = new ProcessBuilder(exePath);
             if (engineWorkDir.canRead() && engineWorkDir.isDirectory())
                 pb.directory(engineWorkDir);
@@ -184,27 +197,6 @@ public class ExternalEngine extends UCIEngineBase {
         }
     }
 
-    /**
-     * Remove all files except exePath from exeDir.
-     */
-    private void cleanUpExeDir(File exeDir, String exePath) {
-        try {
-            exePath = new File(exePath).getCanonicalPath();
-            File[] files = exeDir.listFiles();
-            if (files == null)
-                return;
-            for (File f : files) {
-                if (!f.getCanonicalPath().equals(exePath) && !keepExeDirFile(f))
-                    f.delete();
-            }
-        } catch (IOException ignore) {
-        }
-    }
-
-    private boolean keepExeDirFile(File f) {
-        return ExternalPikafishEngine.keepExeDirFile(f);
-    }
-
     private int hashMB = -1;
     private String gaviotaTbPath = "";
     private String syzygyPath = "";
@@ -269,7 +261,7 @@ public class ExternalEngine extends UCIEngineBase {
     // XXX Writes should be handled by separate thread.
     @Override
     public void writeLineToEngine(String data) {
-//        System.out.printf("GUI -> Engine: %s\n", data);
+        Log.d("ExternalEngine", "GUI -> Engine: " + data);
         data += "\n";
         try {
             Process ep = engineProc;
@@ -310,8 +302,7 @@ public class ExternalEngine extends UCIEngineBase {
     }
 
     protected String copyFile(File from, File exeDir) throws IOException {
-        File to = new File(exeDir, "engine.exe");
-        new File(engineCheckSumFilePath()).delete();
+        File to = new File(exeDir, from.getName());
         if (to.exists() && (from.length() == to.length()) && (from.lastModified() == to.lastModified()))
             return to.getAbsolutePath();
         try (FileInputStream fis = new FileInputStream(from);
