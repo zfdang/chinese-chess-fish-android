@@ -21,7 +21,6 @@ package org.petero.droidfish.player;
 import android.util.Log;
 
 import com.zfdang.chess.gamelogic.Move;
-import com.zfdang.chess.gamelogic.Position;
 import com.zfdang.chess.gamelogic.PvInfo;
 
 import java.util.ArrayList;
@@ -29,7 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.petero.droidfish.EngineOptions;
+import org.petero.droidfish.engine.EngineOptions;
 import org.petero.droidfish.engine.UCIEngine;
 import org.petero.droidfish.engine.UCIEngineBase;
 import org.petero.droidfish.engine.UCIOptions;
@@ -777,7 +776,7 @@ public class ComputerPlayer {
     }
 
     private synchronized int getReadTimeout() {
-        boolean needGuiUpdate = (searchRequest != null && searchRequest.currPos != null) &&
+        boolean needGuiUpdate = (searchRequest != null && searchRequest.currBoard != null) &&
                 (depthModified || currMoveModified || pvModified || statsModified);
         int timeout = 2000000000;
         if (needGuiUpdate) {
@@ -882,7 +881,7 @@ public class ComputerPlayer {
         if (Thread.currentThread().isInterrupted())
             return;
 
-        if ((searchRequest == null) || (searchRequest.currPos == null))
+        if ((searchRequest == null) || (searchRequest.currBoard == null))
             return;
 
         long now = System.currentTimeMillis();

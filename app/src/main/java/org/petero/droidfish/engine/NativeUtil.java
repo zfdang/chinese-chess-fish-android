@@ -58,5 +58,5 @@ public class NativeUtil {
     /**
      * For synchronizing non thread safe native calls.
      */
-    public static final Object nativeLock = new Object();
+    static final Object nativeLock = new Object();
 }

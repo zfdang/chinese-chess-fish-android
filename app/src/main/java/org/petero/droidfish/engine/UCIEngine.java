@@ -20,8 +20,6 @@ package org.petero.droidfish.engine;
 
 import java.util.Map;
 
-import org.petero.droidfish.EngineOptions;
-
 public interface UCIEngine {
 
     /**
