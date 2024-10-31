@@ -6,10 +6,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.zfdang.chess.gamelogic.Move
-import org.petero.droidfish.engine.ComputerPlayer
+import org.petero.droidfish.player.ComputerPlayer
+import org.petero.droidfish.player.EngineListener
 
-class PromptActivity : AppCompatActivity(), ComputerPlayer.Listener
+class PromptActivity : AppCompatActivity(), EngineListener
 {
     lateinit var computerPlayer: ComputerPlayer
 
@@ -53,7 +53,7 @@ class PromptActivity : AppCompatActivity(), ComputerPlayer.Listener
         Log.d(  "PromptActivity", "Engine name: $engineName")
     }
 
-    override fun notifySearchResult(searchId: Int, bestMove: String?, nextPonderMove: Move?) {
+    override fun notifySearchResult(searchId: Int, bestMove: String?, nextPonderMove: String?) {
         Log.d(  "PromptActivity", "Search result: $searchId, $bestMove, $nextPonderMove")
     }
 
