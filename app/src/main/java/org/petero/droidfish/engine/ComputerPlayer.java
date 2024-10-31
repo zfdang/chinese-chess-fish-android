@@ -1145,6 +1145,7 @@ public class ComputerPlayer {
     }
 
     public void sendToEngine(String command) {
+        // for troubleshooting only
         if (uciEngine != null) {
             uciEngine.writeLineToEngine(command);
             Log.d("ComputerPlayer", "sendToEngine: " + command);
