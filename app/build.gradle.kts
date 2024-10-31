@@ -16,6 +16,7 @@ android {
     defaultConfig {
         applicationId = "com.zfdang.chess"
         minSdk = 26
+        //noinspection ExpiredTargetSdkVersion
         targetSdk = 28
         versionCode = 1
         versionName = "1.0"
