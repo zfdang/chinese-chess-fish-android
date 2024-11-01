@@ -99,9 +99,7 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
                 game.startPos = null
                 game.endPos = null
             }
-
-
-            Log.v("PlayActivity", "onTouch: x = $x, y = $y, pos = " + pos.toString())
+            Log.d("PlayActivity", "onTouch: x = $x, y = $y, pos = " + pos.toString())
         }
         return false
     }
