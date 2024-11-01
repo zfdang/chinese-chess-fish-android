@@ -19,7 +19,8 @@
 package org.petero.droidfish.engine;
 
 /**
- * Engine options, including endgame tablebase probing options.
+ * Engine options.
+ * This class is useless now, keep it just for avoiding too many changes
  */
 public final class EngineOptions {
     public String workDir;      // Working directory for engine process
