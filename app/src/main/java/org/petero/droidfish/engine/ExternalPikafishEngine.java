@@ -47,10 +47,13 @@ public class ExternalPikafishEngine extends ExternalEngine {
 
     public ExternalPikafishEngine(String workDir, Report report) {
         super("pikafish", workDir, report);
+
+        // uci_showwdl is not included in the uci response, so we need to add it manually
+        registerOption("option name uci_showwdl type check default false".split("\\s+"));
     }
 
     @Override
-    protected File getOptionsFile() {
+    protected File getIniFile() {
         File extDir = new File(context.getFilesDir(), "pikafish");
         return new File(extDir, "pikafish.ini");
     }

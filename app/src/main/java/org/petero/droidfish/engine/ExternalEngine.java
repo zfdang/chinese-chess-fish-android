@@ -209,7 +209,7 @@ public class ExternalEngine extends UCIEngineBase {
     }
 
     @Override
-    protected File getOptionsFile() {
+    protected File getIniFile() {
         return new File(engineFileName.getAbsolutePath() + ".ini");
     }
 
@@ -225,7 +225,7 @@ public class ExternalEngine extends UCIEngineBase {
         if (ret == null)
             return null;
         if (ret.length() > 0) {
-//            System.out.printf("Engine -> GUI: %s\n", ret);
+            Log.d("ExternalEngine", "readLineFromEngine: " + ret);
         }
         return ret;
     }
@@ -233,7 +233,7 @@ public class ExternalEngine extends UCIEngineBase {
     // XXX Writes should be handled by separate thread.
     @Override
     public void writeLineToEngine(String data) {
-        Log.d("ExternalEngine", "GUI -> Engine: " + data);
+        Log.d("ExternalEngine", "writeLineToEngine: " + data);
         data += "\n";
         try {
             Process ep = engineProc;
@@ -242,6 +242,7 @@ public class ExternalEngine extends UCIEngineBase {
                 ep.getOutputStream().flush();
             }
         } catch (IOException ignore) {
+            Log.d("ExternalEngine", "Failed to write to engine: " + ignore.getMessage());
         }
     }
 

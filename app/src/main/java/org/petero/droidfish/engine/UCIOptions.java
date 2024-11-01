@@ -18,6 +18,8 @@
 
 package org.petero.droidfish.engine;
 
+import android.util.Log;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -287,5 +289,6 @@ public class UCIOptions implements Serializable, Cloneable {
         String name = p.name.toLowerCase(Locale.US);
         names.add(name);
         options.put(name, p);
+        Log.d("UCIOptions", "Added option " + name + " type " + p.type + " value " + p.getStringValue());
     }
 }
