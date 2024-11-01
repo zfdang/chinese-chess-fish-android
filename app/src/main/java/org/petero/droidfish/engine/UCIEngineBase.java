@@ -41,7 +41,7 @@ public abstract class UCIEngineBase implements UCIEngine {
                                       EngineOptions engineOptions, Report report) {
         // only pikafishi engine is supported
         if ("pikafish".equals(engine)) {
-            return new ExternalPikafishEngine(engineOptions.workDir, report);
+            return new PikafishExternalEngine(engineOptions.workDir, report);
         } else {
             Log.d("UCIEngineBase", "Unknown engine: " + engine);
             return null;
