@@ -187,7 +187,7 @@ public class ExternalPikafishEngine extends ExternalEngine {
      * pointing to the network file embedded in assets.
      */
     @Override
-    public boolean setOption(String name, String value) {
+    public boolean applyOption(String name, String value) {
         for (int i = 0; i < 2; i++) {
             if (name.toLowerCase(Locale.US).equals(networkOptions[i]) && networkAsssetFiles[i].equals(value)) {
                 getUCIOptions().getOption(name).setFromString(value);
