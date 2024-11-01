@@ -53,6 +53,7 @@ public interface UCIEngine {
      */
     void shutDown();
 
+
     /**
      * Read UCI options from .ini file and send them to the engine.
      */
@@ -62,6 +63,22 @@ public interface UCIEngine {
      * Save current UCI options to file.
      */
     void saveIniFile();
+
+
+    /**
+     * Set engine UCI options.
+     */
+    boolean setUCIOptions(Map<String, String> uciOptions);
+
+    /**
+     * Set an engine integer option.
+     */
+    void setOption(String name, int value);
+
+    /**
+     * Set an engine boolean option.
+     */
+    void setOption(String name, boolean value);
 
     /**
      * Set an engine option. If the option is not a string option,
@@ -74,7 +91,7 @@ public interface UCIEngine {
     /**
      * special setOption, no value but to clear the option
      */
-    boolean setOptionClear(String name);
+    void setOptionClear(String name);
 
     /**
      * Clear all engine options.
@@ -85,12 +102,20 @@ public interface UCIEngine {
      * Apply engine UCI options.
      * These options could be loadIniFile, set by setUCIOptions, or by setOption
      */
-    boolean applyAllOptions();
+    boolean applyUCIOptions();
 
     /**
-     * Apply a single option.
+     * Register an option as supported by the engine.
+     *
+     * @param tokens The UCI option line sent by the engine, split in words.
      */
-    boolean applyOption(String name, String value);
+    UCIOptions.OptionBase registerOption(String[] tokens);
+
+
+    /**
+     * Get engine UCI options.
+     */
+    UCIOptions getUCIOptions();
 
     /**
      * Read a line from the engine.
@@ -107,13 +132,5 @@ public interface UCIEngine {
      */
     void writeLineToEngine(String data);
 
-    /**
-     * Get engine UCI options.
-     */
-    UCIOptions getUCIOptions();
-
-    /** Register an option as supported by the engine.
-     * @param tokens  The UCI option line sent by the engine, split in words. */
-    UCIOptions.OptionBase registerOption(String[] tokens);
 
 }
