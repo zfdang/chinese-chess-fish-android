@@ -95,6 +95,19 @@ public class ComputerPlayer {
         if (uci == null)
             return null;
         UCIOptions opts = uci.getUCIOptions();
+        if (opts == null)
+            return null;
+        try {
+            opts = opts.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+        for (Map.Entry<String, String> e : pendingOptions.entrySet()) {
+            UCIOptions.OptionBase o = opts.getOption(e.getKey());
+            if (o != null)
+                o.setFromString(e.getValue());
+        }
+        Log.d("ComputerPlayer", "getUCIOptions: " + opts.toString());
         return opts;
     }
 
@@ -113,11 +126,14 @@ public class ComputerPlayer {
      * Send pending UCI option changes to the engine.
      */
     private synchronized boolean applyPendingOptions() {
+        if (pendingOptions.isEmpty())
+            return false;
+        boolean modified = false;
         UCIEngine uci = uciEngine;
-        if (uci != null) {
-            uci.applyAllOptions();
-        }
-        return false;
+        if (uci != null)
+            modified = uci.setUCIOptions(pendingOptions);
+        pendingOptions.clear();
+        return modified;
     }
 
     public synchronized void setEngineUCIOptions(Map<String, String> uciOptions) {
@@ -392,7 +408,7 @@ public class ComputerPlayer {
         clearInfo();
         if (maxPV > 1) {
             int num = Math.min(maxPV, searchRequest.numPV);
-            uciEngine.setOption("MultiPV", Integer.toString(num));
+            uciEngine.setOption("MultiPV", num);
         }
 
         if (isSearch) { // Search or ponder search
@@ -407,8 +423,8 @@ public class ComputerPlayer {
 //                    posStr.append(TextIO.moveToUCIString(sr.mList.get(i)));
                 }
             }
-            uciEngine.setOption("Ponder", sr.ponderEnabled? "true" : "false");
-            uciEngine.setOption("UCI_AnalyseMode", "false");
+            uciEngine.setOption("Ponder", sr.ponderEnabled);
+            uciEngine.setOption("UCI_AnalyseMode", false);
             uciEngine.writeLineToEngine(posStr.toString());
             if (sr.wTime < 1) sr.wTime = 1;
             if (sr.bTime < 1) sr.bTime = 1;
@@ -444,7 +460,7 @@ public class ComputerPlayer {
                 }
             }
             uciEngine.writeLineToEngine(posStr.toString());
-            uciEngine.setOption("UCI_AnalyseMode", "true");
+            uciEngine.setOption("UCI_AnalyseMode", true);
             StringBuilder goStr = new StringBuilder(96);
             goStr.append("go infinite");
             if (sr.searchMoves != null) {
@@ -482,8 +498,6 @@ public class ComputerPlayer {
 
         uciEngine.clearAllOptions();
         uciEngine.loadIniFile();
-        uciEngine.applyAllOptions();
-
 //        uciEngine.writeLineToEngine("uci");
         engineState.engineName = searchRequest.engineName;
         engineState.setState(EngineStateValue.READ_OPTIONS);

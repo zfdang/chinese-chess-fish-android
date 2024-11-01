@@ -24,8 +24,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
-
-public class UCIOptions {
+public class UCIOptions implements Serializable, Cloneable {
+    private static final long serialVersionUID = 1L;
     private ArrayList<String> names;
     private Map<String, OptionBase> options;
 
@@ -37,11 +37,16 @@ public class UCIOptions {
         STRING
     }
 
-    public abstract static class OptionBase{
+    public abstract static class OptionBase implements Serializable, Cloneable {
+        private static final long serialVersionUID = 1L;
         public String name;
         public Type type;
         public boolean visible = true; // True if visible in "Engine Options" dialog
 
+        @Override
+        public OptionBase clone() throws CloneNotSupportedException {
+            return (OptionBase) super.clone();
+        }
 
         /**
          * Return true if current value != default value.
@@ -73,6 +78,8 @@ public class UCIOptions {
                     } catch (NumberFormatException ex) {
                         return false;
                     }
+                case COMBO:
+                    return ((ComboOption) o).set(value);
                 case BUTTON:
                     return false;
                 case STRING:
@@ -155,6 +162,7 @@ public class UCIOptions {
         public String[] allowedValues;
         public String value;
         public String defaultValue;
+
         ComboOption(String name, String[] allowed, String def) {
             this.name = name;
             this.type = Type.COMBO;
@@ -162,14 +170,17 @@ public class UCIOptions {
             this.value = def;
             this.defaultValue = def;
         }
+
         @Override
         public boolean modified() {
             return !value.equals(defaultValue);
         }
+
         @Override
         public String getStringValue() {
             return value;
         }
+
         public boolean set(String value) {
             for (String allowed : allowedValues) {
                 if (allowed.toLowerCase(Locale.US).equals(value.toLowerCase(Locale.US))) {
@@ -239,46 +250,25 @@ public class UCIOptions {
     UCIOptions() {
         names = new ArrayList<>();
         options = new TreeMap<>();
-        initialize();
     }
 
-    // create initialize function to add all above default values
-    public void initialize() {
-        //      current all options for pikafish engine
-        //
-        //      id name Pikafish dev-20240822-nogit
-        //      id author the Pikafish developers (see AUTHORS file)
-        //
-        //      option name Debug Log File type string default
-        //      option name NumaPolicy type string default auto
-        //      option name Threads type spin default 1 min 1 max 1024
-        //      option name Hash type spin default 16 min 1 max 33554432
-        //      option name Clear Hash type button
-        //      option name Ponder type check default false
-        //      option name MultiPV type spin default 1 min 1 max 128
-        //      option name Move Overhead type spin default 10 min 0 max 5000
-        //      option name nodestime type spin default 0 min 0 max 10000
-        //      option name UCI_ShowWDL type check default false
-        //      option name EvalFile type string default pikafish.nnue
-        //      uciok
-        addOption(new StringOption("Debug Log File", ""));
-        addOption(new StringOption("NumaPolicy", "auto"));
-        addOption(new SpinOption("Threads", 1, 1024, 1));
-        addOption(new SpinOption("Hash", 1, 33554432, 16));
-        addOption(new ButtonOption("Clear Hash"));
-        addOption(new CheckOption("Ponder", false));
-        addOption(new SpinOption("MultiPV", 1, 128, 1));
-        addOption(new SpinOption("Move Overhead", 0, 5000, 10));
-        addOption(new SpinOption("nodestime", 0, 10000, 0));
-        addOption(new CheckOption("UCI_ShowWDL", false));
-        addOption(new StringOption("EvalFile", "pikafish.nnue"));
+    @Override
+    public UCIOptions clone() throws CloneNotSupportedException {
+        UCIOptions copy = new UCIOptions();
+
+        copy.names = new ArrayList<>();
+        copy.names.addAll(names);
+
+        copy.options = new TreeMap<>();
+        for (Map.Entry<String, OptionBase> e : options.entrySet())
+            copy.options.put(e.getKey(), e.getValue().clone());
+
+        return copy;
     }
 
     public void clear() {
         names.clear();
         options.clear();
-
-        initialize();
     }
 
     public boolean contains(String optName) {
