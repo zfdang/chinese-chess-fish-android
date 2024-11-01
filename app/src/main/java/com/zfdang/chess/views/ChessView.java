@@ -67,6 +67,11 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         initBitmaps();
     }
 
+    // method to set game
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
     public void initBitmaps() {
         ChessBoardBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.chessboard);
         srcBoardRect = new Rect(0, 0, ChessBoardBitmap.getWidth(), ChessBoardBitmap.getHeight());

@@ -8,18 +8,22 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.zfdang.chess.adapters.MoveHistoryAdapter
+import com.zfdang.chess.controls.GameController
+import com.zfdang.chess.controls.GameControllerListener
 import com.zfdang.chess.databinding.ActivityPlayBinding
+import com.zfdang.chess.gamelogic.Board
 import com.zfdang.chess.gamelogic.Game
 import com.zfdang.chess.gamelogic.Move
 import com.zfdang.chess.gamelogic.Piece
 import com.zfdang.chess.gamelogic.Position
 import com.zfdang.chess.gamelogic.PvInfo
 import com.zfdang.chess.views.ChessView
+import org.petero.droidfish.player.ComputerPlayer
 import org.petero.droidfish.player.EngineListener
 import org.petero.droidfish.player.SearchListener
 
 
-class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, SearchListener {
+class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, SearchListener, GameControllerListener {
 
     // 防止重复点击
     private val MIN_CLICK_DELAY_TIME: Int = 100
@@ -29,14 +33,13 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
     private lateinit var binding: ActivityPlayBinding
     private lateinit var chessLayout: FrameLayout
 
-    // 棋盘状态
-    private lateinit var game: Game;
+    // 棋盘
     private lateinit var chessView: ChessView
     private lateinit var moveHistoryAdapter: MoveHistoryAdapter
 
-    // player
+    // controller, player, game
     private lateinit var controller: GameController
-
+    private lateinit var game: Game
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,7 +50,10 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
 
         chessLayout = binding.chesslayout
 
-        game = Game()
+        // new game
+        controller = GameController(this, this, this)
+        controller.newGame()
+        game = controller.game
 
         // 初始化棋盘
         chessView = ChessView(this, game)
@@ -67,8 +73,6 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
         moveHistoryAdapter = MoveHistoryAdapter(this, historyTable, game)
         moveHistoryAdapter.populateTable()
 
-        //
-        controller = GameController(this,this)
     }
 
 
