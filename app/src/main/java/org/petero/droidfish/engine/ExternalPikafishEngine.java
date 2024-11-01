@@ -28,6 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Locale;
 
 import android.util.Log;
@@ -37,7 +38,7 @@ import android.util.Log;
  */
 public class ExternalPikafishEngine extends ExternalEngine {
     private static final String[] networkAsssetFiles = {"pikafish.nnue", "pikafish.ini", "version.txt"};
-    private static final String[] networkOptions = {"evalfile", "evalfilesmall"};
+    private static final String[] networkOptions = {"evalfile"};
 
     // PikafishEngineFile: the name of the engine file in the assets directory
     // ChineseChess/app/src/main/assets/pikafish-armv8
@@ -58,15 +59,40 @@ public class ExternalPikafishEngine extends ExternalEngine {
         return new File(extDir, "pikafish.ini");
     }
 
+    /**
+     * Return true if the UCI option can be edited in the "Engine Options" dialog.
+     */
+    //    pikafish目前的uci命令的输出
+    //    id author the Pikafish developers (see AUTHORS file)
+    //    option name Debug Log File type string default
+    //    option name NumaPolicy type string default auto
+    //    option name Threads type spin default 1 min 1 max 1024
+    //    option name Hash type spin default 16 min 1 max 33554432
+    //    option name Clear Hash type button
+    //    option name Ponder type check default false
+    //    option name MultiPV type spin default 1 min 1 max 128
+    //    option name Move Overhead type spin default 10 min 0 max 5000
+    //    option name nodestime type spin default 0 min 0 max 10000
+    //    option name Skill Level type spin default 20 min 0 max 20
+    //    option name Mate Threat Depth type spin default 10 min 0 max 10
+    //    option name Repetition Rule type combo default AsianRule var AsianRule var ChineseRule var SkyRule var ComputerRule var AllowChase var YitianRule
+    //    option name Draw Rule type combo default None var None var DrawAsBlackWin var DrawAsRedWin var DrawRepAsBlackWin var DrawRepAsRedWin
+    //    option name Rule60MaxPly type spin default 120 min 0 max 120
+    //    option name UCI_LimitStrength type check default false
+    //    option name UCI_Elo type spin default 1280 min 1280 max 3133
+    //    option name ScoreType type combo default Elo var Elo var PawnValueNormalized var Raw
+    //    option name LU_Output type check default true
+    //    option name EvalFile type string default pikafish.nnue
+    //    uciok
     @Override
     protected boolean editableOption(String name) {
         name = name.toLowerCase(Locale.US);
         if (!super.editableOption(name))
             return false;
-        if (name.equals("skill level") || name.equals("write debug log") ||
-                name.equals("write search log"))
-            return false;
-        return true;
+        // pikafish可修改的选项
+        String[] editable = {"numapolicy", "threads", "hash", "clear hash", "ponder", "multipv", "move overhead", "skill level",
+                "mate threat depth", "repetition rule", "draw rule", "rule60maxply", "scoretype", "lu_output", "evalfile", "uci_showwdl"};
+        return Arrays.asList(editable).contains(name);
     }
 
     private long readCheckSum(File f) {
@@ -196,7 +222,7 @@ public class ExternalPikafishEngine extends ExternalEngine {
      */
     @Override
     public boolean setOption(String name, String value) {
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < networkOptions.length; i++) {
             if (name.toLowerCase(Locale.US).equals(networkOptions[i]) && networkAsssetFiles[i].equals(value)) {
                 getUCIOptions().getOption(name).setFromString(value);
                 value = networkFiles[i].getAbsolutePath();

@@ -38,29 +38,14 @@ public interface UCIEngine {
     void initialize();
 
     /**
+     * Shut down engine.
+     */
+    void shutDown();
+
+    /**
      * Initialize default options.
      */
     void initOptions(EngineOptions engineOptions);
-
-    /**
-     * Read UCI options from .ini file and send them to the engine.
-     */
-    void applyIniFile();
-
-    /**
-     * Set engine UCI options.
-     */
-    boolean setUCIOptions(Map<String, String> uciOptions);
-
-    /**
-     * Save non-default UCI option values to file.
-     */
-    void saveIniFile(UCIOptions options);
-
-    /**
-     * Get engine UCI options.
-     */
-    UCIOptions getUCIOptions();
 
     /**
      * Return true if engine options have correct values.
@@ -69,24 +54,24 @@ public interface UCIEngine {
     boolean optionsOk(EngineOptions engineOptions);
 
     /**
-     * Shut down engine.
+     * Read UCI options from .ini file and send them to the engine.
      */
-    void shutDown();
+    void applyIniFile();
 
     /**
-     * Read a line from the engine.
-     *
-     * @param timeoutMillis Maximum time to wait for data.
-     * @return The line, without terminating newline characters,
-     * or empty string if no data available,
-     * or null if I/O error.
+     * Save non-default UCI option values to file.
      */
-    String readLineFromEngine(int timeoutMillis);
+    void saveIniFile(UCIOptions options);
 
     /**
-     * Write a line to the engine. \n will be added automatically.
+     * Set engine UCI options.
      */
-    void writeLineToEngine(String data);
+    boolean setUCIOptions(Map<String, String> uciOptions);
+
+    /**
+     * Get engine UCI options.
+     */
+    UCIOptions getUCIOptions();
 
     /**
      * Temporarily set the engine Elo strength to use for the next search.
@@ -123,4 +108,19 @@ public interface UCIEngine {
      * @param tokens The UCI option line sent by the engine, split in words.
      */
     UCIOptions.OptionBase registerOption(String[] tokens);
+
+    /**
+     * Read a line from the engine.
+     *
+     * @param timeoutMillis Maximum time to wait for data.
+     * @return The line, without terminating newline characters,
+     * or empty string if no data available,
+     * or null if I/O error.
+     */
+    String readLineFromEngine(int timeoutMillis);
+
+    /**
+     * Write a line to the engine. \n will be added automatically.
+     */
+    void writeLineToEngine(String data);
 }

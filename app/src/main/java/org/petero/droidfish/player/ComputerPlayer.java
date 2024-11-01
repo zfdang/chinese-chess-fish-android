@@ -503,7 +503,6 @@ public class ComputerPlayer {
         engineState.setState(EngineStateValue.READ_OPTIONS);
     }
 
-
     private final static long guiUpdateInterval = 100;
     private long lastGUIUpdate = 0;
 
