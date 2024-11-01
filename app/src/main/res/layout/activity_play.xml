@@ -26,40 +26,54 @@
             android:background="#03A9F4"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/button"
+            <ImageButton
+                android:id="@+id/imageButton2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:icon="@drawable/back" />
+                app:srcCompat="@drawable/person_48px" />
 
-            <Button
-                android:id="@+id/button2"
+            <ImageButton
+                android:id="@+id/imageButton3"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button" />
+                app:srcCompat="@drawable/computer_48px" />
 
-            <Button
-                android:id="@+id/button3"
+            <ImageButton
+                android:id="@+id/imageButton6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button" />
+                app:srcCompat="@drawable/arrow_back_48px" />
 
-            <Button
-                android:id="@+id/button4"
+            <ImageButton
+                android:id="@+id/imageButton5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button" />
+                app:srcCompat="@drawable/arrow_forward_48px" />
 
-            <Button
-                android:id="@+id/button5"
+            <ImageButton
+                android:id="@+id/imageButton4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button" />
+                app:srcCompat="@drawable/pause_circle_48px" />
+
+            <ImageButton
+                android:id="@+id/imageButton7"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/alt_route_48px" />
+
+            <ImageButton
+                android:id="@+id/imageButton8"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/menu_48px" />
 
         </LinearLayout>
 
@@ -104,40 +118,40 @@
             android:background="#FFEB3B"
             android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/button10"
+            <ImageButton
+                android:id="@+id/imageButton12"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button" />
+                app:srcCompat="@drawable/restart_alt_48px" />
 
-            <Button
-                android:id="@+id/button9"
+            <ImageButton
+                android:id="@+id/imageButton9"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button" />
+                app:srcCompat="@drawable/arrow_back_48px" />
 
-            <Button
-                android:id="@+id/button8"
+            <ImageButton
+                android:id="@+id/imageButton10"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button" />
+                app:srcCompat="@drawable/arrow_forward_48px" />
 
-            <Button
-                android:id="@+id/button7"
+            <ImageButton
+                android:id="@+id/imageButton11"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button" />
+                app:srcCompat="@drawable/search_48px" />
 
-            <Button
-                android:id="@+id/button6"
+            <ImageButton
+                android:id="@+id/imageButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button" />
+                app:srcCompat="@drawable/logout_48px" />
 
         </LinearLayout>
 
