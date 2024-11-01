@@ -197,6 +197,9 @@ public class ExternalEngine extends UCIEngineBase {
         }
     }
 
+    private int hashMB = -1;
+    private String gaviotaTbPath = "";
+    private String syzygyPath = "";
     private boolean optionsInitialized = false;
 
     @Override
@@ -206,14 +209,14 @@ public class ExternalEngine extends UCIEngineBase {
     }
 
     @Override
-    protected File getIniFile() {
+    protected File getOptionsFile() {
         return new File(engineFileName.getAbsolutePath() + ".ini");
     }
 
 
     @Override
     public boolean optionsOk(EngineOptions engineOptions) {
-        return optionsInitialized;
+        return true;
     }
 
     @Override
@@ -222,7 +225,7 @@ public class ExternalEngine extends UCIEngineBase {
         if (ret == null)
             return null;
         if (ret.length() > 0) {
-            Log.d("ExternalEngine", "Engine -> GUI: " + ret);
+//            System.out.printf("Engine -> GUI: %s\n", ret);
         }
         return ret;
     }
@@ -269,7 +272,6 @@ public class ExternalEngine extends UCIEngineBase {
         if (stdErrThread != null)
             stdErrThread.interrupt();
     }
-
 
     protected String copyFile(File from, File exeDir) throws IOException {
         File to = new File(exeDir, from.getName());

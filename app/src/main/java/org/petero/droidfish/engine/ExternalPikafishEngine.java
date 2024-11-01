@@ -50,7 +50,7 @@ public class ExternalPikafishEngine extends ExternalEngine {
     }
 
     @Override
-    protected File getIniFile() {
+    protected File getOptionsFile() {
         File extDir = new File(context.getFilesDir(), "pikafish");
         return new File(extDir, "pikafish.ini");
     }
@@ -182,9 +182,14 @@ public class ExternalPikafishEngine extends ExternalEngine {
         }
     }
 
+    @Override
+    public void initOptions(EngineOptions engineOptions) {
+        super.initOptions(engineOptions);
+    }
+
     /**
      * Handles setting the EvalFile UCI option to a full path if needed,
-     * pointing to the network file embedded in assets.
+     * pointing to the network file embedded in DroidFish.
      */
     @Override
     public boolean setOption(String name, String value) {
