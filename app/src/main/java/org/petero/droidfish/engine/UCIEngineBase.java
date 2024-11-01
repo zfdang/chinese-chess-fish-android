@@ -93,11 +93,13 @@ public abstract class UCIEngineBase implements UCIEngine {
                 String key = ((String) ent.getKey()).toLowerCase(Locale.US);
                 String value = (String) ent.getValue();
                 opts.put(key, value);
+
+                // set option one by one
+                setOption(key, value);
+                Log.d("UCIEngineBase", "Set option " + key + " to " + value);
             }
         }
         Log.d("UCIEngineBase", "Read " + opts.size() + " options from " + optionsFile);
-        Log.d("UCIEngineBase", opts.toString());
-        setUCIOptions(opts);
     }
 
     @Override
@@ -105,7 +107,7 @@ public abstract class UCIEngineBase implements UCIEngine {
         Properties iniOptions = new Properties();
         for (String name : uciOptions.getOptionNames()) {
             UCIOptions.OptionBase o = uciOptions.getOption(name);
-            if (configurableOption(name) && o.modified())
+            if (editableOption(name))
                 iniOptions.put(o.name, o.getStringValue());
         }
         File optionsFile = getIniFile();
@@ -114,18 +116,6 @@ public abstract class UCIEngineBase implements UCIEngine {
         } catch (IOException ignore) {
             Log.d("UCIEngineBase", "Failed to write options file: " + optionsFile);
         }
-    }
-
-    @Override
-    public final boolean setUCIOptions(Map<String, String> uciOptions) {
-        boolean modified = false;
-        for (Map.Entry<String, String> ent : uciOptions.entrySet()) {
-            String key = ent.getKey().toLowerCase(Locale.US);
-            String value = ent.getValue();
-            if (configurableOption(key))
-                modified |= setOption(key, value);
-        }
-        return modified;
     }
 
     @Override
@@ -152,23 +142,48 @@ public abstract class UCIEngineBase implements UCIEngine {
         }
     }
 
-    /**
-     * Return true if the UCI option can be modified by the user, either directly
-     * from the "Engine Options" dialog or indirectly, for example from the
-     * "Set Engine Strength" dialog.
-     */
-    private boolean configurableOption(String name) {
-        if (editableOption(name))
-            return true;
-        name = name.toLowerCase(Locale.US);
-        String[] configurable = {"uci_limitstrength", "uci_elo"};
-        return Arrays.asList(configurable).contains(name);
-    }
-
 
     @Override
     public final void clearAllOptions() {
         uciOptions.clear();
+    }
+
+
+    /**
+     * Return true if engine has option optName.
+     */
+    protected final boolean hasOption(String optName) {
+        return uciOptions.contains(optName);
+    }
+
+    @Override
+    public boolean setOption(String name, String value) {
+        if (!uciOptions.contains(name))
+            return false;
+        UCIOptions.OptionBase o = uciOptions.getOption(name);
+        o.setFromString(value);
+        return true;
+    }
+
+
+    @Override
+    public boolean setOptionClear(String name) {
+        return false;
+    }
+
+    @Override
+    public boolean applyAllOptions() {
+        // reset in engine
+        for (String name : uciOptions.getOptionNames()) {
+            UCIOptions.OptionBase o = uciOptions.getOption(name);
+            if (editableOption(name)) {
+                if (!applyOption(name, o.getStringValue())) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     @Override
@@ -201,10 +216,10 @@ public abstract class UCIEngineBase implements UCIEngine {
                     else if (type.equals("combo"))
                         stop = "var";
                     defVal = "";
-                    while (i + 1 < tokens.length && !tokens[i + 1].equals(stop)) {
+                    while (i+1 < tokens.length && !tokens[i+1].equals(stop)) {
                         if (defVal.length() > 0)
                             defVal += " ";
-                        defVal += tokens[i + 1];
+                        defVal += tokens[i+1];
                         i++;
                     }
                 } else if (tokens[i].equals("min")) {
@@ -213,10 +228,10 @@ public abstract class UCIEngineBase implements UCIEngine {
                     maxVal = tokens[++i];
                 } else if (tokens[i].equals("var")) {
                     String value = "";
-                    while (i + 1 < tokens.length && !tokens[i + 1].equals("var")) {
+                    while (i+1 < tokens.length && !tokens[i+1].equals("var")) {
                         if (value.length() > 0)
                             value += " ";
-                        value += tokens[i + 1];
+                        value += tokens[i+1];
                         i++;
                     }
                     var.add(value);
@@ -267,26 +282,8 @@ public abstract class UCIEngineBase implements UCIEngine {
         return option;
     }
 
-    /**
-     * Return true if engine has option optName.
-     */
-    protected final boolean hasOption(String optName) {
-        return uciOptions.contains(optName);
-    }
-
-
     @Override
-    public final void setOption(String name, int value) {
-        setOption(name, String.format(Locale.US, "%d", value));
-    }
-
-    @Override
-    public final void setOption(String name, boolean value) {
-        setOption(name, value ? "true" : "false");
-    }
-
-    @Override
-    public boolean setOption(String name, String value) {
+    public boolean applyOption(String name, String value) {
         if (!uciOptions.contains(name))
             return false;
         UCIOptions.OptionBase o = uciOptions.getOption(name);
@@ -301,14 +298,4 @@ public abstract class UCIEngineBase implements UCIEngine {
         return false;
     }
 
-
-    @Override
-    public void setOptionClear(String name) {
-
-    }
-
-    @Override
-    public boolean applyUCIOptions() {
-        return false;
-    }
 }
