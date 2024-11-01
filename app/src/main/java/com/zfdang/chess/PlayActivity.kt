@@ -15,11 +15,8 @@ import com.zfdang.chess.gamelogic.Piece
 import com.zfdang.chess.gamelogic.Position
 import com.zfdang.chess.gamelogic.PvInfo
 import com.zfdang.chess.views.ChessView
-import org.petero.droidfish.player.ComputerPlayer
 import org.petero.droidfish.player.EngineListener
 import org.petero.droidfish.player.SearchListener
-import org.petero.droidfish.player.SearchRequest
-import java.util.ArrayList
 
 
 class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, SearchListener {
@@ -72,9 +69,6 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
 
         //
         controller = GameController(this,this)
-//        controller.game = game
-
-//        controller.newGame()
     }
 
 

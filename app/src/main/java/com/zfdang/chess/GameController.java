@@ -1,16 +1,11 @@
 package com.zfdang.chess;
 
 import com.zfdang.chess.gamelogic.Game;
-import com.zfdang.chess.gamelogic.Move;
-import com.zfdang.chess.gamelogic.Position;
-import com.zfdang.chess.gamelogic.PvInfo;
 
 import org.petero.droidfish.engine.EngineOptions;
 import org.petero.droidfish.player.ComputerPlayer;
 import org.petero.droidfish.player.EngineListener;
 import org.petero.droidfish.player.SearchListener;
-
-import java.util.ArrayList;
 
 public class GameController{
     public static final int MAX_MOVES = 2048;
