@@ -39,7 +39,6 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
 
     // controller, player, game
     private lateinit var controller: GameController
-    private lateinit var game: Game
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,29 +47,26 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
         binding = ActivityPlayBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        chessLayout = binding.chesslayout
-
         // new game
         controller = GameController(this, this, this)
         controller.newGame()
-        game = controller.game
 
         // 初始化棋盘
-        chessView = ChessView(this, game)
+        chessLayout = binding.chesslayout
+        chessView = ChessView(this, controller.game)
         chessView.setOnTouchListener(this)
-
         chessLayout.addView(chessView)
 
         // bind button id = button6
         binding.button6.setOnClickListener {
             // Handle button click
             Log.v("PlayActivity", "button6 clicked")
-            game.currentBoard.convertToFEN();
+            controller.game.currentBoard.convertToFEN();
         }
 
         // Bind historyTable and initialize it with dummy data
         val historyTable = binding.historyTable
-        moveHistoryAdapter = MoveHistoryAdapter(this, historyTable, game)
+        moveHistoryAdapter = MoveHistoryAdapter(this, historyTable, controller.game)
         moveHistoryAdapter.populateTable()
 
     }
