@@ -28,8 +28,8 @@
 
             <ImageButton
                 android:id="@+id/imageButton2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/person_48px" />
 
@@ -123,7 +123,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/restart_alt_48px" />
+                app:srcCompat="@drawable/new_window_48px" />
 
             <ImageButton
                 android:id="@+id/imageButton9"
