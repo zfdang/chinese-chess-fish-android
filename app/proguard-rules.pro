@@ -19,3 +19,20 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-optimizations code/removal/*
+-assumenosideeffects class android.util.Log {
+    public static boolean isLoggable(java.lang.String, int);
+    public static int v(...);
+    public static int d(...);
+    public static int i(...);
+    public static int w(...);
+}
+#-assumenosideeffects class java.lang.Exception {
+#    public void printStackTrace();
+#}
+-assumenosideeffects class timber.log.Timber* {
+    public static *** v(...);
+}
+#-assumenosideeffects class * implements org.slf4j.Logger {
+#    public void trace(...);
+#}
