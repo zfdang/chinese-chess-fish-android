@@ -34,7 +34,7 @@ import java.util.TreeMap;
 public abstract class UCIEngineBase implements UCIEngine {
 
     private boolean processAlive;
-    private UCIOptions uciOptions;
+    private UCIOptions options;
     protected boolean isUCI;
 
     public static UCIEngine getEngine(String engine,
@@ -50,8 +50,8 @@ public abstract class UCIEngineBase implements UCIEngine {
 
     protected UCIEngineBase() {
         processAlive = false;
-        uciOptions = new UCIOptions();
-        isUCI = true;
+        options = new UCIOptions();
+        isUCI = false;
     }
 
     protected abstract void startProcess();
@@ -65,21 +65,13 @@ public abstract class UCIEngineBase implements UCIEngine {
     }
 
     @Override
-    public void shutDown() {
-        if (processAlive) {
-            writeLineToEngine("quit");
-            processAlive = false;
-        }
-    }
-
-    @Override
     public void initOptions(EngineOptions engineOptions) {
         isUCI = true;
     }
 
     @Override
-    public final void loadIniFile() {
-        File optionsFile = getIniFile();
+    public final void applyIniFile() {
+        File optionsFile = getOptionsFile();
         Properties iniOptions = new Properties();
         try (FileInputStream is = new FileInputStream(optionsFile)) {
             iniOptions.load(is);
@@ -101,22 +93,6 @@ public abstract class UCIEngineBase implements UCIEngine {
     }
 
     @Override
-    public final void saveIniFile() {
-        Properties iniOptions = new Properties();
-        for (String name : uciOptions.getOptionNames()) {
-            UCIOptions.OptionBase o = uciOptions.getOption(name);
-            if (configurableOption(name) && o.modified())
-                iniOptions.put(o.name, o.getStringValue());
-        }
-        File optionsFile = getIniFile();
-        try (FileOutputStream os = new FileOutputStream(optionsFile)) {
-            iniOptions.store(os, null);
-        } catch (IOException ignore) {
-            Log.d("UCIEngineBase", "Failed to write options file: " + optionsFile);
-        }
-    }
-
-    @Override
     public final boolean setUCIOptions(Map<String, String> uciOptions) {
         boolean modified = false;
         for (Map.Entry<String, String> ent : uciOptions.entrySet()) {
@@ -129,14 +105,30 @@ public abstract class UCIEngineBase implements UCIEngine {
     }
 
     @Override
+    public final void saveIniFile(UCIOptions options) {
+        Properties iniOptions = new Properties();
+        for (String name : options.getOptionNames()) {
+            UCIOptions.OptionBase o = options.getOption(name);
+            if (configurableOption(name) && o.modified())
+                iniOptions.put(o.name, o.getStringValue());
+        }
+        File optionsFile = getOptionsFile();
+        try (FileOutputStream os = new FileOutputStream(optionsFile)) {
+            iniOptions.store(os, null);
+        } catch (IOException ignore) {
+            Log.d("UCIEngineBase", "Failed to write options file: " + optionsFile);
+        }
+    }
+
+    @Override
     public final UCIOptions getUCIOptions() {
-        return uciOptions;
+        return options;
     }
 
     /**
-     * Get ini file for UCI options
+     * Get engine UCI options file.
      */
-    protected abstract File getIniFile();
+    protected abstract File getOptionsFile();
 
     /**
      * Return true if the UCI option can be edited in the "Engine Options" dialog.
@@ -165,10 +157,17 @@ public abstract class UCIEngineBase implements UCIEngine {
         return Arrays.asList(configurable).contains(name);
     }
 
+    @Override
+    public void shutDown() {
+        if (processAlive) {
+            writeLineToEngine("quit");
+            processAlive = false;
+        }
+    }
 
     @Override
-    public final void clearAllOptions() {
-        uciOptions.clear();
+    public final void clearOptions() {
+        options.clear();
     }
 
     @Override
@@ -262,7 +261,7 @@ public abstract class UCIEngineBase implements UCIEngine {
 
         if (option != null) {
             option.visible = editableOption(name);
-            uciOptions.addOption(option);
+            options.addOption(option);
         }
         return option;
     }
@@ -271,9 +270,23 @@ public abstract class UCIEngineBase implements UCIEngine {
      * Return true if engine has option optName.
      */
     protected final boolean hasOption(String optName) {
-        return uciOptions.contains(optName);
+        return options.contains(optName);
     }
 
+    @Override
+    public final void setEloStrength(int elo) {
+        String lsName = "UCI_LimitStrength";
+        boolean limit = elo != Integer.MAX_VALUE;
+        UCIOptions.OptionBase o = options.getOption(lsName);
+        if (o instanceof UCIOptions.CheckOption) {
+            // Don't use setOption() since this value reflects current search parameters,
+            // not user specified strength settings, so should not be saved in .ini file.
+            writeLineToEngine(String.format(Locale.US, "setoption name %s value %s",
+                    lsName, limit ? "true" : "false"));
+        }
+        if (limit)
+            setOption("UCI_Elo", elo);
+    }
 
     @Override
     public final void setOption(String name, int value) {
@@ -287,9 +300,9 @@ public abstract class UCIEngineBase implements UCIEngine {
 
     @Override
     public boolean setOption(String name, String value) {
-        if (!uciOptions.contains(name))
+        if (!options.contains(name))
             return false;
-        UCIOptions.OptionBase o = uciOptions.getOption(name);
+        UCIOptions.OptionBase o = options.getOption(name);
         if (o instanceof UCIOptions.ButtonOption) {
             writeLineToEngine(String.format(Locale.US, "setoption name %s", o.name));
         } else if (o.setFromString(value)) {
@@ -298,17 +311,6 @@ public abstract class UCIEngineBase implements UCIEngine {
             writeLineToEngine(String.format(Locale.US, "setoption name %s value %s", o.name, value));
             return true;
         }
-        return false;
-    }
-
-
-    @Override
-    public void setOptionClear(String name) {
-
-    }
-
-    @Override
-    public boolean applyUCIOptions() {
         return false;
     }
 }

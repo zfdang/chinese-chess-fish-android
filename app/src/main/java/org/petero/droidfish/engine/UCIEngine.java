@@ -38,9 +38,29 @@ public interface UCIEngine {
     void initialize();
 
     /**
-     * Initialize default process option, not specific for UCI engine
+     * Initialize default options.
      */
     void initOptions(EngineOptions engineOptions);
+
+    /**
+     * Read UCI options from .ini file and send them to the engine.
+     */
+    void applyIniFile();
+
+    /**
+     * Set engine UCI options.
+     */
+    boolean setUCIOptions(Map<String, String> uciOptions);
+
+    /**
+     * Save non-default UCI option values to file.
+     */
+    void saveIniFile(UCIOptions options);
+
+    /**
+     * Get engine UCI options.
+     */
+    UCIOptions getUCIOptions();
 
     /**
      * Return true if engine options have correct values.
@@ -53,22 +73,26 @@ public interface UCIEngine {
      */
     void shutDown();
 
+    /**
+     * Read a line from the engine.
+     *
+     * @param timeoutMillis Maximum time to wait for data.
+     * @return The line, without terminating newline characters,
+     * or empty string if no data available,
+     * or null if I/O error.
+     */
+    String readLineFromEngine(int timeoutMillis);
 
     /**
-     * Read UCI options from .ini file and send them to the engine.
+     * Write a line to the engine. \n will be added automatically.
      */
-    void loadIniFile();
+    void writeLineToEngine(String data);
 
     /**
-     * Save current UCI options to file.
+     * Temporarily set the engine Elo strength to use for the next search.
+     * Integer.MAX_VALUE means full strength.
      */
-    void saveIniFile();
-
-
-    /**
-     * Set engine UCI options.
-     */
-    boolean setUCIOptions(Map<String, String> uciOptions);
+    void setEloStrength(int elo);
 
     /**
      * Set an engine integer option.
@@ -89,20 +113,9 @@ public interface UCIEngine {
     boolean setOption(String name, String value);
 
     /**
-     * special setOption, no value but to clear the option
+     * Clear list of supported options.
      */
-    void setOptionClear(String name);
-
-    /**
-     * Clear all engine options.
-     */
-    void clearAllOptions();
-
-    /**
-     * Apply engine UCI options.
-     * These options could be loadIniFile, set by setUCIOptions, or by setOption
-     */
-    boolean applyUCIOptions();
+    void clearOptions();
 
     /**
      * Register an option as supported by the engine.
@@ -110,27 +123,4 @@ public interface UCIEngine {
      * @param tokens The UCI option line sent by the engine, split in words.
      */
     UCIOptions.OptionBase registerOption(String[] tokens);
-
-
-    /**
-     * Get engine UCI options.
-     */
-    UCIOptions getUCIOptions();
-
-    /**
-     * Read a line from the engine.
-     *
-     * @param timeoutMillis Maximum time to wait for data.
-     * @return The line, without terminating newline characters,
-     * or empty string if no data available,
-     * or null if I/O error.
-     */
-    String readLineFromEngine(int timeoutMillis);
-
-    /**
-     * Write a line to the engine. \n will be added automatically.
-     */
-    void writeLineToEngine(String data);
-
-
 }

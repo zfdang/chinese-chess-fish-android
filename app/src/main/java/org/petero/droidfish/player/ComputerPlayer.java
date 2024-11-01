@@ -144,7 +144,7 @@ public class ComputerPlayer {
         if (modified) {
             UCIEngine uci = uciEngine;
             if (uci != null)
-                uci.saveIniFile();
+                uci.saveIniFile(getUCIOptions());
         }
     }
 
@@ -496,9 +496,11 @@ public class ComputerPlayer {
         engineMonitor = new Thread(() -> monitorLoop(uci));
         engineMonitor.start();
 
-        uciEngine.clearAllOptions();
-        uciEngine.loadIniFile();
-//        uciEngine.writeLineToEngine("uci");
+        uciEngine.clearOptions();
+        uciEngine.writeLineToEngine("uci");
+        uciEngine.writeLineToEngine("setoption name EvalFile value pikafish.nnue");
+        uciEngine.writeLineToEngine("isready");
+        maxPV = 1;
         engineState.engineName = searchRequest.engineName;
         engineState.setState(EngineStateValue.READ_OPTIONS);
     }
@@ -556,7 +558,7 @@ public class ComputerPlayer {
                 if (readUCIOption(uci, s)) {
                     pendingOptions.clear();
                     uci.initOptions(engineOptions);
-                    uci.loadIniFile();
+                    uci.applyIniFile();
                     uci.writeLineToEngine("ucinewgame");
                     uci.writeLineToEngine("isready");
                     engineState.setState(EngineStateValue.WAIT_READY);
