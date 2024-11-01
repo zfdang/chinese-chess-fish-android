@@ -94,7 +94,7 @@ public class ExternalEngine extends UCIEngineBase {
             // change engineWorkDir if necessary
             if(!engineWorkDir.exists()){
                 engineWorkDir = new File(exePath).getParentFile();
-                Log.d("ExternalEngine", "Engine work dir does not exist, using engine dir: " + engineWorkDir.getAbsolutePath());
+                Log.d("ExternalEngine", "Engine workDir does not exist, using exeDir: " + engineWorkDir.getAbsolutePath());
             }
 
             ProcessBuilder pb = new ProcessBuilder(exePath);
@@ -197,9 +197,6 @@ public class ExternalEngine extends UCIEngineBase {
         }
     }
 
-    private int hashMB = -1;
-    private String gaviotaTbPath = "";
-    private String syzygyPath = "";
     private boolean optionsInitialized = false;
 
     @Override
@@ -209,14 +206,13 @@ public class ExternalEngine extends UCIEngineBase {
     }
 
     @Override
-    protected File getIniFile() {
-        return new File(engineFileName.getAbsolutePath() + ".ini");
+    public boolean optionsOk(EngineOptions engineOptions) {
+        return optionsInitialized;
     }
 
-
     @Override
-    public boolean optionsOk(EngineOptions engineOptions) {
-        return true;
+    protected File getIniFile() {
+        return new File(engineFileName.getAbsolutePath() + ".ini");
     }
 
     @Override
