@@ -98,7 +98,7 @@ public abstract class UCIEngineBase implements UCIEngine {
         for (Map.Entry<String, String> ent : uciOptions.entrySet()) {
             String key = ent.getKey().toLowerCase(Locale.US);
             String value = ent.getValue();
-            if (configurableOption(key)) {
+            if (editableOption(key)) {
                 if (uciOptions.containsKey(key)) {
                     // key should exist and configurable, and value is different with previous value
                     modified |= setOption(key, value);
@@ -113,7 +113,7 @@ public abstract class UCIEngineBase implements UCIEngine {
         Properties iniOptions = new Properties();
         for (String name : options.getOptionNames()) {
             UCIOptions.OptionBase o = options.getOption(name);
-            if (configurableOption(name) && o.modified())
+            if (editableOption(name) && o.modified())
                 iniOptions.put(o.name, o.getStringValue());
         }
         File optionsFile = getIniFile();
@@ -134,49 +134,10 @@ public abstract class UCIEngineBase implements UCIEngine {
      */
     protected abstract File getIniFile();
 
-    /**
-     * Return true if the UCI option can be edited in the "Engine Options" dialog.
-     */
-    //    pikafish目前的uci命令的输出
-    //    id author the Pikafish developers (see AUTHORS file)
-    //    option name Debug Log File type string default
-    //    option name NumaPolicy type string default auto
-    //    option name Threads type spin default 1 min 1 max 1024
-    //    option name Hash type spin default 16 min 1 max 33554432
-    //    option name Clear Hash type button
-    //    option name Ponder type check default false
-    //    option name MultiPV type spin default 1 min 1 max 128
-    //    option name Move Overhead type spin default 10 min 0 max 5000
-    //    option name nodestime type spin default 0 min 0 max 10000
-    //    option name Skill Level type spin default 20 min 0 max 20
-    //    option name Mate Threat Depth type spin default 10 min 0 max 10
-    //    option name Repetition Rule type combo default AsianRule var AsianRule var ChineseRule var SkyRule var ComputerRule var AllowChase var YitianRule
-    //    option name Draw Rule type combo default None var None var DrawAsBlackWin var DrawAsRedWin var DrawRepAsBlackWin var DrawRepAsRedWin
-    //    option name Rule60MaxPly type spin default 120 min 0 max 120
-    //    option name UCI_LimitStrength type check default false
-    //    option name UCI_Elo type spin default 1280 min 1280 max 3133
-    //    option name ScoreType type combo default Elo var Elo var PawnValueNormalized var Raw
-    //    option name LU_Output type check default true
-    //    option name EvalFile type string default pikafish.nnue
-    //    uciok
     protected boolean editableOption(String name) {
         name = name.toLowerCase(Locale.US);
-        String[] editable = {"numapolicy", "threads", "hash", "clear hash", "ponder", "multipv", "move overhead", "skill level",
-                "mate threat depth", "repetition rule", "draw rule", "rule60maxply", "scoretype", "lu_output", "evalfile", "uci_showwdl"};
+        String[] editable = {"hash", "threads"};
         return Arrays.asList(editable).contains(name);
-    }
-
-    /**
-     * Return true if the UCI option can be modified by the user, either directly
-     * from the "Engine Options" dialog or indirectly, for example from the
-     * "Set Engine Strength" dialog.
-     */
-    private boolean configurableOption(String name) {
-        if (editableOption(name))
-            return true;
-        name = name.toLowerCase(Locale.US);
-        String[] configurable = {"uci_limitstrength", "uci_elo"};
-        return Arrays.asList(configurable).contains(name);
     }
 
     @Override
