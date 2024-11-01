@@ -45,7 +45,7 @@ public class ExternalPikafishEngine extends ExternalEngine {
 
     private final File[] networkFiles = {null, null, null}; // Full path of the copied network files
 
-    public ExternalPikafishEngine(Report report, String workDir) {
+    public ExternalPikafishEngine(String workDir, Report report) {
         super("pikafish", workDir, report);
     }
 
@@ -185,11 +185,6 @@ public class ExternalPikafishEngine extends ExternalEngine {
     @Override
     public void initOptions(EngineOptions engineOptions) {
         super.initOptions(engineOptions);
-        for (int i = 0; i < 2; i++) {
-            UCIOptions.OptionBase opt = getUCIOptions().getOption(networkOptions[i]);
-            if (opt != null)
-                setOption(networkOptions[i], opt.getStringValue());
-        }
     }
 
     /**
