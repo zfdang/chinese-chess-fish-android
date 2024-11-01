@@ -39,10 +39,12 @@ public abstract class UCIEngineBase implements UCIEngine {
 
     public static UCIEngine getEngine(String engine,
                                       EngineOptions engineOptions, Report report) {
+        // only pikafishi engine is supported
         if ("pikafish".equals(engine)) {
-            return new ExternalPikafishEngine(report, engineOptions.workDir);
+            return new ExternalPikafishEngine(engineOptions.workDir, report);
         } else {
-            return new ExternalEngine(engine, engineOptions.workDir, report);
+            Log.d("UCIEngineBase", "Unknown engine: " + engine);
+            return null;
         }
     }
 
@@ -85,6 +87,8 @@ public abstract class UCIEngineBase implements UCIEngine {
                 opts.put(key, value);
             }
         }
+        Log.d("UCIEngineBase", "Read " + opts.size() + " options from " + optionsFile);
+        Log.d("UCIEngineBase", opts.toString());
         setUCIOptions(opts);
     }
 
@@ -112,6 +116,7 @@ public abstract class UCIEngineBase implements UCIEngine {
         try (FileOutputStream os = new FileOutputStream(optionsFile)) {
             iniOptions.store(os, null);
         } catch (IOException ignore) {
+            Log.d("UCIEngineBase", "Failed to write options file: " + optionsFile);
         }
     }
 
