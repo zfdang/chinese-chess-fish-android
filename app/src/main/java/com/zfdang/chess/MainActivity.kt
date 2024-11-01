@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
     fun initEngineFile(): Unit {
         // prepare engine files
-        val computerPlayer = ComputerPlayer(null)
+        val computerPlayer = ComputerPlayer(null, null)
         computerPlayer.queueStartEngine(1024,"pikafish")
         computerPlayer.getUCIOptions()
     }

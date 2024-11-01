@@ -157,7 +157,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         p.setColor(Color.RED);
 
         // draw arrow for the last 3 moves in historyMoves
-        for(int i = game.historyRecords.size() - 1; i >= 0 && i >= game.historyRecords.size() - 3; i--) {
+        for(int i = game.historyRecords.size() - 1; i >= 1 && i >= game.historyRecords.size() - 3; i--) {
             Game.HistoryRecord record = game.historyRecords.get(i);
             crd0 = getCoordByPosition(record.move.fromPosition);
             crd1 = getCoordByPosition(record.move.toPosition);

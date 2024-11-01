@@ -39,7 +39,7 @@ class PromptActivity : AppCompatActivity(), EngineListener
 
     fun initEngineFile(): Unit {
         // prepare engine files
-        computerPlayer = ComputerPlayer(this)
+        computerPlayer = ComputerPlayer(this, null)
         computerPlayer.queueStartEngine(1024,"pikafish")
         computerPlayer.getUCIOptions()
     }

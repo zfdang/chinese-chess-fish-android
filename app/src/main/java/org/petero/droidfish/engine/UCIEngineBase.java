@@ -100,10 +100,8 @@ public abstract class UCIEngineBase implements UCIEngine {
             String value = ent.getValue();
             if (configurableOption(key)) {
                 if (uciOptions.containsKey(key)) {
+                    // key should exist and configurable, and value is different with previous value
                     modified |= setOption(key, value);
-                } else {
-//                    options.addOption(value);
-                    modified = true;
                 }
             }
         }

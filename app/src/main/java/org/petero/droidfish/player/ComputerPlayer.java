@@ -63,8 +63,9 @@ public class ComputerPlayer {
     private Thread engineMonitor;
 
     // new constructor to accept listener
-    public ComputerPlayer(EngineListener engineListener) {
+    public ComputerPlayer(EngineListener engineListener, SearchListener searchListener) {
         this.engineListener = engineListener;
+        this.searchListener = searchListener;
     }
 
     /**

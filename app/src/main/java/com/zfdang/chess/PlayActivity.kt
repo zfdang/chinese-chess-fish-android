@@ -10,11 +10,19 @@ import androidx.appcompat.app.AppCompatActivity
 import com.zfdang.chess.adapters.MoveHistoryAdapter
 import com.zfdang.chess.databinding.ActivityPlayBinding
 import com.zfdang.chess.gamelogic.Game
+import com.zfdang.chess.gamelogic.Move
 import com.zfdang.chess.gamelogic.Piece
+import com.zfdang.chess.gamelogic.Position
+import com.zfdang.chess.gamelogic.PvInfo
 import com.zfdang.chess.views.ChessView
+import org.petero.droidfish.player.ComputerPlayer
+import org.petero.droidfish.player.EngineListener
+import org.petero.droidfish.player.SearchListener
+import org.petero.droidfish.player.SearchRequest
+import java.util.ArrayList
 
 
-class PlayActivity : AppCompatActivity(), View.OnTouchListener {
+class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, SearchListener {
 
     // 防止重复点击
     private val MIN_CLICK_DELAY_TIME: Int = 100
@@ -28,6 +36,9 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
     private lateinit var game: Game;
     private lateinit var chessView: ChessView
     private lateinit var moveHistoryAdapter: MoveHistoryAdapter
+
+    // player
+    private lateinit var controller: GameController
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -58,7 +69,14 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
         val historyTable = binding.historyTable
         moveHistoryAdapter = MoveHistoryAdapter(this, historyTable, game)
         moveHistoryAdapter.populateTable()
+
+        //
+        controller = GameController(this,this)
+//        controller.game = game
+
+//        controller.newGame()
     }
+
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         // 防止重复点击
@@ -93,8 +111,9 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
                 }
                 game.endPos = pos
                 game.movePiece()
-                moveHistoryAdapter.populateTable()
+                controller.nextMove()
 
+                moveHistoryAdapter.populateTable()
 
                 game.startPos = null
                 game.endPos = null
@@ -102,5 +121,41 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener {
             Log.d("PlayActivity", "onTouch: x = $x, y = $y, pos = " + pos.toString())
         }
         return false
+    }
+
+    override fun reportEngineError(errMsg: String?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun notifyEngineName(engineName: String?) {
+        Log.d("PlayActivity", "notifyEngineName: $engineName")
+    }
+
+    override fun notifyDepth(id: Int, depth: Int) {
+        Log.d("PlayActivity", "notifyDepth: $depth")
+    }
+
+    override fun notifyCurrMove(id: Int, pos: Position?, m: Move?, moveNr: Int) {
+        Log.d("PlayActivity", "notifyCurrMove: $m")
+    }
+
+    override fun notifyPV(id: Int, pos: Position?, pvInfo: ArrayList<PvInfo>?, ponderMove: Move?) {
+        Log.d("PlayActivity", "notifyPV: $pvInfo")
+    }
+
+    override fun notifyStats(id: Int, nodes: Long, nps: Int, tbHits: Long, hash: Int, time: Int, seldepth: Int) {
+        Log.d("PlayActivity", "notifyStats: nodes = $nodes, nps = $nps, tbHits = $tbHits, hash = $hash, time = $time, seldepth = $seldepth")
+    }
+
+    override fun notifyBookInfo(id: Int, bookInfo: String?, moveList: ArrayList<Move>?, eco: String?, distToEcoTree: Int) {
+        Log.d(  "PlayActivity", "notifyBookInfo: $bookInfo")
+    }
+
+    override fun notifySearchResult(searchId: Int, bestMove: String?, nextPonderMove: String?) {
+        Log.d("PlayActivity", "notifySearchResult: $bestMove")
+    }
+
+    override fun notifyEngineInitialized() {
+        Log.d("PlayActivity", "notifyEngineInitialized")
     }
 }
