@@ -36,7 +36,7 @@ import android.util.Log;
 /**
  * Stockfish engine running as process, started from assets resource.
  */
-public class ExternalPikafishEngine extends ExternalEngine {
+public class PikafishExternalEngine extends ExternalEngine {
     private static final String[] networkAsssetFiles = {"pikafish.nnue", "pikafish.ini", "version.txt"};
     private static final String[] networkOptions = {"evalfile"};
 
@@ -46,7 +46,7 @@ public class ExternalPikafishEngine extends ExternalEngine {
 
     private final File[] networkFiles = {null, null, null}; // Full path of the copied network files
 
-    public ExternalPikafishEngine(String workDir, Report report) {
+    public PikafishExternalEngine(String workDir, Report report) {
         super("pikafish", workDir, report);
 
         // uci_showwdl is not included in the uci response, so we need to add it manually
