@@ -496,10 +496,7 @@ public class ComputerPlayer {
         engineMonitor = new Thread(() -> monitorLoop(uci));
         engineMonitor.start();
 
-        uciEngine.clearOptions();
         uciEngine.writeLineToEngine("uci");
-        uciEngine.writeLineToEngine("setoption name EvalFile value pikafish.nnue");
-        uciEngine.writeLineToEngine("isready");
         maxPV = 1;
         engineState.engineName = searchRequest.engineName;
         engineState.setState(EngineStateValue.READ_OPTIONS);

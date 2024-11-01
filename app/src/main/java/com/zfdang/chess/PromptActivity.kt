@@ -46,19 +46,19 @@ class PromptActivity : AppCompatActivity(), EngineListener
 
     override fun reportEngineError(errMsg: String?) {
         // UCIEngine.Report.reportError
-        Log.d(  "PromptActivity", "Engine error: $errMsg")
+        Log.d(  "PromptActivity", "reportEngineError: $errMsg")
     }
 
     override fun notifyEngineName(engineName: String?) {
-        Log.d(  "PromptActivity", "Engine name: $engineName")
+        Log.d(  "PromptActivity", "notifyEngineName: $engineName")
     }
 
     override fun notifySearchResult(searchId: Int, bestMove: String?, nextPonderMove: String?) {
-        Log.d(  "PromptActivity", "Search result: $searchId, $bestMove, $nextPonderMove")
+        Log.d(  "PromptActivity", "notifySearchResult: $searchId, $bestMove, $nextPonderMove")
     }
 
     override fun notifyEngineInitialized() {
-        Log.d(  "PromptActivity", "Engine initialized")
+        Log.d(  "PromptActivity", "notifyEngineInitialized")
     }
 
 }
