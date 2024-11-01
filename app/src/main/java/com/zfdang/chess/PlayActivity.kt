@@ -57,18 +57,11 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
         chessView.setOnTouchListener(this)
         chessLayout.addView(chessView)
 
-        // bind button id = button6
-        binding.button6.setOnClickListener {
-            // Handle button click
-            Log.v("PlayActivity", "button6 clicked")
-            controller.game.currentBoard.convertToFEN();
-        }
 
         // Bind historyTable and initialize it with dummy data
         val historyTable = binding.historyTable
         moveHistoryAdapter = MoveHistoryAdapter(this, historyTable, controller.game)
         moveHistoryAdapter.populateTable()
-
     }
 
 
@@ -80,7 +73,7 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
         }
         curClickTime = lastClickTime
 
-
+        val game = controller.game
         if (event!!.action === MotionEvent.ACTION_DOWN) {
             val x = event!!.x
             val y = event!!.y
