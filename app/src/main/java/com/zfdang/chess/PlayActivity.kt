@@ -66,6 +66,7 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
             binding.newbt,
             binding.backbt,
             binding.forwardbt,
+            binding.swapbt,
             binding.searchbt,
             binding.exitbt
         )
