@@ -13,16 +13,20 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
+import com.zfdang.chess.ChessApp;
 import com.zfdang.chess.R;
 import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Game;
 import com.zfdang.chess.gamelogic.Piece;
 import com.zfdang.chess.gamelogic.Position;
 import com.zfdang.chess.utils.ArrowShape;
+import com.zfdang.chess.utils.DrawableUtil;
 
 import android.graphics.Path;
 import android.graphics.Matrix;
+
 
 public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     public ChessViewThread thread;
@@ -37,6 +41,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     public Bitmap ChessBoardBitmap;
     public Bitmap B_box, R_box, Pot;
     public Bitmap[] PieceBitmaps = new Bitmap[14];
+    public Bitmap[] ChoiceBitmaps = new Bitmap[5];
 
     // 如何设置下面的几个参数：
     // 有2个假设：棋盘的每个格子是正方形的, 棋子也是正方形的
@@ -95,6 +100,13 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         PieceBitmaps[11] = BitmapFactory.decodeResource(getResources(), R.drawable.b_ju);
         PieceBitmaps[12] = BitmapFactory.decodeResource(getResources(), R.drawable.b_pao);
         PieceBitmaps[13] = BitmapFactory.decodeResource(getResources(), R.drawable.b_zu);
+
+        // load drawables for choice bitmaps
+        ChoiceBitmaps[0] = BitmapFactory.decodeResource(getResources(), R.drawable.digit1);
+        ChoiceBitmaps[1] = BitmapFactory.decodeResource(getResources(), R.drawable.digit2);
+        ChoiceBitmaps[2] = BitmapFactory.decodeResource(getResources(), R.drawable.digit3);
+        ChoiceBitmaps[3] = BitmapFactory.decodeResource(getResources(), R.drawable.digit4);
+        ChoiceBitmaps[4] = BitmapFactory.decodeResource(getResources(), R.drawable.digit5);
     }
 
     public void Draw(Canvas canvas) {
@@ -161,24 +173,67 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         p.setAntiAlias(true);
         p.setColor(Color.RED);
 
-        // draw arrow for the last 3 moves in historyMoves
-        for(int i = game.historyRecords.size() - 1; i >= 1 && i >= game.historyRecords.size() - 3; i--) {
+        // draw arrow for the last several moves in historyMoves
+        int max_last_moves = 4;
+        // game.historyRecords.get(0) is game without any move
+        for(int i = game.historyRecords.size() - 1; i >= 1 && i >= game.historyRecords.size() - max_last_moves; i--) {
             Game.HistoryRecord record = game.historyRecords.get(i);
             crd0 = getCoordByPosition(record.move.fromPosition);
             crd1 = getCoordByPosition(record.move.toPosition);
 
-            // transparency
-            p.setAlpha(100 - (game.historyRecords.size() - i - 1) * 20);
-            DrawArrow(canvas, crd0, crd1, p);
+            // color
+            if(record.move.isRedMove) {
+                p.setColor(Color.RED);
+            } else {
+                p.setColor(Color.GREEN);
+            }
+
+            // alpha, two moves share the same value
+            int idx = (game.historyRecords.size() - 1 - i);
+            int value = 200 - idx * 50;
+            if(value < 0) value = 0;
+            p.setAlpha(value);
+            DrawArrow(canvas, crd0, crd1, p, null);
         }
     }
 
-    void DrawArrow(Canvas canvas, XYCoord crd0, XYCoord crd1, Paint p) {
+    void DrawArrow(Canvas canvas, XYCoord crd0, XYCoord crd1, Paint p, Bitmap bitmap) {
         ArrowShape arrow = new ArrowShape();
         Path path = new Path();
         arrow.getTransformedPath(path, crd0.x, crd0.y, crd1.x, crd1.y);
-
         canvas.drawPath(path, p);
+
+
+        if(bitmap != null) {
+            int offset_to_endpos = 80;
+            int width_of_bitmap = 80;
+            // 找到合适的位置，然后在那个位置画bitmap
+
+            // 离crd1 offset_to_endpos个像素的位置
+            XYCoord crd3 = new XYCoord(0, 0);
+            int dx = crd1.x - crd0.x;
+            int dy = crd1.y - crd0.y;
+            int d = (int)Math.sqrt(dx*dx + dy*dy);
+            crd3.x = crd1.x - offset_to_endpos * dx / d;
+            crd3.y = crd1.y - offset_to_endpos * dy / d;
+
+            // 两者之间3/5的位置
+            XYCoord crd4 = new XYCoord((crd0.x*2 + crd1.x*3) / 5, (crd0.y*2 + crd1.y*3) / 5);
+
+            // 取离crd1最近的点, 防止箭头太长时，数字离箭头太远
+            int d3 = (crd3.x - crd1.x) * (crd3.x - crd1.x) + (crd3.y - crd1.y) * (crd3.y - crd1.y);
+            int d4 = (crd4.x - crd1.x) * (crd4.x - crd1.x) + (crd4.y - crd1.y) * (crd4.y - crd1.y);
+            XYCoord crd = d3 < d4 ? crd3 : crd4;
+
+            // draw bitmap to crd position
+            int sx = bitmap.getWidth();
+            int sy = bitmap.getHeight();
+            int nx = width_of_bitmap / 2;
+            int ny = nx * sy / sx / 2;
+            Rect tempSrcRect = new Rect(0, 0, sx, sy);
+            Rect tempDesRect = new Rect(crd.x - nx, crd.y - ny, crd.x + nx, crd.y + ny);
+            canvas.drawBitmap(bitmap, tempSrcRect, tempDesRect, null);
+        }
     }
 
     public int Scale(int x) {

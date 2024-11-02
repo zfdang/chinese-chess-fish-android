@@ -11,6 +11,7 @@ public class Move implements Serializable {
 
     public Position fromPosition;
     public Position toPosition;
+    public boolean isRedMove = false;
 
     // create hashmap to convert Arabic numerals to Chinese numerals
     public static final HashMap<Integer, String> arabicToChineseMap = new HashMap<>();
@@ -29,10 +30,19 @@ public class Move implements Serializable {
         this.fromPosition = fromPosition;
         this.toPosition = toPosition;
         this.board = board;
+        updateMoveColor();
     }
 
     public Move(Board board) {
         this.board = board;
+        updateMoveColor();
+    }
+
+    private void updateMoveColor(){
+        int piece = board.getPieceByPosition(fromPosition);
+        if(Piece.isValid(piece)) {
+            isRedMove = Piece.isRed(piece);
+        }
     }
 
     public Move(Position fromPosition, Position toPosition) {
