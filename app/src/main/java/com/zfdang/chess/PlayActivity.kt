@@ -80,7 +80,10 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
             binding.forwardbt,
             binding.helpbt,
             binding.swapbt,
-            binding.exitbt
+            binding.exitbt,
+            binding.choice1bt,
+            binding.choice2bt,
+            binding.choice3bt
         )
         for (button in imageButtons) {
             button.setOnClickListener(this)
@@ -102,22 +105,11 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
     fun loadAudioFiles() {
         // load audio files in raw
         selectSound = MediaPlayer.create(this, R.raw.select)
-//        selectSound.setVolume(0.5f, 0.5f)
-
         moveSound = MediaPlayer.create(this, R.raw.move)
-//        moveSound.setVolume(0.5f, 0.5f)
-
         captureSound = MediaPlayer.create(this, R.raw.capture)
-//        captureSound.setVolume(0.5f, 0.5f)
-
         checkSound = MediaPlayer.create(this, R.raw.check)
-//        checkSound.setVolume(0.5f, 0.5f)
-
         invalidSound = MediaPlayer.create(this, R.raw.invalid)
-//        invalidSound.setVolume(0.5f, 0.5f)
-
         winSound = MediaPlayer.create(this, R.raw.win)
-//        winSound.setVolume(0.5f, 0.5f)
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
@@ -128,7 +120,6 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
         }
         curClickTime = lastClickTime
 
-        val game = controller.game
         if (event!!.action === MotionEvent.ACTION_DOWN) {
             val x = event!!.x
             val y = event!!.y
@@ -214,11 +205,8 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
                 }
             }
             binding.playeraltbt -> {
-                if(binding.choice1bt.visibility == View.VISIBLE){
-                    binding.choice1bt.visibility = View.GONE;
-                    binding.choice2bt.visibility = View.GONE;
-                    binding.choice3bt.visibility = View.GONE;
-                } else {
+                setStatusText("黑棋变着：")
+                if(binding.choice1bt.visibility == View.GONE){
                     binding.choice1bt.visibility = View.VISIBLE;
                     binding.choice2bt.visibility = View.VISIBLE;
                     binding.choice3bt.visibility = View.VISIBLE;
@@ -246,13 +234,30 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
             binding.exitbt -> {
                 finish()
             }
+            binding.choice1bt -> {
+                setStatusText("黑棋变着：选择1")
+                binding.choice1bt.visibility = View.GONE;
+                binding.choice2bt.visibility = View.GONE;
+                binding.choice3bt.visibility = View.GONE;
+            }
+            binding.choice2bt -> {
+                setStatusText("黑棋变着：选择2")
+                binding.choice1bt.visibility = View.GONE;
+                binding.choice2bt.visibility = View.GONE;
+                binding.choice3bt.visibility = View.GONE;
+            }
+            binding.choice3bt -> {
+                setStatusText("黑棋变着：选择3")
+                binding.choice1bt.visibility = View.GONE;
+                binding.choice2bt.visibility = View.GONE;
+                binding.choice3bt.visibility = View.GONE;
+            }
         }
 
     }
 
     override fun onGameSound(sound: GameControllerListener.GameSound?) {
         Log.d(  "PlayActivity", "onGameSound: $sound")
-        // play sound here by GameSound
         when(sound) {
             GameSound.SELECT -> selectSound.start()
             GameSound.MOVE -> moveSound.start()
@@ -260,7 +265,7 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
             GameSound.CHECK -> checkSound.start()
             GameSound.ILLEGAL -> invalidSound.start()
             GameSound.WIN -> winSound.start()
-            null -> Log.d("PlayActivity", "Illegal move")
+            null -> Log.d("PlayActivity", "Illegal sound")
         }
     }
 
