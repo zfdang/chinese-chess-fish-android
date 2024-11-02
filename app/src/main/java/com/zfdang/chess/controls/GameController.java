@@ -91,15 +91,20 @@ public class GameController{
             }
 
             // 判断pos是否是合法的move的终点
-            Move move = new Move(game.startPos, pos);
-            boolean valid = Rule.isValidMove(move, game.currentBoard);
+            Move tempMove = new Move(game.startPos, pos, game.currentBoard);
+            boolean valid = Rule.isValidMove(tempMove);
             if(valid) {
                 game.endPos = pos;
+                int piece = game.currentBoard.getPieceByPosition(game.endPos);
                 game.movePiece();
-                controllerListener.onGameSound(GameControllerListener.GameSound.MOVE);
+                if(Piece.isValid(piece)) {
+                    controllerListener.onGameSound(GameControllerListener.GameSound.CAPTURE);
+                } else {
+                    controllerListener.onGameSound(GameControllerListener.GameSound.MOVE);
+                }
             } else {
-                game.startPos = null;
-                game.endPos = null;
+                controllerListener.onGameSound(GameControllerListener.GameSound.ILLEGAL);
+                controllerListener.onGameEvent(GameControllerListener.GameEvent.ILLEGAL, "Illegal move");
             }
         }
 

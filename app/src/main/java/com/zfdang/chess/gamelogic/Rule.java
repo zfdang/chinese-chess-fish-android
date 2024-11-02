@@ -549,7 +549,9 @@ public class Rule {
         return true;
     }
 
-    public static boolean isValidMove(Move move, Board board){
+    public static boolean isValidMove(Move move) {
+        // jave code to generate rand int, if it > 10, return true else return false
+//        return Math.random() > 0.5;
         return true;
 //        int fromX = move.fromPosition.x;
 //        int fromY = move.fromPosition.y;
@@ -614,7 +616,7 @@ public class Rule {
 //                if (toY < 7 || toY > 9 || toX < 3 || toX > 5) {
 //                    return false;
 //                }
-        }
+    }
 
 //    public static Position reversePos(Position position, boolean IsReverse) {
 //        return (IsReverse == false) ? position : new Position(8 - position.x, 9 - position.y);
