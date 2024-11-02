@@ -12,7 +12,7 @@ import java.util.List;
  */
 
 public class Rule {
-    public static int[][] area = new int[][]{
+    private static int[][] area = new int[][]{
             {1, 1, 1, 2, 2, 2, 1, 1, 1},
             {1, 1, 1, 2, 2, 2, 1, 1, 1},
             {1, 1, 1, 2, 2, 2, 1, 1, 1},
@@ -25,7 +25,7 @@ public class Rule {
             {3, 3, 3, 4, 4, 4, 3, 3, 3},
             {3, 3, 3, 4, 4, 4, 3, 3, 3},
     };
-    public static int[][] offsetX = new int[][]{
+    private static int[][] offsetX = new int[][]{
             {0, 0, 1, -1},             //帅 将
             {1, 1, -1, -1},            //仕 士
             {2, 2, -2, -2},            //相 象
@@ -38,7 +38,7 @@ public class Rule {
             {-1, 0, 1},               //过河兵
             {1, 1, -1, -1, 1, 1, -1, -1},  //反向蹩马腿
     };
-    public static int[][] offsetY = new int[][]{
+    private static int[][] offsetY = new int[][]{
             {1, -1, 0, 0},             //帅 将
             {1, -1, 1, -1},            //仕 士
             {2, -2, 2, -2},            //相 象
@@ -51,6 +51,7 @@ public class Rule {
             {0, -1, 0},               //过河兵
             {1, -1, 1, -1, 1, -1, 1, -1},  //反向蹩马腿
     };
+
 
     /*
     在棋盘中找到将帅的位置
@@ -76,6 +77,7 @@ public class Rule {
         }
         return null;
     }
+
 
     public static List<Position> PossibleMoves(int pieceId, int fromX, int fromY, Board board) {
         List<Position> ret = new ArrayList<Position>();
@@ -289,16 +291,43 @@ public class Rule {
         return ret;
     }
 
-    public static boolean isJiangShuaiInDanger(int piece, Position pos, Board board) {
+    /*
+    检查走法是否合法
+     */
+    public static boolean isValidMove(Move move, Board board) {
+        if (move == null) {
+            return false;
+        }
+
+        int piece = board.getPieceByPosition(move.fromPosition);
+        int fromX = move.fromPosition.x;
+        int fromY = move.fromPosition.y;
+
+        // 检查是否是合法的走法
+        List<Position> moves = PossibleMoves(piece, fromX, fromY, board);
+        Iterator<Position> it = moves.iterator();
+        while (it.hasNext()) {
+            Position pos = it.next();
+            if (pos.equals(move.toPosition)) {
+                // toPosition是所有合法的走法之一
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean isJiangShuaiInDanger(int piece, Board board) {
         // 马的攻击和别腿，红帅和黑将都会用到
         int num = 4;
         int op_block_num = 10; //反向蹩马腿
 
         if (piece == Piece.WSHUAI) {
-            // 验证红帅的位置
-            if(piece != board.getPieceByPosition(pos)){
-                Log.d("Rule", "红帅不存在?" + pos.toString() + " " + board.getPieceByPosition(pos));
-                return false;
+            // 找到红帅的位置
+            Position pos = findJiangShuaiPos(Piece.WSHUAI, board);
+            if(pos == null) {
+                Log.d("Rule", "红帅不存在?");
+                return true;
             }
             int x = pos.x, y = pos.y;
 
@@ -329,10 +358,11 @@ public class Rule {
                 return true;
             }
         } else if(piece == Piece.BJIANG) {
-            // 验证黑将的位置
-            if(piece != board.getPieceByPosition(pos)){
-                Log.d("Rule", "黑将不存在?" + pos.toString() + " " + board.getPieceByPosition(pos));
-                return false;
+            // 找到黑将的位置
+            Position pos = findJiangShuaiPos(Piece.BJIANG, board);
+            if(pos == null) {
+                Log.d("Rule", "黑将不存在?");
+                return true;
             }
             int x = pos.x, y = pos.y;
 
@@ -367,10 +397,62 @@ public class Rule {
     }
 
     /*
-    * 判断(x,y)是否会被piece攻击，piece只能是车或者炮。
-    * 假如（x,y)是车或者炮，检查它的攻击范围内是否有车或者炮，如果有那么反过来也会被攻击
+    判断是否已经结束
      */
-    public static boolean attackableByJuPao(int piece, int x, int y, Board board){
+    public static boolean isDead(int piece, Board board) {
+        if (piece == Piece.WSHUAI) {
+            // 找到红帅的位置
+            Position pos = findJiangShuaiPos(Piece.WSHUAI, board);
+            if(pos == null) {
+                Log.d("Rule", "红帅不存在?");
+                return true;
+            }
+
+            // 红帅当前是否被将军
+            if (!isJiangShuaiInDanger(Piece.WSHUAI, board)) {
+                Log.d("Rule", "红帅没有被将军");
+                return false;
+            }
+
+            // 红帅目前所有可走的棋
+            List<Position> moves = PossibleMoves(Piece.WSHUAI, pos.x, pos.y, board);
+            if(moves.size() > 0) {
+                Log.d("Rule", "红帅还有走的地方");
+                return false;
+            }
+
+            return true;
+        } else if(piece == Piece.BJIANG) {
+            // 找到黑将的位置
+            Position pos = findJiangShuaiPos(Piece.BJIANG, board);
+            if(pos == null) {
+                Log.d("Rule", "黑将不存在?");
+                return true;
+            }
+
+            // 黑将当前是否被将军
+            if (!isJiangShuaiInDanger(Piece.BJIANG, board)) {
+                Log.d("Rule", "黑将没有被将军");
+                return false;
+            }
+
+            // 黑将目前所有可走的棋
+            List<Position> moves = PossibleMoves(Piece.BJIANG, pos.x, pos.y, board);
+            if(moves.size() > 0) {
+                Log.d("Rule", "黑将还有走的地方");
+                return false;
+            }
+            return true;
+        }
+        Log.d("Rule", "不是将帅");
+        return true;
+    }
+
+    /*
+     * 判断(x,y)是否会被piece攻击，piece只能是车或者炮。
+     * 假如（x,y)是车或者炮，检查它的攻击范围内是否有车或者炮，如果有那么反过来也会被攻击
+     */
+    private static boolean attackableByJuPao(int piece, int x, int y, Board board){
         if(!(piece == Piece.BJU || piece == Piece.BPAO || piece == Piece.WJU || piece == Piece.WPAO)){
             return false;
         }
@@ -386,65 +468,15 @@ public class Rule {
     }
 
 
-    /*
-    判断是否已经结束
-     */
-    public static boolean isDead(Board board, boolean isRedKing) {
-        if (isRedKing) {
-            // 找到红帅的位置
-            Position pos = findJiangShuaiPos(Piece.WSHUAI, board);
-            if(pos == null) {
-                Log.d("Rule", "红帅不存在?");
-                return true;
-            }
 
-            // 红帅当前是否被将军
-            if (!isJiangShuaiInDanger(Piece.WSHUAI, pos, board)) {
-                Log.d("Rule", "红帅没有被将军");
-                return false;
-            }
-
-            // 红帅目前所有可走的棋
-            List<Position> moves = PossibleMoves(Piece.WSHUAI, pos.x, pos.y, board);
-            if(moves.size() > 0) {
-                Log.d("Rule", "红帅还有走的地方");
-                return false;
-            }
-
-            return true;
-        } else {
-            // 找到黑将的位置
-            Position pos = findJiangShuaiPos(Piece.BJIANG, board);
-            if(pos == null) {
-                Log.d("Rule", "黑将不存在?");
-                return true;
-            }
-
-            // 黑将当前是否被将军
-            if (!isJiangShuaiInDanger(Piece.BJIANG, pos, board)) {
-                Log.d("Rule", "黑将没有被将军");
-                return false;
-            }
-
-            // 黑将目前所有可走的棋
-            List<Position> moves = PossibleMoves(Piece.BJIANG, pos.x, pos.y, board);
-            if(moves.size() > 0) {
-                Log.d("Rule", "黑将还有走的地方");
-                return false;
-            }
-
-            return true;
-        }
-    }
-
-    public static int InArea(int x, int y) { // 0 棋盘外 1 黑盘 2 黑十字 3 红盘 4 红十字
+    private static int InArea(int x, int y) { // 0 棋盘外 1 黑盘 2 黑十字 3 红盘 4 红十字
         if (x < 0 || x >= Board.BOARD_PIECE_WIDTH || y < 0 || y >= Board.BOARD_PIECE_HEIGHT) {
             return 0;
         }
         return area[y][x];
     }
 
-    public static boolean onSameSide(int fromID, int toID) {
+    private static boolean onSameSide(int fromID, int toID) {
         if(!Piece.isValid(toID) || !Piece.isValid(fromID)) {
             return false;
         }

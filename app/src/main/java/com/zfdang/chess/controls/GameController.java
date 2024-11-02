@@ -92,7 +92,7 @@ public class GameController{
 
             // 判断pos是否是合法的move的终点
             Move tempMove = new Move(game.startPos, pos, game.currentBoard);
-            boolean valid = Rule.isValidMove(tempMove);
+            boolean valid = Rule.isValidMove(tempMove, game.currentBoard);
             if(valid) {
                 game.endPos = pos;
                 int piece = game.currentBoard.getPieceByPosition(game.endPos);
