@@ -201,7 +201,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
             if(record.move.isRedMove) {
                 p.setColor(Color.RED);
             } else {
-                p.setColor(Color.GREEN);
+                p.setColor(Color.BLACK);
             }
 
             // alpha, two moves share the same value
