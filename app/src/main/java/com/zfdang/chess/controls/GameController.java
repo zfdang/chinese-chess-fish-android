@@ -13,6 +13,8 @@ public class GameController{
     public Game game = null;
     public Game oldGame = null;
     private int requestId;
+    public boolean isComputerPlaying = true;
+    public boolean isAutoPlay = true;
 
     private EngineListener engineListener = null;
     private SearchListener searchListener = null;
@@ -22,9 +24,10 @@ public class GameController{
         searchListener = sListener;
         controllerListener = cListener;
 
+        isComputerPlaying = true;
+        isAutoPlay = true;
         requestId = 0;
     }
-
 
     public void newGame() {
         game = new Game();
@@ -38,9 +41,24 @@ public class GameController{
         player.uciNewGame();
     }
 
+    public void togglePlayer() {
+        isComputerPlaying = !isComputerPlaying;
+    }
+
+    public void toggleAutoPlay() {
+        isAutoPlay = !isAutoPlay;
+    }
     public void nextMove(){
         player.sendToEngine("position fen rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1 moves h2e2 h9g7 h0g2 g6g5");
         player.sendToEngine("go depth 5");
+    }
+
+    public void playerBack() {
+
+    }
+
+    public void playerForward() {
+
     }
 
 }

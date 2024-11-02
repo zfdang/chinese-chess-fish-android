@@ -11,19 +11,17 @@ import com.zfdang.chess.adapters.MoveHistoryAdapter
 import com.zfdang.chess.controls.GameController
 import com.zfdang.chess.controls.GameControllerListener
 import com.zfdang.chess.databinding.ActivityPlayBinding
-import com.zfdang.chess.gamelogic.Board
-import com.zfdang.chess.gamelogic.Game
 import com.zfdang.chess.gamelogic.Move
 import com.zfdang.chess.gamelogic.Piece
 import com.zfdang.chess.gamelogic.Position
 import com.zfdang.chess.gamelogic.PvInfo
 import com.zfdang.chess.views.ChessView
-import org.petero.droidfish.player.ComputerPlayer
 import org.petero.droidfish.player.EngineListener
 import org.petero.droidfish.player.SearchListener
 
 
-class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, SearchListener, GameControllerListener {
+class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, SearchListener, GameControllerListener,
+    View.OnClickListener {
 
     // 防止重复点击
     private val MIN_CLICK_DELAY_TIME: Int = 100
@@ -57,13 +55,32 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
         chessView.setOnTouchListener(this)
         chessLayout.addView(chessView)
 
+        // Bind all imagebuttons here, and set their onClickListener
+        val imageButtons = listOf(
+            binding.playerbt,
+            binding.playerbackbt,
+            binding.playerforwardbt,
+            binding.autoplaybt,
+            binding.playeraltbt,
+            binding.optionbt,
+            binding.newbt,
+            binding.backbt,
+            binding.forwardbt,
+            binding.searchbt,
+            binding.exitbt
+        )
+        for (button in imageButtons) {
+            button.setOnClickListener(this)
+        }
 
         // Bind historyTable and initialize it with dummy data
         val historyTable = binding.historyTable
         moveHistoryAdapter = MoveHistoryAdapter(this, historyTable, controller.game)
         moveHistoryAdapter.populateTable()
-    }
 
+        // set status text
+        setStatusText("电脑执黑，自动走棋")
+    }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         // 防止重复点击
@@ -110,6 +127,11 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
         return false
     }
 
+    // create function to set status text
+    fun setStatusText(text: String) {
+        binding.statustv.text = text
+    }
+
     override fun reportEngineError(errMsg: String?) {
         TODO("Not yet implemented")
     }
@@ -144,5 +166,69 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
 
     override fun notifyEngineInitialized() {
         Log.d("PlayActivity", "notifyEngineInitialized")
+    }
+
+    override fun onClick(v: View?) {
+        // handle events for all imagebuttons in activity_player.xml
+        when(v) {
+            binding.playerbt -> {
+                controller.togglePlayer()
+                if(controller.isComputerPlaying){
+                    binding.playerbt.setImageResource(R.drawable.computer_40px)
+                    setStatusText("切换为电脑执黑棋")
+                } else {
+                    binding.playerbt.setImageResource(R.drawable.person_40px)
+                    setStatusText("切换为人工执黑棋")
+                }
+            }
+            binding.playerbackbt -> {
+                controller.playerBack()
+            }
+            binding.playerforwardbt -> {
+                controller.playerForward()
+            }
+            binding.autoplaybt -> {
+                controller.toggleAutoPlay()
+                if(controller.isAutoPlay){
+                    binding.autoplaybt.setImageResource(R.drawable.play_circle_40px)
+                    setStatusText("开启自动走棋")
+                } else {
+                    binding.autoplaybt.setImageResource(R.drawable.pause_circle_40px)
+                    setStatusText("暂停自动走棋")
+                }
+            }
+            binding.playeraltbt -> {
+                if(binding.choice1bt.visibility == View.VISIBLE){
+                    binding.choice1bt.visibility = View.GONE;
+                    binding.choice2bt.visibility = View.GONE;
+                    binding.choice3bt.visibility = View.GONE;
+                } else {
+                    binding.choice1bt.visibility = View.VISIBLE;
+                    binding.choice2bt.visibility = View.VISIBLE;
+                    binding.choice3bt.visibility = View.VISIBLE;
+                }
+//                controller.playerAlt()
+            }
+            binding.optionbt -> {
+//                controller.option()
+            }
+            binding.newbt -> {
+//                controller.newGame()
+            }
+            binding.backbt -> {
+//                controller.back()
+            }
+            binding.forwardbt -> {
+//                controller.forward()
+            }
+            binding.searchbt -> {
+//                controller.search()
+            }
+            binding.exitbt -> {
+                finish()
+//                controller.exit()
+            }
+        }
+
     }
 }
