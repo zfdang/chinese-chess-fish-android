@@ -271,5 +271,13 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
 
     override fun onGameEvent(event: GameControllerListener.GameEvent?, message: String?) {
         Log.d(  "PlayActivity", "onGameEvent: $event, $message")
+        when(event) {
+            GameControllerListener.GameEvent.ILLEGAL -> setStatusText("非法走法！")
+            GameControllerListener.GameEvent.MOVE -> TODO()
+            GameControllerListener.GameEvent.CAPTURE -> TODO()
+            GameControllerListener.GameEvent.CHECK -> TODO()
+            GameControllerListener.GameEvent.CHECKMATE -> TODO()
+            null -> TODO()
+        }
     }
 }
