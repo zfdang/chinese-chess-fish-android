@@ -28,9 +28,9 @@ public class ArrowShape {
     public ArrowShape() {
         this.angle = 60;
         this.innerAngle = 120;
-        this.sideLength = 70;
-        this.headWidth = 18;
-        this.tailWidth = 12;
+        this.sideLength = 80;
+        this.headWidth = 26;
+        this.tailWidth = 10;
     }
 
     public void getTransformedPath(Path path, float x0, float y0, float x1, float y1) {
