@@ -1,19 +1,16 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/fullscreenBackgroundColor"
     android:theme="@style/ThemeOverlay.ChineseChess.FullscreenContainer"
+    android:background="@drawable/boardgb"
     tools:context=".PlayActivity">
-
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#8BC34A"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -21,137 +18,156 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#03A9F4"
+            android:layout_gravity="center"
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/imageButton2"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/person_48px" />
+                android:id="@+id/playerbt"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:src="@drawable/computer_40px" />
 
             <ImageButton
-                android:id="@+id/imageButton3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/computer_48px" />
+                android:id="@+id/playerbackbt"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/arrow_back_40px" />
 
             <ImageButton
-                android:id="@+id/imageButton6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/arrow_back_48px" />
+                android:id="@+id/playerforwardbt"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/arrow_forward_40px" />
 
             <ImageButton
-                android:id="@+id/imageButton5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/arrow_forward_48px" />
+                android:id="@+id/autoplaybt"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/play_circle_40px" />
 
             <ImageButton
-                android:id="@+id/imageButton4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/pause_circle_48px" />
+                android:id="@+id/playeraltbt"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/alt_route_40px" />
 
             <ImageButton
-                android:id="@+id/imageButton7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/alt_route_48px" />
+                android:id="@+id/optionbt"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/menu_40px" />
 
-            <ImageButton
-                android:id="@+id/imageButton8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/menu_48px" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TextView" />
         </LinearLayout>
 
         <FrameLayout
             android:id="@+id/chesslayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:minHeight="200dp"
-            android:layout_weight="0">
+            android:layout_weight="0"
+            android:minHeight="200dp">
 
         </FrameLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="TextView" />
+            <ImageButton
+                android:id="@+id/newbt"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/new_window_40px" />
+
+            <ImageButton
+                android:id="@+id/backbt"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:layout_gravity="center"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/arrow_back_40px" />
+
+            <ImageButton
+                android:id="@+id/forwardbt"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/arrow_forward_40px" />
+
+            <ImageButton
+                android:id="@+id/searchbt"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/search_40px" />
+
+            <ImageButton
+                android:id="@+id/exitbt"
+                android:layout_width="52dp"
+                android:layout_height="52dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/logout_40px" />
+
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#FFEB3B"
-            android:orientation="horizontal">
+            android:layout_height="40dp"
+            android:background="@color/cardview_light_background"
+            android:orientation="vertical">
 
-            <ImageButton
-                android:id="@+id/imageButton12"
+            <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/new_window_48px" />
+                android:layout_height="40dp"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
 
-            <ImageButton
-                android:id="@+id/imageButton9"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/arrow_back_48px" />
+                <TextView
+                    android:id="@+id/statustv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="TextView"
+                    android:textSize="22sp" />
 
-            <ImageButton
-                android:id="@+id/imageButton10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/arrow_forward_48px" />
+                <ImageButton
+                    android:id="@+id/choice1bt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:visibility="gone"
+                    android:background="?android:attr/selectableItemBackground"
+                    app:srcCompat="@drawable/looks_1_40px" />
 
-            <ImageButton
-                android:id="@+id/imageButton11"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/search_48px" />
+                <ImageButton
+                    android:id="@+id/choice2bt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:visibility="gone"
+                    android:background="?android:attr/selectableItemBackground"
+                    app:srcCompat="@drawable/looks_2_40px" />
 
-            <ImageButton
-                android:id="@+id/imageButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                app:srcCompat="@drawable/logout_48px" />
+                <ImageButton
+                    android:id="@+id/choice3bt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp"
+                    android:visibility="gone"
+                    android:background="?android:attr/selectableItemBackground"
+                    app:srcCompat="@drawable/looks_3_40px" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -159,18 +175,18 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
+            android:baselineAligned="false"
             android:orientation="horizontal">
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@color/light_blue_A200"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/textView3"
+                    android:id="@+id/movehistorytv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="着法历史" />
@@ -179,19 +195,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-
                     <TableLayout
                         android:id="@+id/historyTable"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <TableRow
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
-
-                        <TableRow
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
 
                     </TableLayout>
                 </ScrollView>
@@ -202,12 +210,11 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:background="@color/light_blue_600"
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/textView4"
+                    android:id="@+id/hinttv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="着法提示" />
@@ -221,21 +228,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <TableRow
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
-
-                        <TableRow
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
-
                     </TableLayout>
 
                 </ScrollView>
             </LinearLayout>
 
         </LinearLayout>
-
 
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
