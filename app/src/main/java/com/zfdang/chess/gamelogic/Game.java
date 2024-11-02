@@ -51,6 +51,11 @@ public class Game {
     }
 
     public void movePiece() {
+        if(startPos == null || endPos == null) {
+            Log.d("Game", "Invalid move, startPos or endPos is null");
+            return;
+        }
+
         // create new Move object
         currentMove = new Move(this.startPos, this.endPos, currentBoard);
         String chsDesc = currentMove.getChineseStyleDescription();
@@ -70,8 +75,11 @@ public class Game {
         historyRecords.add(record);
 
         Log.d("Game", "Move piece from " + startPos.toString() + " to " + endPos.toString());
-        Log.d("Game", "FEN piece: " + record.board.convertToFEN());
-        Log.d("Game", "Action Desc: " + chsDesc + " " + coordDesc);
+
+        // clear startPos and endPos
+        startPos = null;
+        endPos = null;
+
     }
 
 }
