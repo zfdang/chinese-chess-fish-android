@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 public class Move implements Serializable {
-    private Board board = null;
+    public Board board = null;
 
     public Position fromPosition;
     public Position toPosition;
