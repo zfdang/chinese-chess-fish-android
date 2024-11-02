@@ -549,7 +549,74 @@ public class Rule {
         return true;
     }
 
-    public static Position reversePos(Position position, boolean IsReverse) {
-        return (IsReverse == false) ? position : new Position(8 - position.x, 9 - position.y);
-    }
+    public static boolean isValidMove(Move move, Board board){
+        return true;
+//        int fromX = move.fromPosition.x;
+//        int fromY = move.fromPosition.y;
+//        int toX = move.toPosition.x;
+//        int toY = move.toPosition.y;
+//        int fromID = board.getPieceByPosition(move.fromPosition);
+//        int toID = board.getPieceByPosition(move.toPosition);
+//        if (fromID == 0) {
+//            return false;
+//        }
+//        if (toID != 0 && IsSameSide(fromID, toID) == true) {
+//            return false;
+//        }
+//        switch (fromID) {
+//            case 1://黑将
+//            case 8://红帅
+//                if (toID == 8 || toID == 1) {
+//                    if (fromX == toX) {
+//                        int start, finish;
+//                        if (fromY < toY) {
+//                            start = fromY + 1;
+//                            finish = toY;
+//                        } else {
+//                            start = toY + 1;
+//                            finish = fromY;
+//                        }
+//                        for (int i = start; i < finish; i++) {
+//                            if (piece[i][fromX] != 0) {
+//                                return false;
+//                            }
+//                        }
+//                    } else {
+//                        if (fromX < toX) {
+//                            int start = fromX + 1;
+//                            int finish = toX;
+//                            for (int i = start; i < finish; i++) {
+//                                if (piece[fromY][i] != 0) {
+//                                    return false;
+//                                }
+//                            }
+//                        } else {
+//                            int start = toX + 1;
+//                            int finish = fromX;
+//                            for (int i = start; i < finish; i++) {
+//                                if (piece[fromY][i] != 0) {
+//                                    return false;
+//                                }
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    if (fromX != toX && fromY != toY) {
+//                        return false;
+//                    }
+//                    if (Math.abs(fromX - toX) + Math.abs(fromY - toY) != 1) {
+//                        return false;
+//                    }
+//                }
+//                break;
+//            case 2://黑士
+//            case 9://红士
+//                if (toY < 7 || toY > 9 || toX < 3 || toX > 5) {
+//                    return false;
+//                }
+        }
+
+//    public static Position reversePos(Position position, boolean IsReverse) {
+//        return (IsReverse == false) ? position : new Position(8 - position.x, 9 - position.y);
+//    }
 }

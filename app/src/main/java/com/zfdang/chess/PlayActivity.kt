@@ -1,6 +1,7 @@
 package com.zfdang.chess
 
 import android.annotation.SuppressLint
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
@@ -10,12 +11,14 @@ import androidx.appcompat.app.AppCompatActivity
 import com.zfdang.chess.adapters.MoveHistoryAdapter
 import com.zfdang.chess.controls.GameController
 import com.zfdang.chess.controls.GameControllerListener
+import com.zfdang.chess.controls.GameControllerListener.GameSound
 import com.zfdang.chess.databinding.ActivityPlayBinding
 import com.zfdang.chess.gamelogic.Move
 import com.zfdang.chess.gamelogic.Piece
 import com.zfdang.chess.gamelogic.Position
 import com.zfdang.chess.gamelogic.PvInfo
 import com.zfdang.chess.views.ChessView
+import kotlinx.coroutines.selects.select
 import org.petero.droidfish.player.EngineListener
 import org.petero.droidfish.player.SearchListener
 
@@ -37,6 +40,15 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
 
     // controller, player, game
     private lateinit var controller: GameController
+
+    // mediaplayer
+    private lateinit var selectSound: MediaPlayer
+    private lateinit var moveSound: MediaPlayer
+    private lateinit var captureSound: MediaPlayer
+    private lateinit var checkSound: MediaPlayer
+    private lateinit var invalidSound: MediaPlayer
+    private lateinit var winSound: MediaPlayer
+
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,6 +86,9 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
             button.setOnClickListener(this)
         }
 
+        // init audio files
+        loadAudioFiles();
+
         // Bind historyTable and initialize it with dummy data
         val historyTable = binding.historyTable
         moveHistoryAdapter = MoveHistoryAdapter(this, historyTable, controller.game)
@@ -81,6 +96,28 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
 
         // set status text
         setStatusText("电脑执黑，自动走棋")
+    }
+
+    // fun to load audio files in raw
+    fun loadAudioFiles() {
+        // load audio files in raw
+        selectSound = MediaPlayer.create(this, R.raw.select)
+//        selectSound.setVolume(0.5f, 0.5f)
+
+        moveSound = MediaPlayer.create(this, R.raw.move)
+//        moveSound.setVolume(0.5f, 0.5f)
+
+        captureSound = MediaPlayer.create(this, R.raw.capture)
+//        captureSound.setVolume(0.5f, 0.5f)
+
+        checkSound = MediaPlayer.create(this, R.raw.check)
+//        checkSound.setVolume(0.5f, 0.5f)
+
+        invalidSound = MediaPlayer.create(this, R.raw.invalid)
+//        invalidSound.setVolume(0.5f, 0.5f)
+
+        winSound = MediaPlayer.create(this, R.raw.win)
+//        winSound.setVolume(0.5f, 0.5f)
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
@@ -100,29 +137,7 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
                 // pos is not valid
                 return false
             }
-            if(game.startPos == null) {
-                // start position is empty
-                if(Piece.isValid(game.currentBoard.getPieceByPosition(pos))){
-                    // and the piece is valid
-                    game.startPos = pos
-                }
-            } else {
-                // startPos is not empty
-                if(game.startPos == pos) {
-                    // click the same position
-                    game.startPos = null
-                    game.endPos = null
-                    return false
-                }
-                game.endPos = pos
-                game.movePiece()
-                controller.nextMove()
-
-                moveHistoryAdapter.populateTable()
-
-                game.startPos = null
-                game.endPos = null
-            }
+            controller.touchPosition(pos);
             Log.d("PlayActivity", "onTouch: x = $x, y = $y, pos = " + pos.toString())
         }
         return false
@@ -225,11 +240,31 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
             binding.helpbt -> {
 //                controller.search()
             }
+            binding.swapbt -> {
+//                controller.swap()
+            }
             binding.exitbt -> {
                 finish()
-//                controller.exit()
             }
         }
 
+    }
+
+    override fun onGameSound(sound: GameControllerListener.GameSound?) {
+        Log.d(  "PlayActivity", "onGameSound: $sound")
+        // play sound here by GameSound
+        when(sound) {
+            GameSound.SELECT -> selectSound.start()
+            GameSound.MOVE -> moveSound.start()
+            GameSound.CAPTURE -> captureSound.start()
+            GameSound.CHECK -> checkSound.start()
+            GameSound.ILLEGAL -> invalidSound.start()
+            GameSound.WIN -> winSound.start()
+            null -> Log.d("PlayActivity", "Illegal move")
+        }
+    }
+
+    override fun onGameEvent(event: GameControllerListener.GameEvent?, message: String?) {
+        Log.d(  "PlayActivity", "onGameEvent: $event, $message")
     }
 }

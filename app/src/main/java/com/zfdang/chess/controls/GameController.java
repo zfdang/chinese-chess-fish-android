@@ -1,7 +1,12 @@
 package com.zfdang.chess.controls;
 
 import com.zfdang.chess.gamelogic.Game;
+import com.zfdang.chess.gamelogic.Move;
+import com.zfdang.chess.gamelogic.Piece;
+import com.zfdang.chess.gamelogic.Position;
+import com.zfdang.chess.gamelogic.Rule;
 
+import org.jetbrains.annotations.NotNull;
 import org.petero.droidfish.engine.EngineOptions;
 import org.petero.droidfish.player.ComputerPlayer;
 import org.petero.droidfish.player.EngineListener;
@@ -49,6 +54,12 @@ public class GameController{
         isAutoPlay = !isAutoPlay;
     }
     public void nextMove(){
+        // 判断当前move是否合法
+        game.movePiece();
+
+        // 如果合法的话，就发送给引擎
+        String fen = game.currentBoard.convertToFEN();
+
         player.sendToEngine("position fen rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1 moves h2e2 h9g7 h0g2 g6g5");
         player.sendToEngine("go depth 5");
     }
@@ -61,4 +72,36 @@ public class GameController{
 
     }
 
+    public void touchPosition(@NotNull Position pos) {
+        if(game.startPos == null) {
+            // start position is empty
+            if(Piece.isValid(game.currentBoard.getPieceByPosition(pos))){
+                // and the piece is valid
+                game.startPos = pos;
+                controllerListener.onGameSound(GameControllerListener.GameSound.SELECT);
+            }
+        } else {
+            // startPos is not empty
+            if(game.startPos == pos) {
+                // click the same position, unselect
+                game.startPos = null;
+                game.endPos = null;
+                controllerListener.onGameSound(GameControllerListener.GameSound.SELECT);
+                return;
+            }
+
+            // 判断pos是否是合法的move的终点
+            Move move = new Move(game.startPos, pos);
+            boolean valid = Rule.isValidMove(move, game.currentBoard);
+            if(valid) {
+                game.endPos = pos;
+                game.movePiece();
+                controllerListener.onGameSound(GameControllerListener.GameSound.MOVE);
+            } else {
+                game.startPos = null;
+                game.endPos = null;
+            }
+        }
+
+    }
 }
