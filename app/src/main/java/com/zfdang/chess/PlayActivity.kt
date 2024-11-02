@@ -66,8 +66,8 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
             binding.newbt,
             binding.backbt,
             binding.forwardbt,
+            binding.helpbt,
             binding.swapbt,
-            binding.searchbt,
             binding.exitbt
         )
         for (button in imageButtons) {
@@ -222,7 +222,7 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
             binding.forwardbt -> {
 //                controller.forward()
             }
-            binding.searchbt -> {
+            binding.helpbt -> {
 //                controller.search()
             }
             binding.exitbt -> {

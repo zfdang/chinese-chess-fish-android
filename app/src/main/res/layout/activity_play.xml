@@ -114,12 +114,12 @@
                 app:srcCompat="@drawable/arrow_forward" />
 
             <ImageButton
-                android:id="@+id/searchbt"
+                android:id="@+id/helpbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="8dp"
                 android:background="?android:attr/selectableItemBackground"
-                app:srcCompat="@drawable/search" />
+                app:srcCompat="@drawable/help" />
 
             <ImageButton
                 android:id="@+id/swapbt"
