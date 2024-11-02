@@ -2,9 +2,8 @@ package com.zfdang.chess.gamelogic;
 
 import android.util.Log;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
+import java.util.List;
 
 public class Game {
 
@@ -31,6 +30,7 @@ public class Game {
     public boolean isCheckMate = false;
     public Position startPos =  null;
     public Position endPos = null;
+    public List<Position> possibleMoves = new ArrayList<>();
 
 
     public Game(){
@@ -79,7 +79,27 @@ public class Game {
         // clear startPos and endPos
         startPos = null;
         endPos = null;
+        possibleMoves.clear();
+    }
 
+    public void setStartPos(Position pos) {
+        this.startPos = pos;
+        this.possibleMoves = Rule.PossibleMoves(currentBoard.getPieceByPosition(pos), pos.x, pos.y, currentBoard);
+    }
+
+    public void setEndPos(Position pos) {
+        this.endPos = pos;
+    }
+
+    public String getLastMoveDesc(){
+        if(historyRecords.size() <= 2) return "";
+        return historyRecords.get(historyRecords.size()-1).chsDesc;
+    }
+
+
+    public void clearStartPos(){
+        this.startPos = null;
+        this.possibleMoves.clear();
     }
 
 }
