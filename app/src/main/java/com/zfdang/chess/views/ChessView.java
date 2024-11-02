@@ -141,17 +141,18 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
 
         // draw path of last move
         if(game.historyRecords.size() > 1) {
-//            DrawMoveHistory(canvas);
+            DrawMoveHistory(canvas);
         }
 
         // draw all possible moves
-        tempSrcRect = new Rect(0, 0, R_pot.getWidth(), R_pot.getHeight());
         if(Piece.isRed(game.currentBoard.getPieceByPosition(game.startPos))) {
+            tempSrcRect = new Rect(0, 0, R_pot.getWidth(), R_pot.getHeight());
             for (Position pos : game.possibleMoves) {
                 tempDesRect = getDestRect(pos);
                 canvas.drawBitmap(R_pot, tempSrcRect, tempDesRect, null);
             }
         } else {
+            tempSrcRect = new Rect(0, 0, B_pot.getWidth(), B_pot.getHeight());
             for (Position pos : game.possibleMoves) {
                 tempDesRect = getDestRect(pos);
                 canvas.drawBitmap(B_pot, tempSrcRect, tempDesRect, null);
@@ -164,16 +165,16 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         Board board = game.currentBoard;
         Rect tempDesRect, tempSrcRect;
         Position pos = game.startPos;
-        int piece = board.getPieceByPosition(game.startPos);
+        int piece = board.getPieceByPosition(pos);
         if (Piece.isValid(piece)) {
             // valid piece is selected
             tempDesRect = getDestRect(pos);
-            if (Piece.isRed(board.getPieceByPosition(pos))) {
-                tempSrcRect = new Rect(0, 0, B_box.getWidth(), B_box.getHeight());
-                canvas.drawBitmap(B_box, tempSrcRect, tempDesRect, null);
-            } else {
+            if (Piece.isRed(piece)) {
                 tempSrcRect = new Rect(0, 0, R_box.getWidth(), R_box.getHeight());
                 canvas.drawBitmap(R_box, tempSrcRect, tempDesRect, null);
+            } else {
+                tempSrcRect = new Rect(0, 0, B_box.getWidth(), B_box.getHeight());
+                canvas.drawBitmap(B_box, tempSrcRect, tempDesRect, null);
             }
         }
     }
