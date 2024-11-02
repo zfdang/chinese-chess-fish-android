@@ -3,8 +3,6 @@ package com.zfdang.chess.gamelogic;
 import java.io.Serializable;
 
 public class Position{
-
-
     public int x;
     public int y;
 
