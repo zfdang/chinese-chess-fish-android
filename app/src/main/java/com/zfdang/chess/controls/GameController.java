@@ -77,15 +77,14 @@ public class GameController{
             // start position is empty
             if(Piece.isValid(game.currentBoard.getPieceByPosition(pos))){
                 // and the piece is valid
-                game.startPos = pos;
+                game.setStartPos(pos);
                 controllerListener.onGameSound(GameControllerListener.GameSound.SELECT);
             }
         } else {
             // startPos is not empty
-            if(game.startPos == pos) {
+            if(game.startPos.equals(pos)) {
                 // click the same position, unselect
-                game.startPos = null;
-                game.endPos = null;
+                game.clearStartPos();
                 controllerListener.onGameSound(GameControllerListener.GameSound.SELECT);
                 return;
             }
@@ -94,13 +93,15 @@ public class GameController{
             Move tempMove = new Move(game.startPos, pos, game.currentBoard);
             boolean valid = Rule.isValidMove(tempMove, game.currentBoard);
             if(valid) {
-                game.endPos = pos;
-                int piece = game.currentBoard.getPieceByPosition(game.endPos);
+                int piece = game.currentBoard.getPieceByPosition(pos);
+                game.setEndPos(pos);
                 game.movePiece();
                 if(Piece.isValid(piece)) {
                     controllerListener.onGameSound(GameControllerListener.GameSound.CAPTURE);
+                    controllerListener.onGameEvent(GameControllerListener.GameEvent.CAPTURE, "吃子！");
                 } else {
                     controllerListener.onGameSound(GameControllerListener.GameSound.MOVE);
+                    controllerListener.onGameEvent(GameControllerListener.GameEvent.MOVE, game.getLastMoveDesc());
                 }
             } else {
                 controllerListener.onGameSound(GameControllerListener.GameSound.ILLEGAL);

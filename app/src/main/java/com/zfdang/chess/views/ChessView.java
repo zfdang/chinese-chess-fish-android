@@ -140,7 +140,14 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
 
         // draw path of last move
         if(game.historyRecords.size() > 1) {
-            DrawMoveHistory(canvas);
+//            DrawMoveHistory(canvas);
+        }
+
+        // draw all possible moves
+        tempSrcRect = new Rect(0, 0, Pot.getWidth(), Pot.getHeight());
+        for(Position pos : game.possibleMoves) {
+            tempDesRect = getDestRect(pos);
+            canvas.drawBitmap(Pot, tempSrcRect, tempDesRect, null);
         }
     }
 

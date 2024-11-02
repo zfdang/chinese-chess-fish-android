@@ -273,8 +273,8 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
         Log.d(  "PlayActivity", "onGameEvent: $event, $message")
         when(event) {
             GameControllerListener.GameEvent.ILLEGAL -> setStatusText("非法走法！")
-            GameControllerListener.GameEvent.MOVE -> TODO()
-            GameControllerListener.GameEvent.CAPTURE -> TODO()
+            GameControllerListener.GameEvent.MOVE -> message?.let { setStatusText(it) }
+            GameControllerListener.GameEvent.CAPTURE -> message?.let { setStatusText(it) }
             GameControllerListener.GameEvent.CHECK -> TODO()
             GameControllerListener.GameEvent.CHECKMATE -> TODO()
             null -> TODO()
