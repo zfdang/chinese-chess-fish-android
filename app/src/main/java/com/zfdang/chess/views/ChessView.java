@@ -39,7 +39,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     public Paint paint;
 
     public Bitmap ChessBoardBitmap;
-    public Bitmap B_box, R_box, Pot;
+    public Bitmap B_box, R_box, R_pot, B_pot;
     public Bitmap[] PieceBitmaps = new Bitmap[14];
     public Bitmap[] ChoiceBitmaps = new Bitmap[5];
 
@@ -83,7 +83,8 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
 
         B_box = BitmapFactory.decodeResource(getResources(), R.drawable.b_box);
         R_box = BitmapFactory.decodeResource(getResources(), R.drawable.r_box);
-        Pot = BitmapFactory.decodeResource(getResources(), R.drawable.pot);
+        R_pot = BitmapFactory.decodeResource(getResources(), R.drawable.redpot);
+        B_pot = BitmapFactory.decodeResource(getResources(), R.drawable.blackpot);
 
         // these values should be consistent with Piece.java
         PieceBitmaps[0] = BitmapFactory.decodeResource(getResources(), R.drawable.r_shuai);
@@ -144,10 +145,17 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         // draw all possible moves
-        tempSrcRect = new Rect(0, 0, Pot.getWidth(), Pot.getHeight());
-        for(Position pos : game.possibleMoves) {
-            tempDesRect = getDestRect(pos);
-            canvas.drawBitmap(Pot, tempSrcRect, tempDesRect, null);
+        tempSrcRect = new Rect(0, 0, R_pot.getWidth(), R_pot.getHeight());
+        if(Piece.isRed(game.currentBoard.getPieceByPosition(game.startPos))) {
+            for (Position pos : game.possibleMoves) {
+                tempDesRect = getDestRect(pos);
+                canvas.drawBitmap(R_pot, tempSrcRect, tempDesRect, null);
+            }
+        } else {
+            for (Position pos : game.possibleMoves) {
+                tempDesRect = getDestRect(pos);
+                canvas.drawBitmap(B_pot, tempSrcRect, tempDesRect, null);
+            }
         }
     }
 
