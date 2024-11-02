@@ -174,10 +174,10 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
             binding.playerbt -> {
                 controller.togglePlayer()
                 if(controller.isComputerPlaying){
-                    binding.playerbt.setImageResource(R.drawable.computer_40px)
+                    binding.playerbt.setImageResource(R.drawable.computer)
                     setStatusText("切换为电脑执黑棋")
                 } else {
-                    binding.playerbt.setImageResource(R.drawable.person_40px)
+                    binding.playerbt.setImageResource(R.drawable.person)
                     setStatusText("切换为人工执黑棋")
                 }
             }
@@ -190,10 +190,10 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
             binding.autoplaybt -> {
                 controller.toggleAutoPlay()
                 if(controller.isAutoPlay){
-                    binding.autoplaybt.setImageResource(R.drawable.play_circle_40px)
+                    binding.autoplaybt.setImageResource(R.drawable.play_circle)
                     setStatusText("开启自动走棋")
                 } else {
-                    binding.autoplaybt.setImageResource(R.drawable.pause_circle_40px)
+                    binding.autoplaybt.setImageResource(R.drawable.pause_circle)
                     setStatusText("暂停自动走棋")
                 }
             }
