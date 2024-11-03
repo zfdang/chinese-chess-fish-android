@@ -229,7 +229,6 @@ public class ExternalEngine extends UCIEngineBase {
     // XXX Writes should be handled by separate thread.
     @Override
     public void writeLineToEngine(String data) {
-        Log.d("ExternalEngine", "writeLineToEngine: " + data);
         data += "\n";
         try {
             Process ep = engineProc;
@@ -240,6 +239,7 @@ public class ExternalEngine extends UCIEngineBase {
         } catch (IOException ignore) {
             Log.d("ExternalEngine", "Failed to write to engine: " + ignore.getMessage());
         }
+        Log.d("ExternalEngine", "writeLineToEngine: " + data);
     }
 
     @Override

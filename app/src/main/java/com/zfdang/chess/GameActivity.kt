@@ -172,7 +172,6 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
             }
             binding.optionbt -> {
                 controller.option()
-
 //                controller.option()
             }
             binding.newbt -> {
