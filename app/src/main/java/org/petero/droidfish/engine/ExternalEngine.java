@@ -111,7 +111,7 @@ public class ExternalEngine extends UCIEngineBase {
                 } catch (InterruptedException e) {
                     return;
                 }
-                if (startedOk && isRunning && !isUCI)
+                if (startedOk && isRunning && !isConfigOk)
                     report.reportError(context.getString(R.string.uci_protocol_error));
             });
             startupThread.start();
