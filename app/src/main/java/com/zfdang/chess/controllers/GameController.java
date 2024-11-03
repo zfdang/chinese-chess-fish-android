@@ -73,29 +73,13 @@ public class GameController implements EngineListener, SearchListener {
 
     public void playerForward() {
         long now = System.currentTimeMillis();
-//        int wTime = 0;
-//        int bTime = 0;
-//        int wInc = 0;
-//        int bInc = 0;
-//        int movesToGo = 0;
-//        final Move fPonderMove = null;
-//        SearchRequest sr = SearchRequest.searchRequest(
-//                searchId,
-//                now,
-//                game.history.get(0).board,
-//                game.getMoveList(),
-//                game.currentBoard,
-//                false,
-//                wTime, bTime, wInc, bInc, movesToGo,
-//                false, fPonderMove,
-//                engineName);
-//        player.queueSearchRequest(sr);
 
-        SearchRequest sr = SearchRequest.analyzeRequest(
+        SearchRequest sr = SearchRequest.searchRequest(
                 searchId,
                 game.history.get(0).board,
                 game.getMoveList(),
                 new Board(game.currentBoard),
+                null,
                 false,
                 engineName,
                 3);
@@ -142,15 +126,14 @@ public class GameController implements EngineListener, SearchListener {
 
     }
 
-    public void computerMove() {
-        if(isComputerPlaying) {
-            player.sendToEngine("go depth 5");
-        }
+    public void option() {
+        player.stopSearch();
     }
+
 
     @Override
     public void reportEngineError(String errMsg) {
-
+        Log.d("GameController", "Engine error: " + errMsg);
     }
 
     @Override
@@ -165,14 +148,16 @@ public class GameController implements EngineListener, SearchListener {
 
     @Override
     public void notifyCurrMove(int id, Board board, Move m, int moveNr) {
-
+        Log.d("GameController", "Current move: " + m.getUCCIString());
     }
 
     @Override
     public void notifyPV(int id, Board board, ArrayList<PvInfo> pvInfo, Move ponderMove) {
-
+        // show infos about all pvInfos
+        for(PvInfo pv : pvInfo) {
+            Log.d("GameController", "PV: " + pv);
+        }
     }
-
 
     @Override
     public void notifyStats(int id, long nodes, int nps, long tbHits, int hash, int time, int seldepth) {
@@ -194,7 +179,4 @@ public class GameController implements EngineListener, SearchListener {
         Log.d("GameController", "Engine initialized");
     }
 
-    public void option() {
-        player.stopSearch();
-    }
 }
