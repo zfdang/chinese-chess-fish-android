@@ -443,7 +443,7 @@ public class ComputerPlayer {
         } else { // Analyze
             StringBuilder posStr = new StringBuilder();
             posStr.append("position fen ");
-            posStr.append(sr.prevBoard.convertToFEN());
+            posStr.append(sr.prevBoard.toFENString());
             int nMoves = sr.mList.size();
             if (nMoves > 0) {
                 posStr.append(" moves");
@@ -501,11 +501,9 @@ public class ComputerPlayer {
     private void monitorLoop(UCIEngine uci) {
         while (true) {
             int timeout = getReadTimeout();
-            Log.d("ComputerPlayer", "monitorLoop: timeout = " + timeout);
             if (Thread.currentThread().isInterrupted())
                 return;
             String s = uci.readLineFromEngine(timeout);
-            Log.d("ComputerPlayer", "monitorLoop: " + s);
             long t0 = System.currentTimeMillis();
             while (s != null && !s.isEmpty()) {
                 if (Thread.currentThread().isInterrupted())
@@ -633,23 +631,9 @@ public class ComputerPlayer {
         SearchRequest sr = searchRequest;
         boolean canPonder = true;
 
-//        // Claim draw if appropriate
-//        if (statScore <= 0) {
-//            String drawClaim = canClaimDraw(sr.currPos, sr.posHashList, sr.posHashListSize,
-//                                            TextIO.UCIstringToMove(bestMove));
-//            if (!drawClaim.isEmpty()) {
-//                bestMove = drawClaim;
-//                canPonder = false;
-//            }
-//        }
-//        // Accept draw offer if engine is losing
-//        if (sr.drawOffer && !statIsMate && (statScore <= -300)) {
-//            bestMove = "draw accept";
-//            canPonder = false;
-//        }
-//
 //        if (canPonder) {
-//            Move bestM = TextIO.stringToMove(sr.currPos, bestMove);
+//            Move bestM = new Move(sr.currBoard);
+//            boolean result = bestM.fromUCCIString(bestMoveStr);
 //            if (!TextIO.isValid(sr.currPos, bestM))
 //                canPonder = false;
 //            if (canPonder) {
@@ -665,6 +649,7 @@ public class ComputerPlayer {
 //                }
 //            }
 //        }
+//
 //        if (!canPonder)
 //            nextPonderMove = null;
 

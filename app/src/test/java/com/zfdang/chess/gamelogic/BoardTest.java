@@ -9,10 +9,10 @@ import org.junit.Test;
 public class BoardTest {
 
     @Test
-    public void testConvertToFEN() {
+    public void testToFENString() {
         Board board = new Board();
-        String expectedFEN = "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 0";
-        String actualFEN = board.convertToFEN();
+        String expectedFEN = "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1";
+        String actualFEN = board.toFENString();
         assertEquals(expectedFEN, actualFEN);
     }
 
@@ -20,10 +20,10 @@ public class BoardTest {
     public void testRestoreFromFEN() {
         Board board = new Board();
         board.randomizePieces();
-        String fenString = "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 0";
+        String fenString = "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1";
         boolean result = board.restoreFromFEN(fenString);
         assertTrue(result);
-        assertEquals(fenString, board.convertToFEN());
+        assertEquals(fenString, board.toFENString());
     }
 
     public void testGetPieceByPosition() {

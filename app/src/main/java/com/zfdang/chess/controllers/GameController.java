@@ -63,7 +63,7 @@ public class GameController implements EngineListener, SearchListener {
         game.movePiece();
 
         // 如果合法的话，就发送给引擎
-        String fen = game.currentBoard.convertToFEN();
+        String fen = game.currentBoard.toFENString();
 
         player.sendToEngine("position fen rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1 moves h2e2 h9g7 h0g2 g6g5");
         player.sendToEngine("go depth 5");
