@@ -107,8 +107,9 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void Draw(Canvas canvas) {
-//        canvas.drawColor(Color.WHITE);
-
+        if(canvas == null) {
+            return;
+        }
         // draw chess board
         canvas.drawBitmap(ChessBoardBitmap, srcBoardRect, destBoardRect, null);
 

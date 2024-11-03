@@ -27,7 +27,7 @@
                 android:id="@+id/playerbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="6dp"
                 android:background="?android:attr/selectableItemBackground"
                 android:src="@drawable/computer" />
 
@@ -35,7 +35,7 @@
                 android:id="@+id/playerbackbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="6dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/arrow_back" />
 
@@ -43,7 +43,7 @@
                 android:id="@+id/playerforwardbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="6dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/arrow_forward" />
 
@@ -51,15 +51,23 @@
                 android:id="@+id/autoplaybt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="6dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/play_circle" />
+
+            <ImageButton
+                android:id="@+id/quickbt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/quick" />
 
             <ImageButton
                 android:id="@+id/playeraltbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="6dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/alt_route" />
 
@@ -67,7 +75,7 @@
                 android:id="@+id/optionbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="6dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/tune" />
 

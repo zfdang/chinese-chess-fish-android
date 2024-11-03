@@ -12,7 +12,7 @@ import com.zfdang.chess.adapters.MoveHistoryAdapter
 import com.zfdang.chess.controllers.GameController
 import com.zfdang.chess.controllers.GameControllerListener
 import com.zfdang.chess.gamelogic.GameStatus
-import com.zfdang.chess.databinding.ActivityPlayBinding
+import com.zfdang.chess.databinding.ActivityGameBinding
 import com.zfdang.chess.views.ChessView
 
 
@@ -24,7 +24,7 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
     private var curClickTime: Long = 0
     private var lastClickTime: Long = 0
 
-    private lateinit var binding: ActivityPlayBinding
+    private lateinit var binding: ActivityGameBinding
     private lateinit var chessLayout: FrameLayout
 
     // 棋盘
@@ -47,7 +47,7 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityPlayBinding.inflate(layoutInflater)
+        binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // new game
@@ -66,6 +66,7 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
             binding.playerbackbt,
             binding.playerforwardbt,
             binding.autoplaybt,
+            binding.quickbt,
             binding.playeraltbt,
             binding.optionbt,
             binding.newbt,
@@ -161,6 +162,10 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                     setStatusText("暂停自动走棋")
                 }
             }
+            binding.quickbt -> {
+                setStatusText("黑旗：立刻走棋")
+                controller.moveNow()
+            }
             binding.playeraltbt -> {
                 setStatusText("黑棋变着：")
                 if(binding.choice1bt.visibility == View.GONE){
@@ -171,7 +176,6 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
 //                controller.playerAlt()
             }
             binding.optionbt -> {
-                controller.option()
 //                controller.option()
             }
             binding.newbt -> {
@@ -258,4 +262,7 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
         onGameEvent(event, null);
     }
 
+    override fun runOnUIThread(runnable: Runnable?) {
+            runOnUiThread(runnable);
+        }
 }

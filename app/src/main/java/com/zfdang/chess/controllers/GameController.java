@@ -29,9 +29,9 @@ public class GameController implements EngineListener, SearchListener {
     public boolean isAutoPlay = true;
     private String engineName = "pikafish";
 
-    private GameControllerListener gameControllerListener = null;
+    private GameControllerListener gui = null;
     public GameController(GameControllerListener cListener) {
-        gameControllerListener = cListener;
+        gui = cListener;
 
         isComputerPlaying = true;
         isAutoPlay = true;
@@ -92,14 +92,14 @@ public class GameController implements EngineListener, SearchListener {
             if(Piece.isValid(game.currentBoard.getPieceByPosition(pos))){
                 // and the piece is valid
                 game.setStartPos(pos);
-                gameControllerListener.onGameEvent(GameStatus.SELECT);
+                gui.onGameEvent(GameStatus.SELECT);
             }
         } else {
             // startPos is not empty
             if(game.startPos.equals(pos)) {
                 // click the same position, unselect
                 game.clearStartPos();
-                gameControllerListener.onGameEvent(GameStatus.SELECT);
+                gui.onGameEvent(GameStatus.SELECT);
                 return;
             }
 
@@ -113,21 +113,42 @@ public class GameController implements EngineListener, SearchListener {
 
                 GameStatus status = game.updateMoveStatus();
                 if(status == GameStatus.CHECKMATE) {
-                    gameControllerListener.onGameEvent(GameStatus.CHECKMATE, "将死！");
+                    gui.onGameEvent(GameStatus.CHECKMATE, "将死！");
                 } else if(status == GameStatus.CHECK) {
-                    gameControllerListener.onGameEvent(GameStatus.CHECK, "将军！");
+                    gui.onGameEvent(GameStatus.CHECK, "将军！");
                 } else {
-                    gameControllerListener.onGameEvent(GameStatus.MOVE, game.getLastMoveDesc());
+                    gui.onGameEvent(GameStatus.MOVE, game.getLastMoveDesc());
                 }
             } else {
-                gameControllerListener.onGameEvent(GameStatus.ILLEGAL);
+                gui.onGameEvent(GameStatus.ILLEGAL);
             }
         }
 
     }
-
-    public void option() {
+    public void moveNow() {
+        // send "stop" to engine for "bestmove"
         player.stopSearch();
+    }
+
+    public void playerMovePiece(String bestmove) {
+        Move move = new Move(game.currentBoard);
+        boolean result = move.fromUCCIString(bestmove);
+        if(result) {
+            Log.d("GameController", "Player move: " + move.getChineseStyleString());
+
+            game.startPos = move.fromPosition;
+            game.endPos = move.toPosition;
+            game.movePiece();
+
+            GameStatus status = game.updateMoveStatus();
+            if(status == GameStatus.CHECKMATE) {
+                gui.onGameEvent(GameStatus.CHECKMATE);
+            } else if(status == GameStatus.CHECK) {
+                gui.onGameEvent(GameStatus.CHECK);
+            } else {
+                gui.onGameEvent(GameStatus.MOVE);
+            }
+        }
     }
 
 
@@ -172,6 +193,7 @@ public class GameController implements EngineListener, SearchListener {
     @Override
     public void notifySearchResult(int searchId, String bestMove, String nextPonderMove) {
         Log.d("GameController", "Search result: bestMove=" + bestMove + ", nextPonderMove=" + nextPonderMove);
+        gui.runOnUIThread(() -> playerMovePiece(bestMove));
     }
 
     @Override
