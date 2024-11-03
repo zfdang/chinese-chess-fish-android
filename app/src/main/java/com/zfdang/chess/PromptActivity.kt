@@ -6,12 +6,15 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import org.petero.droidfish.engine.EngineOptions
+import org.petero.droidfish.engine.UCIEngine
+import org.petero.droidfish.engine.UCIEngineBase
 import org.petero.droidfish.player.ComputerPlayer
 import org.petero.droidfish.player.EngineListener
 
-class PromptActivity : AppCompatActivity(), EngineListener
-{
+class PromptActivity : AppCompatActivity(), EngineListener, UCIEngine.Report {
     lateinit var computerPlayer: ComputerPlayer
+    lateinit var engine: UCIEngine
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,6 +29,7 @@ class PromptActivity : AppCompatActivity(), EngineListener
             val inputText = inputBox.text.toString()
             computerPlayer.sendToEngine(inputText)
 
+            engine.writeLineToEngine(inputText);
             resultTextView.text = "You entered: $inputText"
         }
 
@@ -38,10 +42,11 @@ class PromptActivity : AppCompatActivity(), EngineListener
     }
 
     fun initEngineFile(): Unit {
-        // prepare engine files
-        computerPlayer = ComputerPlayer(this, null)
-        computerPlayer.queueStartEngine(1024,"pikafish")
-        computerPlayer.getUCIOptions()
+        val option = EngineOptions()
+        engine = UCIEngineBase.getEngine("pikafish", option, this);
+        engine.initialize()
+//        engine.applyIniFile()
+        engine.writeLineToEngine("uci")
     }
 
     override fun reportEngineError(errMsg: String?) {
@@ -59,6 +64,10 @@ class PromptActivity : AppCompatActivity(), EngineListener
 
     override fun notifyEngineInitialized() {
         Log.d(  "PromptActivity", "notifyEngineInitialized")
+    }
+
+    override fun reportError(errMsg: String?) {
+        TODO("Not yet implemented")
     }
 
 }

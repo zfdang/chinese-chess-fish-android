@@ -198,8 +198,6 @@ public class GameController implements EngineListener, SearchListener {
     }
 
     public void option() {
-        Log.d("GameController", "Option");
-        player.moveNow();
         player.stopSearch();
     }
 }

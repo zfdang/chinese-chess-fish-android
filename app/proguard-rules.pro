@@ -30,9 +30,9 @@
 #-assumenosideeffects class java.lang.Exception {
 #    public void printStackTrace();
 #}
--assumenosideeffects class timber.log.Timber* {
-    public static *** v(...);
-}
+#-assumenosideeffects class timber.log.Timber* {
+#    public static *** v(...);
+#}
 #-assumenosideeffects class * implements org.slf4j.Logger {
 #    public void trace(...);
 #}
