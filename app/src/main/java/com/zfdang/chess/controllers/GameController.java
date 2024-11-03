@@ -2,6 +2,7 @@ package com.zfdang.chess.controllers;
 
 import android.util.Log;
 
+import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Game;
 import com.zfdang.chess.gamelogic.GameStatus;
 import com.zfdang.chess.gamelogic.Move;
@@ -15,6 +16,7 @@ import org.petero.droidfish.engine.EngineOptions;
 import org.petero.droidfish.player.ComputerPlayer;
 import org.petero.droidfish.player.EngineListener;
 import org.petero.droidfish.player.SearchListener;
+import org.petero.droidfish.player.SearchRequest;
 
 import java.util.ArrayList;
 
@@ -23,9 +25,10 @@ public class GameController implements EngineListener, SearchListener {
     public ComputerPlayer player;
     public Game game = null;
     public Game oldGame = null;
-    private int requestId;
+    private int searchId;
     public boolean isComputerPlaying = true;
     public boolean isAutoPlay = true;
+    private String engineName = "pikafish";
 
     private GameControllerListener gameControllerListener = null;
     public GameController(GameControllerListener cListener) {
@@ -33,7 +36,7 @@ public class GameController implements EngineListener, SearchListener {
 
         isComputerPlaying = true;
         isAutoPlay = true;
-        requestId = 0;
+        searchId = 0;
     }
 
     public void newGame() {
@@ -44,7 +47,7 @@ public class GameController implements EngineListener, SearchListener {
             player = new ComputerPlayer(this, this);
             player.setEngineOptions(new EngineOptions());
         }
-        player.queueStartEngine(requestId++,"pikafish");
+        player.queueStartEngine(searchId++,engineName);
         player.uciNewGame();
     }
 
@@ -71,7 +74,34 @@ public class GameController implements EngineListener, SearchListener {
     }
 
     public void playerForward() {
+        long now = System.currentTimeMillis();
+//        int wTime = 0;
+//        int bTime = 0;
+//        int wInc = 0;
+//        int bInc = 0;
+//        int movesToGo = 0;
+//        final Move fPonderMove = null;
+//        SearchRequest sr = SearchRequest.searchRequest(
+//                searchId,
+//                now,
+//                game.history.get(0).board,
+//                game.getMoveList(),
+//                game.currentBoard,
+//                false,
+//                wTime, bTime, wInc, bInc, movesToGo,
+//                false, fPonderMove,
+//                engineName);
+//        player.queueSearchRequest(sr);
 
+        SearchRequest sr = SearchRequest.analyzeRequest(
+                searchId,
+                game.history.get(0).board,
+                game.getMoveList(),
+                new Board(game.currentBoard),
+                false,
+                engineName,
+                2);
+        player.queueAnalyzeRequest(sr);
     }
 
     public void touchPosition(@NotNull Position pos) {
@@ -114,6 +144,12 @@ public class GameController implements EngineListener, SearchListener {
 
     }
 
+    public void computerMove() {
+        if(isComputerPlaying) {
+            player.sendToEngine("go depth 5");
+        }
+    }
+
     @Override
     public void reportEngineError(String errMsg) {
 
@@ -126,7 +162,7 @@ public class GameController implements EngineListener, SearchListener {
 
     @Override
     public void notifyDepth(int id, int depth) {
-
+        Log.d("GameController", "Depth: " + depth);
     }
 
     @Override
@@ -141,21 +177,29 @@ public class GameController implements EngineListener, SearchListener {
 
     @Override
     public void notifyStats(int id, long nodes, int nps, long tbHits, int hash, int time, int seldepth) {
+        Log.d("GameController", "Stats: nodes=" + nodes + ", nps=" + nps + ", tbHits=" + tbHits + ", hash=" + hash + ", time=" + time + ", seldepth=" + seldepth);
 
     }
 
     @Override
     public void notifyBookInfo(int id, String bookInfo, ArrayList<Move> moveList, String eco, int distToEcoTree) {
-
+        Log.d("GameController", "Book info: bookInfo=" + bookInfo + ", eco=" + eco + ", distToEcoTree=" + distToEcoTree);
     }
 
     @Override
     public void notifySearchResult(int searchId, String bestMove, String nextPonderMove) {
+        Log.d("GameController", "Search result: bestMove=" + bestMove + ", nextPonderMove=" + nextPonderMove);
 
     }
 
     @Override
     public void notifyEngineInitialized() {
+        Log.d("GameController", "Engine initialized");
+    }
 
+    public void option() {
+        Log.d("GameController", "Option");
+        player.moveNow();
+        player.stopSearch();
     }
 }

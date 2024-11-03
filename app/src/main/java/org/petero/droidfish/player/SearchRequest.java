@@ -19,7 +19,6 @@ public class SearchRequest {
     Move ponderMove;        // Ponder move, or null if not a ponder search
     Board currBoard;       // currBoard = prevboard + mList - ponderMove
     boolean drawOffer;      // True if other side made draw offer
-
     boolean isSearch;       // True if regular search or ponder search
     boolean isAnalyze;      // True if analysis search
     int wTime;              // White remaining time, milliseconds
@@ -28,7 +27,7 @@ public class SearchRequest {
     int bInc;               // Black time increment per move, milliseconds
     int movesToGo;          // Number of moves to next time control
 
-    String engineName;          // Engine name (identifier)
+    String engineName;      // Engine name (identifier)
     int numPV;              // Number of PV lines to compute
 
     boolean ponderEnabled;  // True if pondering enabled, for engine time management

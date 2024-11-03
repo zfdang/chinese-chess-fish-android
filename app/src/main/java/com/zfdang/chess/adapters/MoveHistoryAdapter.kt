@@ -22,7 +22,7 @@ class MoveHistoryAdapter(private val context: Context, private val tableLayout: 
             val col1 = tableRow.findViewById<TextView>(R.id.move_index)
             val col2 = tableRow.findViewById<TextView>(R.id.move_desc)
             col1.text = moveCount.toString()
-            col2.text = String.format("%s (%s)", item.chsDesc, item.coordDesc)
+            col2.text = String.format("%s (%s)", item.chsString, item.ucciString)
             tableLayout.addView(tableRow, 0)
             moveCount ++
         }
