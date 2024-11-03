@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/boardbg_repeat"
     android:theme="@style/ThemeOverlay.ChineseChess.FullscreenContainer"
-    tools:context=".PlayActivity">
+    tools:context=".GameActivity">
 
     <LinearLayout
         android:layout_width="match_parent"

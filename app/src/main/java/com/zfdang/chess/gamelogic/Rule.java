@@ -399,7 +399,7 @@ public class Rule {
     /*
     判断是否已经结束
      */
-    public static boolean isDead(int piece, Board board) {
+    public static boolean isJiangShuaiDead(int piece, Board board) {
         if (piece == Piece.WSHUAI) {
             // 找到红帅的位置
             Position pos = findJiangShuaiPos(Piece.WSHUAI, board);

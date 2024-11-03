@@ -9,21 +9,14 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.app.AppCompatActivity
 import com.zfdang.chess.adapters.MoveHistoryAdapter
-import com.zfdang.chess.controls.GameController
-import com.zfdang.chess.controls.GameControllerListener
-import com.zfdang.chess.controls.GameControllerListener.GameSound
+import com.zfdang.chess.controllers.GameController
+import com.zfdang.chess.controllers.GameControllerListener
+import com.zfdang.chess.gamelogic.GameStatus
 import com.zfdang.chess.databinding.ActivityPlayBinding
-import com.zfdang.chess.gamelogic.Move
-import com.zfdang.chess.gamelogic.Piece
-import com.zfdang.chess.gamelogic.Position
-import com.zfdang.chess.gamelogic.PvInfo
 import com.zfdang.chess.views.ChessView
-import kotlinx.coroutines.selects.select
-import org.petero.droidfish.player.EngineListener
-import org.petero.droidfish.player.SearchListener
 
 
-class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, SearchListener, GameControllerListener,
+class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerListener,
     View.OnClickListener {
 
     // 防止重复点击
@@ -46,8 +39,8 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
     private lateinit var moveSound: MediaPlayer
     private lateinit var captureSound: MediaPlayer
     private lateinit var checkSound: MediaPlayer
+    private lateinit var checkmateSound: MediaPlayer
     private lateinit var invalidSound: MediaPlayer
-    private lateinit var winSound: MediaPlayer
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -58,7 +51,7 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
         setContentView(binding.root)
 
         // new game
-        controller = GameController(this, this, this)
+        controller = GameController(this)
         controller.newGame()
 
         // 初始化棋盘
@@ -109,7 +102,7 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
         captureSound = MediaPlayer.create(this, R.raw.capture)
         checkSound = MediaPlayer.create(this, R.raw.check)
         invalidSound = MediaPlayer.create(this, R.raw.invalid)
-        winSound = MediaPlayer.create(this, R.raw.win)
+        checkmateSound = MediaPlayer.create(this, R.raw.checkmate)
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
@@ -137,42 +130,6 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
     // create function to set status text
     fun setStatusText(text: String) {
         binding.statustv.text = text
-    }
-
-    override fun reportEngineError(errMsg: String?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun notifyEngineName(engineName: String?) {
-        Log.d("PlayActivity", "notifyEngineName: $engineName")
-    }
-
-    override fun notifyDepth(id: Int, depth: Int) {
-        Log.d("PlayActivity", "notifyDepth: $depth")
-    }
-
-    override fun notifyCurrMove(id: Int, pos: Position?, m: Move?, moveNr: Int) {
-        Log.d("PlayActivity", "notifyCurrMove: $m")
-    }
-
-    override fun notifyPV(id: Int, pos: Position?, pvInfo: ArrayList<PvInfo>?, ponderMove: Move?) {
-        Log.d("PlayActivity", "notifyPV: $pvInfo")
-    }
-
-    override fun notifyStats(id: Int, nodes: Long, nps: Int, tbHits: Long, hash: Int, time: Int, seldepth: Int) {
-        Log.d("PlayActivity", "notifyStats: nodes = $nodes, nps = $nps, tbHits = $tbHits, hash = $hash, time = $time, seldepth = $seldepth")
-    }
-
-    override fun notifyBookInfo(id: Int, bookInfo: String?, moveList: ArrayList<Move>?, eco: String?, distToEcoTree: Int) {
-        Log.d(  "PlayActivity", "notifyBookInfo: $bookInfo")
-    }
-
-    override fun notifySearchResult(searchId: Int, bestMove: String?, nextPonderMove: String?) {
-        Log.d("PlayActivity", "notifySearchResult: $bestMove")
-    }
-
-    override fun notifyEngineInitialized() {
-        Log.d("PlayActivity", "notifyEngineInitialized")
     }
 
     override fun onClick(v: View?) {
@@ -256,28 +213,45 @@ class PlayActivity : AppCompatActivity(), View.OnTouchListener, EngineListener, 
 
     }
 
-    override fun onGameSound(sound: GameControllerListener.GameSound?) {
-        Log.d(  "PlayActivity", "onGameSound: $sound")
-        when(sound) {
-            GameSound.SELECT -> selectSound.start()
-            GameSound.MOVE -> moveSound.start()
-            GameSound.CAPTURE -> captureSound.start()
-            GameSound.CHECK -> checkSound.start()
-            GameSound.ILLEGAL -> invalidSound.start()
-            GameSound.WIN -> winSound.start()
-            null -> Log.d("PlayActivity", "Illegal sound")
+    fun playGameSound(status: GameStatus?) {
+        Log.d(  "GameActivity", "playGameSound: $status")
+        when(status) {
+            GameStatus.SELECT -> selectSound.start()
+            GameStatus.MOVE -> moveSound.start()
+            GameStatus.CAPTURE -> captureSound.start()
+            GameStatus.CHECK -> checkSound.start()
+            GameStatus.ILLEGAL -> invalidSound.start()
+            GameStatus.WIN -> invalidSound.start()
+            GameStatus.CHECKMATE -> checkmateSound.start()
+            GameStatus.LOSE -> TODO()
+            GameStatus.DRAW -> TODO()
+            GameStatus.ENGINE -> TODO()
+            null -> Log.d("PlayActivity", "Illegal status")
         }
     }
 
-    override fun onGameEvent(event: GameControllerListener.GameEvent?, message: String?) {
-        Log.d(  "PlayActivity", "onGameEvent: $event, $message")
-        when(event) {
-            GameControllerListener.GameEvent.ILLEGAL -> setStatusText("非法走法！")
-            GameControllerListener.GameEvent.MOVE -> message?.let { setStatusText(it) }
-            GameControllerListener.GameEvent.CAPTURE -> message?.let { setStatusText(it) }
-            GameControllerListener.GameEvent.CHECK -> TODO()
-            GameControllerListener.GameEvent.CHECKMATE -> TODO()
+    override fun onGameEvent(status: GameStatus?, message: String?) {
+        Log.d(  "PlayActivity", "onGameEvent: $status, $message")
+        when(status) {
+            GameStatus.ILLEGAL -> setStatusText("非法走法！")
+            GameStatus.MOVE -> message?.let { setStatusText(it) }
+            GameStatus.CAPTURE -> message?.let { setStatusText(it) }
+            GameStatus.CHECK -> message?.let { setStatusText(it) }
+            GameStatus.CHECKMATE -> message?.let { setStatusText(it) }
+            GameStatus.SELECT -> message?.let { setStatusText(it) }
+            GameStatus.WIN -> message?.let { setStatusText(it) }
+            GameStatus.LOSE -> message?.let { setStatusText(it) }
+            GameStatus.DRAW -> message?.let { setStatusText(it) }
+            GameStatus.ENGINE -> message?.let { setStatusText(it) }
             null -> TODO()
         }
+
+        // play sound
+        playGameSound(status)
     }
+
+    override fun onGameEvent(event: GameStatus?) {
+        onGameEvent(event, null);
+    }
+
 }
