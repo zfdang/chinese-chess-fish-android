@@ -164,14 +164,15 @@ public class GameController implements EngineListener, SearchListener {
     }
 
     @Override
-    public void notifyCurrMove(int id, Position pos, Move m, int moveNr) {
+    public void notifyCurrMove(int id, Board board, Move m, int moveNr) {
 
     }
 
     @Override
-    public void notifyPV(int id, Position pos, ArrayList<PvInfo> pvInfo, Move ponderMove) {
+    public void notifyPV(int id, Board board, ArrayList<PvInfo> pvInfo, Move ponderMove) {
 
     }
+
 
     @Override
     public void notifyStats(int id, long nodes, int nps, long tbHits, int hash, int time, int seldepth) {

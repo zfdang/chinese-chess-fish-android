@@ -20,6 +20,7 @@ package org.petero.droidfish.player;
 
 import android.util.Log;
 
+import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Move;
 import com.zfdang.chess.gamelogic.PvInfo;
 
@@ -556,30 +557,6 @@ public class ComputerPlayer {
 
     private void reportMove(String bestMoveStr, String nextPonderMoveStr) {
         SearchRequest sr = searchRequest;
-        boolean canPonder = true;
-
-//        if (canPonder) {
-//            Move bestM = new Move(sr.currBoard);
-//            boolean result = bestM.fromUCCIString(bestMoveStr);
-//            if (!TextIO.isValid(sr.currPos, bestM))
-//                canPonder = false;
-//            if (canPonder) {
-//                Position tmpPos = new Position(sr.currPos);
-//                UndoInfo ui = new UndoInfo();
-//                tmpPos.makeMove(bestM, ui);
-//                if (!TextIO.isValid(tmpPos, nextPonderMove))
-//                    canPonder = false;
-//                if (canPonder) {
-//                    tmpPos.makeMove(nextPonderMove, ui);
-//                    if (MoveGen.instance.legalMoves(tmpPos).isEmpty())
-//                        canPonder = false;
-//                }
-//            }
-//        }
-//
-//        if (!canPonder)
-//            nextPonderMove = null;
-
         engineListener.notifySearchResult(sr.searchId, bestMoveStr, nextPonderMoveStr);
     }
 
@@ -795,30 +772,30 @@ public class ComputerPlayer {
 
         int id = engineState.searchId;
         if (depthModified) {
-//            listener.notifyDepth(id, statCurrDepth);
+            searchListener.notifyDepth(id, statCurrDepth);
             depthModified = false;
         }
 //        if (currMoveModified) {
-//            Move m = TextIO.UCIstringToMove(statCurrMove);
-//            Position pos = searchRequest.currPos;
-//            if ((searchRequest.ponderMove != null) && (m != null)) {
-//                pos = new Position(pos);
-//                UndoInfo ui = new UndoInfo();
-//                pos.makeMove(searchRequest.ponderMove, ui);
+////            Move m = TextIO.UCIstringToMove(statCurrMove);
+////            Position pos = searchRequest.currPos;
+////            if ((searchRequest.ponderMove != null) && (m != null)) {
+////                pos = new Position(pos);
+////                UndoInfo ui = new UndoInfo();
+////                pos.makeMove(searchRequest.ponderMove, ui);
 //            }
-//            listener.notifyCurrMove(id, pos, m, statCurrMoveNr);
+//            searchListener.notifyCurrMove(id, pos, m, statCurrMoveNr);
 //            currMoveModified = false;
 //        }
 //        if (pvModified) {
-//            listener.notifyPV(id, searchRequest.currPos, statPvInfo,
+//            searchListener.notifyPV(id, searchRequest.currBoard, statPvInfo,
 //                              searchRequest.ponderMove);
 //            pvModified = false;
 //        }
-        if (statsModified) {
-//            listener.notifyStats(id, statNodes, statNps, statTBHits, statHash, statTime, statSelDepth);
-            statsModified = false;
-        }
-        lastGUIUpdate = System.currentTimeMillis();
+//        if (statsModified) {
+//            searchListener.notifyStats(id, statNodes, statNps, statTBHits, statHash, statTime, statSelDepth);
+//            statsModified = false;
+//        }
+//        lastGUIUpdate = System.currentTimeMillis();
     }
 
     private static void myAssert(boolean b) {
