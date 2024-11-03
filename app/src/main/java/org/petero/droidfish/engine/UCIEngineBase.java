@@ -35,7 +35,7 @@ public abstract class UCIEngineBase implements UCIEngine {
 
     private boolean processAlive;
     private UCIOptions options;
-    protected boolean isUCI;
+    protected boolean isConfigOk;
 
     public static UCIEngine getEngine(String engine,
                                       EngineConfig engineConfig, Report report) {
@@ -51,7 +51,7 @@ public abstract class UCIEngineBase implements UCIEngine {
     protected UCIEngineBase() {
         processAlive = false;
         options = new UCIOptions();
-        isUCI = false;
+        isConfigOk = false;
     }
 
     protected abstract void startProcess();
@@ -66,7 +66,7 @@ public abstract class UCIEngineBase implements UCIEngine {
 
     @Override
     public void initConfig(EngineConfig engineConfig) {
-        isUCI = true;
+        isConfigOk = true;
     }
 
     @Override
