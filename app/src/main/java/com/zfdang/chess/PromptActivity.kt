@@ -12,7 +12,7 @@ import org.petero.droidfish.engine.UCIEngineBase
 import org.petero.droidfish.player.ComputerPlayer
 import org.petero.droidfish.player.EngineListener
 
-class PromptActivity : AppCompatActivity(), EngineListener, UCIEngine.Report {
+class PromptActivity : AppCompatActivity(), EngineListener {
     lateinit var computerPlayer: ComputerPlayer
     lateinit var engine: UCIEngine
 
@@ -64,10 +64,6 @@ class PromptActivity : AppCompatActivity(), EngineListener, UCIEngine.Report {
 
     override fun notifyEngineInitialized() {
         Log.d(  "PromptActivity", "notifyEngineInitialized")
-    }
-
-    override fun reportError(errMsg: String?) {
-        TODO("Not yet implemented")
     }
 
 }

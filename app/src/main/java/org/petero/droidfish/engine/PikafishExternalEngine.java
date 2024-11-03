@@ -33,6 +33,8 @@ import java.util.Locale;
 
 import android.util.Log;
 
+import org.petero.droidfish.player.EngineListener;
+
 /**
  * Stockfish engine running as process, started from assets resource.
  */
@@ -46,8 +48,8 @@ public class PikafishExternalEngine extends ExternalEngine {
 
     private final File[] networkFiles = {null, null, null}; // Full path of the copied network files
 
-    public PikafishExternalEngine(String workDir, Report report) {
-        super("pikafish", workDir, report);
+    public PikafishExternalEngine(String workDir, EngineListener listener) {
+        super("pikafish", workDir, listener);
 
         // uci_showwdl is not included in the uci response, so we need to add it manually
         registerOption("option name uci_showwdl type check default false".split("\\s+"));

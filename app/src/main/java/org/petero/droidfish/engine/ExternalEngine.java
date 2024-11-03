@@ -30,6 +30,7 @@ import java.nio.channels.FileChannel;
 import com.zfdang.chess.ChessApp;
 import com.zfdang.chess.R;
 
+import org.petero.droidfish.player.EngineListener;
 import org.petero.droidfish.utils.LocalPipe;
 
 import android.content.Context;
@@ -43,7 +44,7 @@ public class ExternalEngine extends UCIEngineBase {
 
     private File engineFileName;
     private File engineWorkDir;
-    private final Report report;
+    private final EngineListener listener;
     private Process engineProc;
     private Thread startupThread;
     private Thread exitThread;
@@ -53,9 +54,9 @@ public class ExternalEngine extends UCIEngineBase {
     private boolean startedOk;
     private boolean isRunning;
 
-    public ExternalEngine(String engine, String workDir, Report report) {
+    public ExternalEngine(String engine, String workDir, EngineListener listener) {
         context = ChessApp.getContext();
-        this.report = report;
+        this.listener = listener;
         engineFileName = new File(engine);
         engineWorkDir = new File(workDir);
         engineProc = null;
@@ -112,7 +113,7 @@ public class ExternalEngine extends UCIEngineBase {
                     return;
                 }
                 if (startedOk && isRunning && !isConfigOk)
-                    report.reportError(context.getString(R.string.uci_protocol_error));
+                    listener.reportEngineError(context.getString(R.string.uci_protocol_error));
             });
             startupThread.start();
 
@@ -123,9 +124,9 @@ public class ExternalEngine extends UCIEngineBase {
                         ep.waitFor();
                     isRunning = false;
                     if (!startedOk)
-                        report.reportError(context.getString(R.string.failed_to_start_engine));
+                        listener.reportEngineError(context.getString(R.string.failed_to_start_engine));
                     else {
-                        report.reportError(context.getString(R.string.engine_terminated));
+                        listener.reportEngineError(context.getString(R.string.engine_terminated));
                     }
                 } catch (InterruptedException ignore) {
                 }
@@ -179,7 +180,7 @@ public class ExternalEngine extends UCIEngineBase {
             });
             stdErrThread.start();
         } catch (IOException | SecurityException ex) {
-            report.reportError(ex.getMessage());
+            listener.reportEngineError(ex.getMessage());
             Log.d("ExternalEngine", "Failed to start engine", ex);
         }
     }
