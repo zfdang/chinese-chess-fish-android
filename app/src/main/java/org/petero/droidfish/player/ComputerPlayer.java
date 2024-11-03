@@ -57,7 +57,6 @@ public class ComputerPlayer {
      * >1 if multiPV mode is supported.
      */
     private int maxPV = 1;
-    private String engineName = "Computer";
 
     private EngineState engineState = new EngineState();
     private SearchRequest searchRequest = null;
@@ -148,14 +147,6 @@ public class ComputerPlayer {
             if (uci != null)
                 uci.saveIniFile(getUCIOptions());
         }
-    }
-
-
-    /**
-     * Get engine reported name.
-     */
-    public final synchronized String getEngineName() {
-        return engineName;
     }
 
     /**
@@ -476,7 +467,6 @@ public class ComputerPlayer {
         myAssert(engineState.state == EngineStateValue.DEAD);
         myAssert(searchRequest != null);
 
-        engineName = "Computer";
         uciEngine = UCIEngineBase.getEngine(searchRequest.engineName,
                 engineOptions,
                 errMsg -> {
@@ -611,13 +601,13 @@ public class ComputerPlayer {
 
         if (tokens[0].equals("id")) {
             if (tokens[1].equals("name")) {
-                engineName = "";
+                String tempEngineName = "";
                 for (int i = 2; i < tokens.length; i++) {
-                    if (engineName.length() > 0)
-                        engineName += " ";
-                    engineName += tokens[i];
+                    if (tempEngineName.length() > 0)
+                        tempEngineName += " ";
+                    tempEngineName += tokens[i];
                 }
-                engineListener.notifyEngineName(engineName);
+                engineListener.notifyEngineName(tempEngineName);
             }
         } else if (tokens[0].equals("option")) {
             UCIOptions.OptionBase o = uci.registerOption(tokens);
