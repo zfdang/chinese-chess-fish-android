@@ -20,6 +20,7 @@ package org.petero.droidfish.player;
 
 import android.util.Log;
 
+import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Move;
 import com.zfdang.chess.gamelogic.PvInfo;
 
@@ -453,9 +454,9 @@ public class ComputerPlayer {
                 }
             }
             uciEngine.writeLineToEngine(posStr.toString());
-//            uciEngine.setOption("UCI_AnalyseMode", true);
+            uciEngine.setOption("UCI_AnalyseMode", true);
             StringBuilder goStr = new StringBuilder(96);
-            goStr.append("go infinite");
+            goStr.append("go depth 20");
             if (sr.searchMoves != null) {
                 goStr.append(" searchmoves");
                 for (Move m : sr.searchMoves) {
@@ -578,8 +579,8 @@ public class ComputerPlayer {
                             Log.d("ComputerPlayer", "nextPonderMoveStr: " + nextPonderMoveStr);
                         }
 
-                        if (engineState.state == EngineStateValue.SEARCH)
-                            reportMove(bestMoveStr, nextPonderMoveStr);
+//                        if (engineState.state == EngineStateValue.SEARCH)
+                        reportMove(bestMoveStr, nextPonderMoveStr);
 
                         engineState.setState(EngineStateValue.IDLE);
                         searchRequest = null;
@@ -745,7 +746,7 @@ public class ComputerPlayer {
         currMoveModified = true;
         pvModified = true;
         statsModified = true;
-//        statPvInfo.clear();
+        statPvInfo.clear();
         statCurrMove = "";
         statCurrMoveNr = 0;
     }
@@ -824,24 +825,24 @@ public class ComputerPlayer {
                     pvModified = true;
                 }
             }
-//            if (havePvData) {
-//                while (statPvInfo.size() < pvNum)
-//                    statPvInfo.add(new PvInfo(0, 0, 0, 0, 0, 0, 0, 0, false, false, false, new ArrayList<>()));
-//                if (statPvInfo.size() == pvNum)
-//                    statPvInfo.add(null);
-//                ArrayList<Move> moves = new ArrayList<>();
-//                int nMoves = statPV.size();
-//                for (i = 0; i < nMoves; i++) {
-////                    Move m = statPV.get(i);
-//                    Move m = null;
-//                    if (m == null)
-//                        break;
-//                    moves.add(m);
-//                }
-//                statPvInfo.set(pvNum, new PvInfo(statPVDepth, statScore, statTime, statNodes, statNps,
-//                                                 statTBHits, statHash, statSelDepth,
-//                                                 statIsMate, statUpperBound, statLowerBound, moves));
-//            }
+            if (havePvData) {
+                while (statPvInfo.size() < pvNum)
+                    statPvInfo.add(new PvInfo(0, 0, 0, 0, 0, 0, 0, 0, false, false, false, new ArrayList<>()));
+                if (statPvInfo.size() == pvNum)
+                    statPvInfo.add(null);
+                ArrayList<Move> moves = new ArrayList<>();
+                int nMoves = statPV.size();
+                for (i = 0; i < nMoves; i++) {
+                    Move m = new Move(null, null);
+                    m.fromUCCIString(statPV.get(i));
+                    if (m == null)
+                        break;
+                    moves.add(m);
+                }
+                statPvInfo.set(pvNum, new PvInfo(statPVDepth, statScore, statTime, statNodes, statNps,
+                                                 statTBHits, statHash, statSelDepth,
+                                                 statIsMate, statUpperBound, statLowerBound, moves));
+            }
         } catch (NumberFormatException nfe) {
             Log.d("ComputerPlayer", "parseInfoCmd: " + nfe);
             // Ignore
