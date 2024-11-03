@@ -14,7 +14,7 @@ class MoveHistoryAdapter(private val context: Context, private val tableLayout: 
         tableLayout.removeAllViews()
         // add item in game.historyRecords to tableLayout in reverse order
         var moveCount = 1
-        for (item in game.historyRecords) {
+        for (item in game.history) {
             if(item.move == null) {
                 continue
             }

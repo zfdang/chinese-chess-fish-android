@@ -22,4 +22,10 @@ public class Position{
         Position position = (Position) obj;
         return this.x == position.x && this.y == position.y;
     }
+
+    // write toString method
+    @Override
+    public String toString() {
+        return String.format("(%d, %d)", x, y);
+    }
 }

@@ -67,6 +67,8 @@ public class Move implements Serializable {
     * 2. 对于纵轴来讲，红方是从下到上是进，黑方是从下到上是退
     * 3. 对于走直线的棋子，需要考虑是进退（最后一个数字是纵坐标的差值），还是平移（最后一个数字是目标位置的横坐标）
     * 4. 对于走斜线的棋子（马、相、士），需要考虑是进退，最后一个数字是目标位置的横坐标
+    * 5. 对于红字移动，使用中文的数字；对于黑子移动，使用阿拉伯数字
+    * 6. 还需要处理同一列有相同的棋子，使用前后来区分，比如前炮退二，后炮进二？？
      */
     public String getChineseStyleDescription(){
         if(board == null){
@@ -76,13 +78,14 @@ public class Move implements Serializable {
         int piece = board.getPieceByPosition(fromPosition);
         if(Piece.isValid(piece)) {
             char name = Piece.pieceNameMap.get(piece);
+            String num1, action, num2;
 
             if(Piece.isRed(piece)) {
-                String num1 = arabicToChineseMap.get(9 - fromPosition.x);
+                num1 = arabicToChineseMap.get(9 - fromPosition.x);
 
-                String action = "平";
+                action = "平";
                 // 3.对于走直线的棋子，需要考虑是进退（最后一个数字是纵坐标的差值），还是平移（最后一个数字是目标位置的横坐标）
-                String num2 = arabicToChineseMap.get(abs(toPosition.y - fromPosition.y));
+                num2 = arabicToChineseMap.get(abs(toPosition.y - fromPosition.y));
                 if(toPosition.y > fromPosition.y){
                     action = "退";
                 } else if(toPosition.y < fromPosition.y){
@@ -99,23 +102,23 @@ public class Move implements Serializable {
 
                 return name + num1 + action + num2;
             } else if(Piece.isBlack(piece)) {
-                String num1 = arabicToChineseMap.get(fromPosition.x + 1);
+                num1 = String.format("%d", fromPosition.x + 1);
 
-                String action = "平";
+                action = "平";
                 // 3.对于走直线的棋子，需要考虑是进退（最后一个数字是纵坐标的差值），还是平移（最后一个数字是目标位置的横坐标）
-                String num2 = arabicToChineseMap.get(abs(toPosition.y - fromPosition.y));
+                num2 = String.format("%d", abs(toPosition.y - fromPosition.y));
                 if(toPosition.y > fromPosition.y){
                     action = "进";
                 } else if(toPosition.y < fromPosition.y){
                     action = "退";
                 } else {
                     // 3.对于走直线的棋子，需要考虑是进退（最后一个数字是纵坐标的差值），还是平移（最后一个数字是目标位置的横坐标）
-                    num2 = arabicToChineseMap.get(toPosition.x + 1);
+                    num2 = String.format("%d", toPosition.x + 1);
                 }
 
                 if(Piece.isDiagonalPiece(piece)) {
                     // 4. 对于走斜线的棋子（马、相、士），需要考虑是进退，最后一个数字是目标位置的横坐标
-                    num2 = arabicToChineseMap.get(toPosition.x + 1);
+                    num2 = String.format("%d", toPosition.x + 1);
                 }
 
                 return name + num1 + action + num2;
