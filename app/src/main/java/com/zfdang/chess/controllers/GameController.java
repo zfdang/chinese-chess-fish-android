@@ -12,7 +12,6 @@ import com.zfdang.chess.gamelogic.PvInfo;
 import com.zfdang.chess.gamelogic.Rule;
 
 import org.jetbrains.annotations.NotNull;
-import org.petero.droidfish.engine.EngineOptions;
 import org.petero.droidfish.player.ComputerPlayer;
 import org.petero.droidfish.player.EngineListener;
 import org.petero.droidfish.player.SearchListener;

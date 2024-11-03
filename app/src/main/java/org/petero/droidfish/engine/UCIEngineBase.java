@@ -38,10 +38,10 @@ public abstract class UCIEngineBase implements UCIEngine {
     protected boolean isUCI;
 
     public static UCIEngine getEngine(String engine,
-                                      EngineOptions engineOptions, Report report) {
+                                      EngineConfig engineConfig, Report report) {
         // only pikafishi engine is supported
         if ("pikafish".equals(engine)) {
-            return new PikafishExternalEngine(engineOptions.workDir, report);
+            return new PikafishExternalEngine(engineConfig.workDir, report);
         } else {
             Log.d("UCIEngineBase", "Unknown engine: " + engine);
             return null;
@@ -65,7 +65,7 @@ public abstract class UCIEngineBase implements UCIEngine {
     }
 
     @Override
-    public void initOptions(EngineOptions engineOptions) {
+    public void initConfig(EngineConfig engineConfig) {
         isUCI = true;
     }
 
