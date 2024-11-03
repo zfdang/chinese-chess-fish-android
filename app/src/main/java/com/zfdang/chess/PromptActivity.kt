@@ -6,7 +6,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import org.petero.droidfish.engine.EngineOptions
+import org.petero.droidfish.engine.EngineConfig
 import org.petero.droidfish.engine.UCIEngine
 import org.petero.droidfish.engine.UCIEngineBase
 import org.petero.droidfish.player.ComputerPlayer
@@ -42,7 +42,7 @@ class PromptActivity : AppCompatActivity(), EngineListener, UCIEngine.Report {
     }
 
     fun initEngineFile(): Unit {
-        val option = EngineOptions()
+        val option = EngineConfig()
         engine = UCIEngineBase.getEngine("pikafish", option, this);
         engine.initialize()
 //        engine.applyIniFile()

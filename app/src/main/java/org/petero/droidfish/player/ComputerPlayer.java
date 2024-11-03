@@ -20,7 +20,6 @@ package org.petero.droidfish.player;
 
 import android.util.Log;
 
-import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Move;
 import com.zfdang.chess.gamelogic.PvInfo;
 
@@ -29,7 +28,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.petero.droidfish.engine.EngineOptions;
+import org.petero.droidfish.engine.EngineConfig;
 import org.petero.droidfish.engine.UCIEngine;
 import org.petero.droidfish.engine.UCIEngineBase;
 import org.petero.droidfish.engine.UCIOptions;
@@ -43,7 +42,8 @@ public class ComputerPlayer {
     private UCIEngine uciEngine = null;
 
     // engineOption目前为止没有实际作用，没有删除只是因为不想改动太多代码
-    private EngineOptions engineOptions = new EngineOptions();
+    private EngineConfig engineConfig = new EngineConfig();
+
     /**
      * Pending UCI options to send when engine becomes idle.
      */
@@ -56,14 +56,21 @@ public class ComputerPlayer {
 
     /**
      * >1 if multiPV mode is supported.
+     * this value will be read from engine options during initialization
+     * so we don't have to set it manually
      */
     private int maxPV = 1;
+
+    public int getMaxPV() {
+        return maxPV;
+    }
+
 
     private EngineState engineState = new EngineState();
     private SearchRequest searchRequest = null;
     private Thread engineMonitor;
 
-    // new constructor to accept listener
+    // constructor to accept listener
     public ComputerPlayer(EngineListener engineListener, SearchListener searchListener) {
         this.engineListener = engineListener;
         this.searchListener = searchListener;
@@ -111,13 +118,6 @@ public class ComputerPlayer {
         }
         Log.d("ComputerPlayer", "getUCIOptions: " + opts.toString());
         return opts;
-    }
-
-    /**
-     * Return maximum number of PVs supported by engine.
-     */
-    public final synchronized int getMaxPV() {
-        return maxPV;
     }
 
     /**
@@ -270,7 +270,7 @@ public class ComputerPlayer {
         if (!needShutDown) {
             UCIEngine uci = uciEngine;
             if (uci != null)
-                needShutDown = !uci.optionsOk(engineOptions);
+                needShutDown = !uci.configOk(engineConfig);
         }
         if (needShutDown)
             shutdownEngine();
@@ -465,7 +465,7 @@ public class ComputerPlayer {
         myAssert(searchRequest != null);
 
         uciEngine = UCIEngineBase.getEngine(searchRequest.engineName,
-                engineOptions,
+                engineConfig,
                 errMsg -> {
                     if (errMsg == null)
                         errMsg = "";
@@ -478,7 +478,6 @@ public class ComputerPlayer {
         engineMonitor.start();
 
         uciEngine.writeLineToEngine("uci");
-        maxPV = 1;
         engineState.engineName = searchRequest.engineName;
         engineState.setState(EngineStateValue.READ_OPTIONS);
     }
@@ -533,7 +532,7 @@ public class ComputerPlayer {
             case READ_OPTIONS: {
                 if (readUCIOption(uci, s)) {
                     pendingOptions.clear();
-                    uci.initOptions(engineOptions);
+                    uci.initConfig(engineConfig);
                     uci.applyIniFile();
                     uci.writeLineToEngine("ucinewgame");
                     uci.writeLineToEngine("isready");

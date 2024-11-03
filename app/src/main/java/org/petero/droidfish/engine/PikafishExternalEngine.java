@@ -212,8 +212,8 @@ public class PikafishExternalEngine extends ExternalEngine {
     }
 
     @Override
-    public void initOptions(EngineOptions engineOptions) {
-        super.initOptions(engineOptions);
+    public void initConfig(EngineConfig engineConfig) {
+        super.initConfig(engineConfig);
     }
 
     /**

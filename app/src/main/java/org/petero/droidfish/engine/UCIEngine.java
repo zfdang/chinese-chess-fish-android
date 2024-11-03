@@ -45,13 +45,13 @@ public interface UCIEngine {
     /**
      * Initialize default options.
      */
-    void initOptions(EngineOptions engineOptions);
+    void initConfig(EngineConfig engineConfig);
 
     /**
      * Return true if engine options have correct values.
      * If false is returned, engine will be restarted.
      */
-    boolean optionsOk(EngineOptions engineOptions);
+    boolean configOk(EngineConfig engineConfig);
 
     /**
      * Read UCI options from .ini file and send them to the engine.

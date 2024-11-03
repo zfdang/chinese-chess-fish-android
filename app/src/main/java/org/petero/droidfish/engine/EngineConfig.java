@@ -22,14 +22,14 @@ package org.petero.droidfish.engine;
  * Engine options.
  * This class is useless now, keep it just for avoiding too many changes
  */
-public final class EngineOptions {
+public final class EngineConfig {
     public String workDir;      // Working directory for engine process
 
-    public EngineOptions() {
+    public EngineConfig() {
         workDir = "";
     }
 
-    public EngineOptions(EngineOptions other) {
+    public EngineConfig(EngineConfig other) {
         workDir = other.workDir;
     }
 

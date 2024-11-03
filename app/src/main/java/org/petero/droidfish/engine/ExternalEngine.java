@@ -200,13 +200,13 @@ public class ExternalEngine extends UCIEngineBase {
     private boolean optionsInitialized = false;
 
     @Override
-    public void initOptions(EngineOptions engineOptions) {
-        super.initOptions(engineOptions);
+    public void initConfig(EngineConfig engineConfig) {
+        super.initConfig(engineConfig);
         optionsInitialized = true;
     }
 
     @Override
-    public boolean optionsOk(EngineOptions engineOptions) {
+    public boolean configOk(EngineConfig engineConfig) {
         return optionsInitialized;
     }
 
