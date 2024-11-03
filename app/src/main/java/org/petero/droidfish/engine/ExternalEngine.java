@@ -222,7 +222,6 @@ public class ExternalEngine extends UCIEngineBase {
         if (ret == null)
             return null;
         if (ret.length() > 0) {
-            Log.d("ExternalEngine", "readLineFromEngine: " + ret);
         }
         return ret;
     }
@@ -240,7 +239,6 @@ public class ExternalEngine extends UCIEngineBase {
         } catch (IOException ignore) {
             Log.d("ExternalEngine", "Failed to write to engine: " + ignore.getMessage());
         }
-        Log.d("ExternalEngine", "writeLineToEngine: " + data);
     }
 
     @Override

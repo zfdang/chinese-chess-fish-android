@@ -33,4 +33,16 @@ public class PvInfo {
         this.pv = pv;
     }
 
+    public String toString() {
+        String result = "depth=" + depth + ", score=" + score + ", pv:{";
+        // show info in pv
+        for(int i = 0; i < pv.size(); i++) {
+            result +=  pv.get(i).getUCCIString() + ",";
+            if (i == 2) break;
+        }
+        result += "}";
+
+        return result;
+    }
+
 }

@@ -84,7 +84,6 @@ public class ComputerPlayer {
         switch (engineState.state) {
             case SEARCH:
             case PONDER:
-            case ANALYZE:
             case STOP_FOR_BESTMOVE:
                 return true;
             default:
@@ -281,7 +280,6 @@ public class ComputerPlayer {
         switch (engineState.state) {
             case SEARCH:
             case PONDER:
-            case ANALYZE:
                 uciEngine.writeLineToEngine("stop");
                 engineState.setState(EngineStateValue.STOP_FOR_BESTMOVE);
                 return true;
@@ -294,7 +292,7 @@ public class ComputerPlayer {
      * Tell engine to stop searching and return the bestmove immediately.
      */
     public void moveNow() {
-        if (engineState.state == EngineStateValue.SEARCH || engineState.state == EngineStateValue.ANALYZE) {
+        if (engineState.state == EngineStateValue.SEARCH) {
             uciEngine.writeLineToEngine("stop");
         }
     }
@@ -323,10 +321,8 @@ public class ComputerPlayer {
     public final synchronized SearchType getSearchType() {
         if (searchRequest == null)
             return SearchType.NONE;
-        if (searchRequest.isAnalyze)
-            return SearchType.ANALYZE;
-        if (!searchRequest.isSearch)
-            return SearchType.NONE;
+        if (searchRequest.isSearch)
+            return SearchType.SEARCH;
         if (searchRequest.ponderMove == null)
             return SearchType.SEARCH;
         else
@@ -366,8 +362,7 @@ public class ComputerPlayer {
 
         // Check if only engine start was requested
         boolean isSearch = sr.isSearch;
-        boolean isAnalyze = sr.isAnalyze;
-        if (!isSearch && !isAnalyze) {
+        if (!isSearch) {
             searchRequest = null;
             return;
         }
@@ -381,7 +376,7 @@ public class ComputerPlayer {
             uciEngine.setOption("MultiPV", num);
         }
 
-        if (isAnalyze){
+        if (isSearch){
             StringBuilder posStr = new StringBuilder();
             posStr.append("position fen ");
             posStr.append(sr.prevBoard.toFENString());
@@ -400,8 +395,18 @@ public class ComputerPlayer {
             // 这里的命令可以根据需要设置
             // https://backscattering.de/chess/uci/#gui-go-searchmoves
             goStr.append("go depth 20");
+
+            // 如果有searchMoves，就加上searchMoves, 这个以后可以从开局库获取
+            if (sr.searchMoves != null) {
+                goStr.append(" searchmoves");
+                for (Move m : sr.searchMoves) {
+                    goStr.append(' ');
+                    goStr.append(m.getUCCIString());
+                }
+            }
+
             uciEngine.writeLineToEngine(goStr.toString());
-            engineState.setState(EngineStateValue.ANALYZE);
+            engineState.setState(EngineStateValue.SEARCH);
         }
     }
 
@@ -469,7 +474,6 @@ public class ComputerPlayer {
         if (s.length() == 0)
             return;
 
-        Log.d("ComputerPlayer", "processEngineOutput: " + s + " state = " + engineState.state);
         switch (engineState.state) {
             case READ_OPTIONS: {
                 if (readUCIOption(uci, s)) {
@@ -490,9 +494,8 @@ public class ComputerPlayer {
                 }
                 break;
             }
-            case SEARCH:
             case PONDER:
-            case ANALYZE: {
+            case SEARCH: {
                 String[] tokens = tokenize(s);
                 int nTok = tokens.length;
                 if (nTok > 0) {
@@ -567,52 +570,6 @@ public class ComputerPlayer {
         cmdLine = cmdLine.trim();
         return cmdLine.split("\\s+");
     }
-
-    /**
-     * Check if a draw claim is allowed, possibly after playing "move".
-     *
-     * @param move The move that may have to be made before claiming draw.
-     * @return The draw string that claims the draw, or empty string if draw claim not valid.
-     */
-//    private static String canClaimDraw(Position pos, long[] posHashList, int posHashListSize, Move move) {
-//        String drawStr = "";
-//        if (canClaimDraw50(pos)) {
-//            drawStr = "draw 50";
-//        } else if (canClaimDrawRep(pos, posHashList, posHashListSize, posHashListSize)) {
-//            drawStr = "draw rep";
-//        } else if (move != null) {
-//            String strMove = TextIO.moveToString(pos, move, false, false);
-//            posHashList[posHashListSize++] = pos.zobristHash();
-//            UndoInfo ui = new UndoInfo();
-//            pos.makeMove(move, ui);
-//            if (canClaimDraw50(pos)) {
-//                drawStr = "draw 50 " + strMove;
-//            } else if (canClaimDrawRep(pos, posHashList, posHashListSize, posHashListSize)) {
-//                drawStr = "draw rep " + strMove;
-//            }
-//            pos.unMakeMove(move, ui);
-//        }
-//        return drawStr;
-//    }
-
-//    private static boolean canClaimDraw50(Position pos) {
-//        return (pos.halfMoveClock >= 100);
-//    }
-
-//    private static boolean canClaimDrawRep(Position pos, long[] posHashList, int posHashListSize, int posHashFirstNew) {
-//        int reps = 0;
-//        for (int i = posHashListSize - 4; i >= 0; i -= 2) {
-//            if (pos.zobristHash() == posHashList[i]) {
-//                reps++;
-//                if (i >= posHashFirstNew) {
-//                    reps++;
-//                    break;
-//                }
-//            }
-//        }
-//        return (reps >= 2);
-//    }
-
 
     private int statCurrDepth = 0;
     private int statPVDepth = 0;
@@ -756,7 +713,7 @@ public class ComputerPlayer {
     }
 
     /**
-     * Notify GUI about search statistics.
+     * Notify listener about search statistics.
      */
     private synchronized void notifyListener() {
         Log.d("ComputerPlayer", "notifyListener");
@@ -775,27 +732,27 @@ public class ComputerPlayer {
             searchListener.notifyDepth(id, statCurrDepth);
             depthModified = false;
         }
-//        if (currMoveModified) {
-////            Move m = TextIO.UCIstringToMove(statCurrMove);
-////            Position pos = searchRequest.currPos;
-////            if ((searchRequest.ponderMove != null) && (m != null)) {
-////                pos = new Position(pos);
-////                UndoInfo ui = new UndoInfo();
-////                pos.makeMove(searchRequest.ponderMove, ui);
+        if (currMoveModified) {
+//            Move m = new Move(searchRequest.currBoard);
+//            boolean result = m.fromUCCIString(statCurrMove);
+//            Board board = searchRequest.currBoard;
+//            if ((searchRequest.ponderMove != null) && (m != null)) {
+//                board = new Board(board);
+//                UndoInfo ui = new UndoInfo();
+//                board.makeMove(searchRequest.ponderMove, ui);
 //            }
-//            searchListener.notifyCurrMove(id, pos, m, statCurrMoveNr);
-//            currMoveModified = false;
-//        }
-//        if (pvModified) {
-//            searchListener.notifyPV(id, searchRequest.currBoard, statPvInfo,
-//                              searchRequest.ponderMove);
-//            pvModified = false;
-//        }
-//        if (statsModified) {
-//            searchListener.notifyStats(id, statNodes, statNps, statTBHits, statHash, statTime, statSelDepth);
-//            statsModified = false;
-//        }
-//        lastGUIUpdate = System.currentTimeMillis();
+//            searchListener.notifyCurrMove(id, board, m, statCurrMoveNr);
+            currMoveModified = false;
+        }
+        if (pvModified) {
+            searchListener.notifyPV(id, searchRequest.currBoard, statPvInfo, searchRequest.ponderMove);
+            pvModified = false;
+        }
+        if (statsModified) {
+            searchListener.notifyStats(id, statNodes, statNps, statTBHits, statHash, statTime, statSelDepth);
+            statsModified = false;
+        }
+        lastGUIUpdate = System.currentTimeMillis();
     }
 
     private static void myAssert(boolean b) {
