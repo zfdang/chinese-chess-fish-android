@@ -100,7 +100,7 @@ public class GameController implements EngineListener, SearchListener {
                 new Board(game.currentBoard),
                 false,
                 engineName,
-                2);
+                3);
         player.queueAnalyzeRequest(sr);
     }
 
@@ -178,7 +178,6 @@ public class GameController implements EngineListener, SearchListener {
     @Override
     public void notifyStats(int id, long nodes, int nps, long tbHits, int hash, int time, int seldepth) {
         Log.d("GameController", "Stats: nodes=" + nodes + ", nps=" + nps + ", tbHits=" + tbHits + ", hash=" + hash + ", time=" + time + ", seldepth=" + seldepth);
-
     }
 
     @Override
@@ -189,7 +188,6 @@ public class GameController implements EngineListener, SearchListener {
     @Override
     public void notifySearchResult(int searchId, String bestMove, String nextPonderMove) {
         Log.d("GameController", "Search result: bestMove=" + bestMove + ", nextPonderMove=" + nextPonderMove);
-
     }
 
     @Override
