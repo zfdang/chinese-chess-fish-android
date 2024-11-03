@@ -1,9 +1,5 @@
 package com.zfdang.chess.gamelogic;
 
-import android.util.Log;
-
-import java.io.Serializable;
-
 /**
  * Created by zfdang on 2016-4-17.
  * This class represents the chess board data, basically it's represention of FEN string;
@@ -12,7 +8,7 @@ public class Board {
     private static final long serialVersionUID = 2194052829642412444L;
 
     public boolean bRedGo = true;
-    public int rounds = 0;
+    public int rounds = 1;
     static public int BOARD_PIECE_WIDTH = 9;
     static public int BOARD_PIECE_HEIGHT = 10;
 
@@ -32,9 +28,13 @@ public class Board {
             {Piece.WJU, Piece.WMA, Piece.WXIANG, Piece.WSHI, Piece.WSHUAI, Piece.WSHI, Piece.WXIANG, Piece.WMA, Piece.WJU},
     };
 
+    public static boolean isValidPosition(Position pos) {
+        return pos.x >= 0 && pos.x < BOARD_PIECE_WIDTH && pos.y >= 0 && pos.y < BOARD_PIECE_HEIGHT;
+    }
+
     public Board() {
         bRedGo = true;
-        rounds = 0;
+        rounds = 1;
     }
 
     public Board(Board b) {
@@ -91,7 +91,7 @@ public class Board {
         }
     }
 
-    public String convertToFEN() {
+    public String toFENString() {
         // https://www.xqbase.com/protocol/pgnfen2.htm
         // https://www.xqbase.com/protocol/cchess_fen.htm
         // 按白方视角，描述由上至下、由左至右的盘面，以/符号来分隔相邻横列。白方大写字母、黑方小写字母。

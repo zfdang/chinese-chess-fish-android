@@ -2,6 +2,8 @@ package com.zfdang.chess.gamelogic;
 
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -52,21 +54,40 @@ public class MoveTest {
         move.fromPosition = new Position(3, 9);
         move.toPosition = new Position(3, 8) ;
         board.setPieceByPosition(move.fromPosition, Piece.BJU); // Set a piece at the from position
-        assertEquals("车四退一", move.getChineseStyleString());
+        assertEquals("车4退1", move.getChineseStyleString());
 
         move.fromPosition = new Position(7, 7);
         move.toPosition = new Position(3, 7) ;
         board.setPieceByPosition(move.fromPosition, Piece.BPAO); // Set a piece at the from position
-        assertEquals("炮八平四", move.getChineseStyleString());
+        assertEquals("炮8平4", move.getChineseStyleString());
 
         move.fromPosition = new Position(2, 0);
         move.toPosition = new Position(4, 2) ;
         board.setPieceByPosition(move.fromPosition, Piece.BXIANG); // Set a piece at the from position
-        assertEquals("象三进五", move.getChineseStyleString());
+        assertEquals("象3进5", move.getChineseStyleString());
 
         move.fromPosition = new Position(2, 2);
         move.toPosition = new Position(1, 4) ;
         board.setPieceByPosition(move.fromPosition, Piece.BMA); // Set a piece at the from position
-        assertEquals("马三进二", move.getChineseStyleString());
+        assertEquals("马3进2", move.getChineseStyleString());
+    }
+
+    @Test
+    public void testFromUCCIString() {
+        Move move = new Move(new Board());
+
+        // Test valid UCCI string
+        boolean result = move.fromUCCIString("h2e2");
+        assertTrue(result);
+        assertEquals(new Position(7, 7), move.fromPosition);
+        assertEquals(new Position(4, 7), move.toPosition);
+
+        // Test invalid UCCI string (length not 4)
+        result = move.fromUCCIString("h2e");
+        assertFalse(result);
+
+        // Test invalid UCCI string (invalid characters)
+        result = move.fromUCCIString("h2e@");
+        assertFalse(result);
     }
 }

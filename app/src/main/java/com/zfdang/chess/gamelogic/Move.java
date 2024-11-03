@@ -39,6 +39,9 @@ public class Move implements Serializable {
     }
 
     private void updateMoveColor(){
+        if(board == null || fromPosition == null || toPosition == null){
+            return;
+        }
         int piece = board.getPieceByPosition(fromPosition);
         if(Piece.isValid(piece)) {
             isRedMove = Piece.isRed(piece);
@@ -48,6 +51,32 @@ public class Move implements Serializable {
     public Move(Position fromPosition, Position toPosition) {
         this.fromPosition = fromPosition;
         this.toPosition = toPosition;
+    }
+
+    public boolean fromUCCIString(String ucciString){
+        if(ucciString.length() != 4){
+            return false;
+        }
+
+        char s, e;
+        s = ucciString.charAt(0);
+        e = ucciString.charAt(2);
+        Position pos = new Position(s - 'a', 9 - (ucciString.charAt(1) - '0'));
+        if(!Board.isValidPosition(pos)){
+            return false;
+        } else {
+            fromPosition = pos;
+        }
+        pos = new Position(e - 'a', 9 - (ucciString.charAt(3) - '0'));
+        if(!Board.isValidPosition(pos)){
+            return false;
+        } else {
+            toPosition = pos;
+        }
+
+        updateMoveColor();
+
+        return true;
     }
 
     // h2e2
