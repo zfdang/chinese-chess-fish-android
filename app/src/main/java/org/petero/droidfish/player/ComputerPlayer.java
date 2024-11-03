@@ -42,6 +42,7 @@ public class ComputerPlayer {
     private SearchListener searchListener = null;
     private UCIEngine uciEngine = null;
 
+    // engineOption目前为止没有实际作用，没有删除只是因为不想改动太多代码
     private EngineOptions engineOptions = new EngineOptions();
     /**
      * Pending UCI options to send when engine becomes idle.
@@ -117,10 +118,6 @@ public class ComputerPlayer {
      */
     public final synchronized int getMaxPV() {
         return maxPV;
-    }
-
-    public final void setEngineOptions(EngineOptions options) {
-        engineOptions = options;
     }
 
     /**

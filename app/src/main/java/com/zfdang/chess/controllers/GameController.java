@@ -45,7 +45,6 @@ public class GameController implements EngineListener, SearchListener {
         // Initialize computer player
         if(player == null) {
             player = new ComputerPlayer(this, this);
-            player.setEngineOptions(new EngineOptions());
         }
         player.queueStartEngine(searchId++,engineName);
         player.uciNewGame();
