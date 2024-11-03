@@ -1,7 +1,7 @@
 package org.petero.droidfish.player;
 
+import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Move;
-import com.zfdang.chess.gamelogic.Position;
 import com.zfdang.chess.gamelogic.PvInfo;
 
 import java.util.ArrayList;
@@ -19,13 +19,13 @@ public interface SearchListener {
     /**
      * Report the move, valid in position pos, that the engine is currently searching.
      */
-    void notifyCurrMove(int id, Position pos, Move m, int moveNr);
+    void notifyCurrMove(int id, Board board, Move m, int moveNr);
 
     /**
      * Report PV information. If ponderMove is non-null, ponderMove is the first move
      * to play from position pos.
      */
-    void notifyPV(int id, Position pos, ArrayList<PvInfo> pvInfo, Move ponderMove);
+    void notifyPV(int id, Board board, ArrayList<PvInfo> pvInfo, Move ponderMove);
 
     /**
      * Report search statistics.
