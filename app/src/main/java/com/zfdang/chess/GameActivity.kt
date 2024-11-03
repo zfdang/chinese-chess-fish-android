@@ -171,6 +171,8 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
 //                controller.playerAlt()
             }
             binding.optionbt -> {
+                controller.option()
+
 //                controller.option()
             }
             binding.newbt -> {

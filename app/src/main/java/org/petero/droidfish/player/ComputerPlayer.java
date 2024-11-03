@@ -214,15 +214,7 @@ public class ComputerPlayer {
      */
     private ArrayList<Move> movesToSearch(SearchRequest sr) {
         ArrayList<Move> moves = sr.searchMoves;
-//        ArrayList<Move> legalMoves = new MoveGen().legalMoves(sr.currPos);
-//        if (engineOptions.rootProbe)
-//            moves = Probe.getInstance().removeNonOptimal(sr.currPos, legalMoves);
-//        if (moves != null) {
-//            sr.searchMoves = moves;
-//        } else {
-//            moves = legalMoves;
-//            sr.searchMoves = null;
-//        }
+        // process moves if necessary
         return moves;
     }
 
@@ -266,10 +258,10 @@ public class ComputerPlayer {
         killOldEngine(sr.engineName);
         stopSearch();
 
-        // If no legal moves, there is nothing to analyze
-        ArrayList<Move> moves = movesToSearch(sr);
-        if (moves.size() == 0)
-            return;
+//        // If no legal moves, there is nothing to analyze
+//        ArrayList<Move> moves = movesToSearch(sr);
+//        if (moves.size() == 0)
+//            return;
 
         searchRequest = sr;
         handleQueue();
@@ -443,7 +435,7 @@ public class ComputerPlayer {
                 goStr.append(" searchmoves");
                 for (Move m : sr.searchMoves) {
                     goStr.append(' ');
-//                    goStr.append(TextIO.moveToUCIString(m));
+                    goStr.append(m.getUCCIString());
                 }
             }
             uciEngine.writeLineToEngine(goStr.toString());
@@ -451,24 +443,24 @@ public class ComputerPlayer {
         } else { // Analyze
             StringBuilder posStr = new StringBuilder();
             posStr.append("position fen ");
-//            posStr.append(TextIO.toFEN(sr.prevPos));
+            posStr.append(sr.prevBoard.convertToFEN());
             int nMoves = sr.mList.size();
             if (nMoves > 0) {
                 posStr.append(" moves");
                 for (int i = 0; i < nMoves; i++) {
                     posStr.append(" ");
-//                    posStr.append(TextIO.moveToUCIString(sr.mList.get(i)));
+                    posStr.append(sr.mList.get(i).getUCCIString());
                 }
             }
             uciEngine.writeLineToEngine(posStr.toString());
-            uciEngine.setOption("UCI_AnalyseMode", true);
+//            uciEngine.setOption("UCI_AnalyseMode", true);
             StringBuilder goStr = new StringBuilder(96);
             goStr.append("go infinite");
             if (sr.searchMoves != null) {
                 goStr.append(" searchmoves");
                 for (Move m : sr.searchMoves) {
                     goStr.append(' ');
-//                    goStr.append(TextIO.moveToUCIString(m));
+                    goStr.append(m.getUCCIString());
                 }
             }
             uciEngine.writeLineToEngine(goStr.toString());
@@ -550,6 +542,7 @@ public class ComputerPlayer {
         if (s.length() == 0)
             return;
 
+        Log.d("ComputerPlayer", "processEngineOutput: " + s + " state = " + engineState.state);
         switch (engineState.state) {
             case READ_OPTIONS: {
                 if (readUCIOption(uci, s)) {
@@ -854,7 +847,8 @@ public class ComputerPlayer {
 //                ArrayList<Move> moves = new ArrayList<>();
 //                int nMoves = statPV.size();
 //                for (i = 0; i < nMoves; i++) {
-//                    Move m = TextIO.UCIstringToMove(statPV.get(i));
+////                    Move m = statPV.get(i);
+//                    Move m = null;
 //                    if (m == null)
 //                        break;
 //                    moves.add(m);
@@ -864,8 +858,10 @@ public class ComputerPlayer {
 //                                                 statIsMate, statUpperBound, statLowerBound, moves));
 //            }
         } catch (NumberFormatException nfe) {
+            Log.d("ComputerPlayer", "parseInfoCmd: " + nfe);
             // Ignore
         } catch (ArrayIndexOutOfBoundsException aioob) {
+            Log.d("ComputerPlayer", "parseInfoCmd: " + aioob);
             // Ignore
         }
     }

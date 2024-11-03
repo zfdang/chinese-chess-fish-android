@@ -9,8 +9,8 @@ public class Game {
     //  create public data class HistoryRecord
     public static class HistoryRecord {
         public Move move;
-        public String coordDesc;
-        public String chsDesc;
+        public String ucciString;
+        public String chsString;
         public Board board;
         public int score;
         public long time;
@@ -19,8 +19,8 @@ public class Game {
 
         private HistoryRecord() {
             move = null;
-            coordDesc = "";
-            chsDesc = "";
+            ucciString = "";
+            chsString = "";
             board = null;
             score = 0;
             time = 0;
@@ -28,10 +28,10 @@ public class Game {
             pv = "";
         }
 
-        public HistoryRecord(Move move, String coordDesc, String chsDesc, Board board) {
+        public HistoryRecord(Move move, String ucciString, String chsString, Board board) {
             this.move = move;
-            this.coordDesc = coordDesc;
-            this.chsDesc = chsDesc;
+            this.ucciString = ucciString;
+            this.chsString = chsString;
             // clone board, so that it won't be modified by others
             this.board = new Board(board);
             this.score = 0;
@@ -78,8 +78,8 @@ public class Game {
 
         // create new Move object
         currentMove = new Move(this.startPos, this.endPos, currentBoard);
-        String chsDesc = currentMove.getChineseStyleDescription();
-        String coordDesc = currentMove.getCoordDescription();
+        String chsDesc = currentMove.getChineseStyleString();
+        String coordDesc = currentMove.getUCCIString();
         currentMove.isRedMove = Piece.isRed(piece);
 
         // move piece in currentBoard
@@ -125,6 +125,16 @@ public class Game {
         }
     }
 
+    public ArrayList<Move> getMoveList(){
+        ArrayList<Move> moveList = new ArrayList<>();
+        for(HistoryRecord record : history){
+            if(record.move != null){
+                moveList.add(record.move);
+            }
+        }
+        return moveList;
+    }
+
     public void setStartPos(Position pos) {
         this.startPos = pos;
         this.possibleMoves = Rule.PossibleMoves(currentBoard.getPieceByPosition(pos), pos.x, pos.y, currentBoard);
@@ -136,7 +146,7 @@ public class Game {
 
     public String getLastMoveDesc(){
         HistoryRecord record = history.get(history.size()-1);
-        return record.chsDesc;
+        return record.chsString;
     }
 
     public void clearStartPos(){

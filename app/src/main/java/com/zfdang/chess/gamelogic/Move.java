@@ -51,7 +51,7 @@ public class Move implements Serializable {
     }
 
     // h2e2
-    public String getCoordDescription(){
+    public String getUCCIString(){
         char s, e;
         s = (char)('a' + fromPosition.x);
         e = (char)('a' + toPosition.x);
@@ -69,8 +69,9 @@ public class Move implements Serializable {
     * 4. 对于走斜线的棋子（马、相、士），需要考虑是进退，最后一个数字是目标位置的横坐标
     * 5. 对于红字移动，使用中文的数字；对于黑子移动，使用阿拉伯数字
     * 6. 还需要处理同一列有相同的棋子，使用前后来区分，比如前炮退二，后炮进二？？
+    * https://www.xqbase.com/protocol/cchess_move.htm
      */
-    public String getChineseStyleDescription(){
+    public String getChineseStyleString(){
         if(board == null){
             // depends on board status
             return "未知动作";
