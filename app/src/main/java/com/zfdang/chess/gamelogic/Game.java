@@ -60,6 +60,7 @@ public class Game {
         currentMove = new Move(this.startPos, this.endPos, currentBoard);
         String chsDesc = currentMove.getChineseStyleDescription();
         String coordDesc = currentMove.getCoordDescription();
+        currentMove.isRedMove =Piece.isRed(currentBoard.getPieceByPosition(startPos));
 
         // move piece in currentBoard
         int piece = currentBoard.getPieceByPosition(startPos);
@@ -80,6 +81,33 @@ public class Game {
         startPos = null;
         endPos = null;
         possibleMoves.clear();
+    }
+
+    public GameStatus updateMoveStatus(){
+        boolean isCheck = false;
+        boolean isDead = false;
+        if(currentMove != null) {
+            if(currentMove.isRedMove) {
+                isCheck = Rule.isJiangShuaiInDanger(Piece.BJIANG, currentBoard);
+                if(isCheck) {
+                    isDead = Rule.isJiangShuaiDead(Piece.BJIANG, currentBoard);
+                }
+            } else {
+                isCheck = Rule.isJiangShuaiInDanger(Piece.WSHUAI, currentBoard);
+                if(isCheck) {
+                    isDead = Rule.isJiangShuaiDead(Piece.WSHUAI, currentBoard);
+                }
+            }
+        }
+        if(isDead){
+            isGameOver = true;
+            isCheckMate = true;
+            return GameStatus.CHECKMATE;
+        } else if(isCheck) {
+            return GameStatus.CHECK;
+        } else {
+            return GameStatus.MOVE;
+        }
     }
 
     public void setStartPos(Position pos) {

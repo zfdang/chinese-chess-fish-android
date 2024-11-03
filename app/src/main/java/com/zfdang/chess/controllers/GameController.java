@@ -1,9 +1,11 @@
-package com.zfdang.chess.controls;
+package com.zfdang.chess.controllers;
 
 import com.zfdang.chess.gamelogic.Game;
+import com.zfdang.chess.gamelogic.GameStatus;
 import com.zfdang.chess.gamelogic.Move;
 import com.zfdang.chess.gamelogic.Piece;
 import com.zfdang.chess.gamelogic.Position;
+import com.zfdang.chess.gamelogic.PvInfo;
 import com.zfdang.chess.gamelogic.Rule;
 
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +14,9 @@ import org.petero.droidfish.player.ComputerPlayer;
 import org.petero.droidfish.player.EngineListener;
 import org.petero.droidfish.player.SearchListener;
 
-public class GameController{
+import java.util.ArrayList;
+
+public class GameController implements EngineListener, SearchListener {
     public static final int MAX_MOVES = 2048;
     public ComputerPlayer player;
     public Game game = null;
@@ -21,13 +25,9 @@ public class GameController{
     public boolean isComputerPlaying = true;
     public boolean isAutoPlay = true;
 
-    private EngineListener engineListener = null;
-    private SearchListener searchListener = null;
-    private GameControllerListener controllerListener = null;
-    public GameController(EngineListener eListener, SearchListener sListener, GameControllerListener cListener) {
-        engineListener = eListener;
-        searchListener = sListener;
-        controllerListener = cListener;
+    private GameControllerListener gameControllerListener = null;
+    public GameController(GameControllerListener cListener) {
+        gameControllerListener = cListener;
 
         isComputerPlaying = true;
         isAutoPlay = true;
@@ -39,7 +39,7 @@ public class GameController{
 
         // Initialize computer player
         if(player == null) {
-            player = new ComputerPlayer(engineListener, searchListener);
+            player = new ComputerPlayer(this, this);
             player.setEngineOptions(new EngineOptions());
         }
         player.queueStartEngine(requestId++,"pikafish");
@@ -78,14 +78,14 @@ public class GameController{
             if(Piece.isValid(game.currentBoard.getPieceByPosition(pos))){
                 // and the piece is valid
                 game.setStartPos(pos);
-                controllerListener.onGameSound(GameControllerListener.GameSound.SELECT);
+                gameControllerListener.onGameEvent(GameStatus.SELECT);
             }
         } else {
             // startPos is not empty
             if(game.startPos.equals(pos)) {
                 // click the same position, unselect
                 game.clearStartPos();
-                controllerListener.onGameSound(GameControllerListener.GameSound.SELECT);
+                gameControllerListener.onGameEvent(GameStatus.SELECT);
                 return;
             }
 
@@ -96,18 +96,64 @@ public class GameController{
                 int piece = game.currentBoard.getPieceByPosition(pos);
                 game.setEndPos(pos);
                 game.movePiece();
-                if(Piece.isValid(piece)) {
-                    controllerListener.onGameSound(GameControllerListener.GameSound.CAPTURE);
-                    controllerListener.onGameEvent(GameControllerListener.GameEvent.CAPTURE, "吃子！");
+
+                GameStatus status = game.updateMoveStatus();
+                if(status == GameStatus.CHECKMATE) {
+                    gameControllerListener.onGameEvent(GameStatus.CHECKMATE, "将死！");
+                } else if(status == GameStatus.CHECK) {
+                    gameControllerListener.onGameEvent(GameStatus.CHECK, "将军！");
                 } else {
-                    controllerListener.onGameSound(GameControllerListener.GameSound.MOVE);
-                    controllerListener.onGameEvent(GameControllerListener.GameEvent.MOVE, game.getLastMoveDesc());
+                    gameControllerListener.onGameEvent(GameStatus.MOVE, game.getLastMoveDesc());
                 }
             } else {
-                controllerListener.onGameSound(GameControllerListener.GameSound.ILLEGAL);
-                controllerListener.onGameEvent(GameControllerListener.GameEvent.ILLEGAL, "Illegal move");
+                gameControllerListener.onGameEvent(GameStatus.ILLEGAL);
             }
         }
+
+    }
+
+    @Override
+    public void reportEngineError(String errMsg) {
+
+    }
+
+    @Override
+    public void notifyEngineName(String engineName) {
+
+    }
+
+    @Override
+    public void notifyDepth(int id, int depth) {
+
+    }
+
+    @Override
+    public void notifyCurrMove(int id, Position pos, Move m, int moveNr) {
+
+    }
+
+    @Override
+    public void notifyPV(int id, Position pos, ArrayList<PvInfo> pvInfo, Move ponderMove) {
+
+    }
+
+    @Override
+    public void notifyStats(int id, long nodes, int nps, long tbHits, int hash, int time, int seldepth) {
+
+    }
+
+    @Override
+    public void notifyBookInfo(int id, String bookInfo, ArrayList<Move> moveList, String eco, int distToEcoTree) {
+
+    }
+
+    @Override
+    public void notifySearchResult(int searchId, String bestMove, String nextPonderMove) {
+
+    }
+
+    @Override
+    public void notifyEngineInitialized() {
 
     }
 }

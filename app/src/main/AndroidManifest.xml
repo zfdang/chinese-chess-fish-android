@@ -20,7 +20,7 @@
             android:name=".PromptActivity"
             android:exported="false" />
         <activity
-            android:name=".PlayActivity"
+            android:name=".GameActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:label="@string/title_activity_play"

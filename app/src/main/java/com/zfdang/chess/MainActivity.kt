@@ -6,7 +6,6 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import org.petero.droidfish.player.ComputerPlayer
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,7 +26,7 @@ class MainActivity : AppCompatActivity() {
 
         // Set click listeners
         buttonPlay.setOnClickListener {
-            val intent = Intent(this, PlayActivity::class.java)
+            val intent = Intent(this, GameActivity::class.java)
             startActivity(intent)
         }
 
