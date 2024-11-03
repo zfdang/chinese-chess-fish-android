@@ -23,16 +23,6 @@ import java.util.Map;
 public interface UCIEngine {
 
     /**
-     * For reporting engine error messages.
-     */
-    public interface Report {
-        /**
-         * Report error message to GUI.
-         */
-        void reportError(String errMsg);
-    }
-
-    /**
      * Start engine.
      */
     void initialize();

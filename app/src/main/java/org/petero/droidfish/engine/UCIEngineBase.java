@@ -20,6 +20,8 @@ package org.petero.droidfish.engine;
 
 import android.util.Log;
 
+import org.petero.droidfish.player.EngineListener;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -38,10 +40,10 @@ public abstract class UCIEngineBase implements UCIEngine {
     protected boolean isConfigOk;
 
     public static UCIEngine getEngine(String engine,
-                                      EngineConfig engineConfig, Report report) {
+                                      EngineConfig engineConfig, EngineListener listener) {
         // only pikafishi engine is supported
         if ("pikafish".equals(engine)) {
-            return new PikafishExternalEngine(engineConfig.workDir, report);
+            return new PikafishExternalEngine(engineConfig.workDir, listener);
         } else {
             Log.d("UCIEngineBase", "Unknown engine: " + engine);
             return null;

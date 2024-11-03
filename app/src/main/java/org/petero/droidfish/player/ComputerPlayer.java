@@ -84,7 +84,7 @@ public class ComputerPlayer {
             case SEARCH:
             case PONDER:
             case ANALYZE:
-            case STOP_SEARCH:
+            case STOP_FOR_BESTMOVE:
                 return true;
             default:
                 return false;
@@ -134,7 +134,7 @@ public class ComputerPlayer {
         return modified;
     }
 
-    public synchronized void setEngineUCIOptions(Map<String, String> uciOptions) {
+    public synchronized void setUCIOptions(Map<String, String> uciOptions) {
         pendingOptions.putAll(uciOptions);
         boolean modified = true;
         if (engineState.state == EngineStateValue.IDLE)
@@ -169,7 +169,7 @@ public class ComputerPlayer {
         if (engineState.state == EngineStateValue.PONDER) {
             uciEngine.writeLineToEngine("ponderhit");
             engineState.setState(EngineStateValue.SEARCH);
-//            pvModified = true;
+            pvModified = true;
             notifyListener();
         }
     }
@@ -191,15 +191,16 @@ public class ComputerPlayer {
      * Start an engine, if not already started.
      * Will shut down old engine first, if needed.
      */
-    public final synchronized void queueStartEngine(int id, String engine) {
-        killOldEngine(engine);
+    public final synchronized void queueStartEngine(int id, String engineName) {
+        killOldEngine(engineName);
         stopSearch();
-        searchRequest = SearchRequest.startRequest(id, engine);
+        searchRequest = SearchRequest.startRequest(id, engineName);
         handleQueue();
     }
 
     /**
      * Decide what moves to search. Filters out non-optimal moves if tablebases are used.
+     * 原来遗留的函数，现在没用上
      */
     private ArrayList<Move> movesToSearch(SearchRequest sr) {
         ArrayList<Move> moves = sr.searchMoves;
@@ -231,7 +232,7 @@ public class ComputerPlayer {
             if (moves.size() == 1) {
                 Move bestMove = moves.get(0);
                 // todo
-                searchListener.notifySearchResult(sr.searchId, null, null);
+                searchListener.notifySearchResult(sr.searchId, bestMove.getUCCIString(), null);
                 return;
             }
         }
@@ -241,16 +242,11 @@ public class ComputerPlayer {
     }
 
     /**
-     * Start analyzing a position.
+     * Start analyzing a board.
      */
     public final synchronized void queueAnalyzeRequest(SearchRequest sr) {
         killOldEngine(sr.engineName);
         stopSearch();
-
-//        // If no legal moves, there is nothing to analyze
-//        ArrayList<Move> moves = movesToSearch(sr);
-//        if (moves.size() == 0)
-//            return;
 
         searchRequest = sr;
         handleQueue();
@@ -286,7 +282,7 @@ public class ComputerPlayer {
             case PONDER:
             case ANALYZE:
                 uciEngine.writeLineToEngine("stop");
-                engineState.setState(EngineStateValue.STOP_SEARCH);
+                engineState.setState(EngineStateValue.STOP_FOR_BESTMOVE);
                 return true;
             default:
                 return false;
@@ -294,12 +290,14 @@ public class ComputerPlayer {
     }
 
     /**
-     * Tell engine to move now.
+     * Tell engine to stop searching and return the bestmove immediately.
      */
     public void moveNow() {
-        if (engineState.state == EngineStateValue.SEARCH)
+        if (engineState.state == EngineStateValue.SEARCH || engineState.state == EngineStateValue.ANALYZE) {
             uciEngine.writeLineToEngine("stop");
+        }
     }
+
 
     /**
      * Return true if current search job is equal to id.
@@ -375,17 +373,6 @@ public class ComputerPlayer {
 
         engineState.searchId = searchRequest.searchId;
 
-        // Reduce remaining time if there was an engine delay
-//        if (isSearch) {
-//            long now = System.currentTimeMillis();
-//            int delay = (int)(now - searchRequest.startTime);
-//            boolean wtm = searchRequest.currPos.whiteMove ^ (searchRequest.ponderMove != null);
-//            if (wtm)
-//                searchRequest.wTime = Math.max(1, searchRequest.wTime - delay);
-//            else
-//                searchRequest.bTime = Math.max(1, searchRequest.bTime - delay);
-//        }
-
         // Set strength and MultiPV parameters
         clearInfo();
         if (maxPV > 1) {
@@ -393,43 +380,7 @@ public class ComputerPlayer {
             uciEngine.setOption("MultiPV", num);
         }
 
-        if (isSearch) { // Search or ponder search
-            StringBuilder posStr = new StringBuilder();
-            posStr.append("position fen ");
-//            posStr.append(TextIO.toFEN(sr.prevPos));
-            int nMoves = sr.mList.size();
-            if (nMoves > 0) {
-                posStr.append(" moves");
-                for (int i = 0; i < nMoves; i++) {
-                    posStr.append(" ");
-//                    posStr.append(TextIO.moveToUCIString(sr.mList.get(i)));
-                }
-            }
-            uciEngine.setOption("Ponder", sr.ponderEnabled);
-            uciEngine.setOption("UCI_AnalyseMode", false);
-            uciEngine.writeLineToEngine(posStr.toString());
-            if (sr.wTime < 1) sr.wTime = 1;
-            if (sr.bTime < 1) sr.bTime = 1;
-            StringBuilder goStr = new StringBuilder(96);
-            goStr.append(String.format(Locale.US, "go wtime %d btime %d", sr.wTime, sr.bTime));
-            if (sr.wInc > 0)
-                goStr.append(String.format(Locale.US, " winc %d", sr.wInc));
-            if (sr.bInc > 0)
-                goStr.append(String.format(Locale.US, " binc %d", sr.bInc));
-            if (sr.movesToGo > 0)
-                goStr.append(String.format(Locale.US, " movestogo %d", sr.movesToGo));
-            if (sr.ponderMove != null)
-                goStr.append(" ponder");
-            if (sr.searchMoves != null) {
-                goStr.append(" searchmoves");
-                for (Move m : sr.searchMoves) {
-                    goStr.append(' ');
-                    goStr.append(m.getUCCIString());
-                }
-            }
-            uciEngine.writeLineToEngine(goStr.toString());
-            engineState.setState((sr.ponderMove == null) ? EngineStateValue.SEARCH : EngineStateValue.PONDER);
-        } else { // Analyze
+        if (isAnalyze){
             StringBuilder posStr = new StringBuilder();
             posStr.append("position fen ");
             posStr.append(sr.prevBoard.toFENString());
@@ -442,16 +393,12 @@ public class ComputerPlayer {
                 }
             }
             uciEngine.writeLineToEngine(posStr.toString());
-            uciEngine.setOption("UCI_AnalyseMode", true);
+            // pikafish doesn't support "UCI_AnalyseMode" command
+//            uciEngine.setOption("UCI_AnalyseMode", true);
             StringBuilder goStr = new StringBuilder(96);
+            // 这里的命令可以根据需要设置
+            // https://backscattering.de/chess/uci/#gui-go-searchmoves
             goStr.append("go depth 20");
-            if (sr.searchMoves != null) {
-                goStr.append(" searchmoves");
-                for (Move m : sr.searchMoves) {
-                    goStr.append(' ');
-                    goStr.append(m.getUCCIString());
-                }
-            }
             uciEngine.writeLineToEngine(goStr.toString());
             engineState.setState(EngineStateValue.ANALYZE);
         }
@@ -464,13 +411,7 @@ public class ComputerPlayer {
         myAssert(engineState.state == EngineStateValue.DEAD);
         myAssert(searchRequest != null);
 
-        uciEngine = UCIEngineBase.getEngine(searchRequest.engineName,
-                engineConfig,
-                errMsg -> {
-                    if (errMsg == null)
-                        errMsg = "";
-                    engineListener.reportEngineError(errMsg);
-                });
+        uciEngine = UCIEngineBase.getEngine(searchRequest.engineName, engineConfig, engineListener);
         uciEngine.initialize();
 
         final UCIEngine uci = uciEngine;
@@ -565,7 +506,6 @@ public class ComputerPlayer {
                             Log.d("ComputerPlayer", "nextPonderMoveStr: " + nextPonderMoveStr);
                         }
 
-//                        if (engineState.state == EngineStateValue.SEARCH)
                         reportMove(bestMoveStr, nextPonderMoveStr);
 
                         engineState.setState(EngineStateValue.IDLE);
@@ -575,7 +515,7 @@ public class ComputerPlayer {
                 }
                 break;
             }
-            case STOP_SEARCH: {
+            case STOP_FOR_BESTMOVE: {
                 String[] tokens = tokenize(s);
                 if (tokens[0].equals("bestmove")) {
                     uci.writeLineToEngine("isready");
