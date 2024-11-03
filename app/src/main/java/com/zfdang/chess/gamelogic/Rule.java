@@ -397,7 +397,8 @@ public class Rule {
     }
 
     /*
-    判断是否已经结束
+       判断将帅是否被将死，
+       目前的逻辑还有问题，需要去修改
      */
     public static boolean isJiangShuaiDead(int piece, Board board) {
         if (piece == Piece.WSHUAI) {
@@ -525,17 +526,17 @@ public class Rule {
         // validate fromx, fromy, tox, toy
         if (fromX < 0 || fromX >= Board.BOARD_PIECE_WIDTH || fromY < 0 || fromY >= Board.BOARD_PIECE_HEIGHT
                 || toX < 0 || toX >= Board.BOARD_PIECE_WIDTH || toY < 0 || toY >= Board.BOARD_PIECE_HEIGHT) {
-            Log.e("Rule", "CanMove: 位置不合法" + fromX + " " + fromY + " " + toX + " " + toY);
+//            Log.e("Rule", "CanMove: 位置不合法" + fromX + " " + fromY + " " + toX + " " + toY);
             return false;
         }
 
         if(fromX == toX && fromY == toY){
-            Log.d("Rule", "CanMove: 位置相同" + fromX + " " + fromY + " " + toX + " " + toY);
+//            Log.d("Rule", "CanMove: 位置相同" + fromX + " " + fromY + " " + toX + " " + toY);
             return false;
         }
 
         if (onSameSide(board.getPieceByPosition(fromX, fromY), board.getPieceByPosition(toX, toY))) {
-            Log.d("Rule", "CanMove: 不能吃自己的棋子");
+//            Log.d("Rule", "CanMove: 不能吃自己的棋子");
             return false;
         }
 

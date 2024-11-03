@@ -13,19 +13,15 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
 
-import com.zfdang.chess.ChessApp;
 import com.zfdang.chess.R;
 import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Game;
 import com.zfdang.chess.gamelogic.Piece;
 import com.zfdang.chess.gamelogic.Position;
 import com.zfdang.chess.utils.ArrowShape;
-import com.zfdang.chess.utils.DrawableUtil;
 
 import android.graphics.Path;
-import android.graphics.Matrix;
 
 
 public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
@@ -111,7 +107,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void Draw(Canvas canvas) {
-        canvas.drawColor(Color.WHITE);
+//        canvas.drawColor(Color.WHITE);
 
         // draw chess board
         canvas.drawBitmap(ChessBoardBitmap, srcBoardRect, destBoardRect, null);
@@ -124,7 +120,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
             for (int y = 0; y < Board.BOARD_PIECE_HEIGHT; y++) {
                 Position pos = new Position(x, y);
                 int piece = board.getPieceByPosition(pos);
-                if (piece > 0) {
+                if (Piece.isValid(piece)) {
                     // valid piece, draw the bitmap
                     Bitmap bitmap = PieceBitmaps[piece-1];
                     tempSrcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
@@ -134,30 +130,33 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
 
-        // draw selected piece
         if(game.startPos != null) {
+            // highlight selected piece
             HighlighSelectedPiece(canvas);
+
+            // show all possible moves for selected piece
+            int piece = game.currentBoard.getPieceByPosition(game.startPos);
+            // draw all possible moves
+            if(Piece.isRed(piece)) {
+                tempSrcRect = new Rect(0, 0, R_pot.getWidth(), R_pot.getHeight());
+                for (Position pos : game.possibleMoves) {
+                    tempDesRect = getDestRect(pos);
+                    canvas.drawBitmap(R_pot, tempSrcRect, tempDesRect, null);
+                }
+            } else if(Piece.isBlack(piece)){
+                tempSrcRect = new Rect(0, 0, B_pot.getWidth(), B_pot.getHeight());
+                for (Position pos : game.possibleMoves) {
+                    tempDesRect = getDestRect(pos);
+                    canvas.drawBitmap(B_pot, tempSrcRect, tempDesRect, null);
+                }
+            }
         }
 
-        // draw path of last move
-        if(game.historyRecords.size() > 1) {
+        // draw arrows for last moves
+        if(game.history.size() > 1) {
             DrawMoveHistory(canvas);
         }
 
-        // draw all possible moves
-        if(Piece.isRed(game.currentBoard.getPieceByPosition(game.startPos))) {
-            tempSrcRect = new Rect(0, 0, R_pot.getWidth(), R_pot.getHeight());
-            for (Position pos : game.possibleMoves) {
-                tempDesRect = getDestRect(pos);
-                canvas.drawBitmap(R_pot, tempSrcRect, tempDesRect, null);
-            }
-        } else {
-            tempSrcRect = new Rect(0, 0, B_pot.getWidth(), B_pot.getHeight());
-            for (Position pos : game.possibleMoves) {
-                tempDesRect = getDestRect(pos);
-                canvas.drawBitmap(B_pot, tempSrcRect, tempDesRect, null);
-            }
-        }
     }
 
     private void HighlighSelectedPiece(Canvas canvas) {
@@ -181,19 +180,17 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
 
     private void DrawMoveHistory(Canvas canvas) {
         Board board = game.currentBoard;
-        XYCoord crd0 = getCoordByPosition(game.currentMove.fromPosition);
-        XYCoord crd1 = getCoordByPosition(game.currentMove.toPosition);
+        XYCoord crd0, crd1;
 
         Paint p = new Paint();
         p.setStyle(Paint.Style.FILL);
         p.setAntiAlias(true);
-        p.setColor(Color.RED);
 
         // draw arrow for the last several moves in historyMoves
-        int max_last_moves = 2;
+        int num_of_moves = 2;
         // game.historyRecords.get(0) is game without any move
-        for(int i = game.historyRecords.size() - 1; i >= 1 && i >= game.historyRecords.size() - max_last_moves; i--) {
-            Game.HistoryRecord record = game.historyRecords.get(i);
+        for(int i = game.history.size() - 1; i >= 1 && i >= game.history.size() - num_of_moves; i--) {
+            Game.HistoryRecord record = game.history.get(i);
             crd0 = getCoordByPosition(record.move.fromPosition);
             crd1 = getCoordByPosition(record.move.toPosition);
 
@@ -204,21 +201,24 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
                 p.setColor(Color.BLACK);
             }
 
-            // alpha, two moves share the same value
-            int idx = (game.historyRecords.size() - 1 - i);
+            // calculate alpha value, the last move is the most opaque one
+            int idx = (game.history.size() - 1 - i);
             int value = 200 - idx * 50;
             if(value < 0) value = 0;
             p.setAlpha(value);
+
             DrawArrow(canvas, crd0, crd1, p, null);
         }
     }
 
+    /*
+        * 画箭头，并在箭头上显示bitmap。这个bitmap一般是数字，来标识箭头
+     */
     void DrawArrow(Canvas canvas, XYCoord crd0, XYCoord crd1, Paint p, Bitmap bitmap) {
         ArrowShape arrow = new ArrowShape();
         Path path = new Path();
         arrow.getTransformedPath(path, crd0.x, crd0.y, crd1.x, crd1.y);
         canvas.drawPath(path, p);
-
 
         if(bitmap != null) {
             int offset_to_endpos = 80;

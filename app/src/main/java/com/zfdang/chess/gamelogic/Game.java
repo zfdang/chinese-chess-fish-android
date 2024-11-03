@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
-
-
     //  create public data class HistoryRecord
     public static class HistoryRecord {
         public Move move;
@@ -18,20 +16,42 @@ public class Game {
         public long time;
         public String bestMove;
         public String pv;
+
+        private HistoryRecord() {
+            move = null;
+            coordDesc = "";
+            chsDesc = "";
+            board = null;
+            score = 0;
+            time = 0;
+            bestMove = "";
+            pv = "";
+        }
+
+        public HistoryRecord(Move move, String coordDesc, String chsDesc, Board board) {
+            this.move = move;
+            this.coordDesc = coordDesc;
+            this.chsDesc = chsDesc;
+            // clone board, so that it won't be modified by others
+            this.board = new Board(board);
+            this.score = 0;
+            this.time = 0;
+            this.bestMove = "";
+            this.pv = "";
+        }
     }
 
     // create ListArray of HistoryRecord
-    public ArrayList<HistoryRecord> historyRecords = new ArrayList<>();
+    public ArrayList<HistoryRecord> history = new ArrayList<>();
 
     public Board currentBoard = null;
     public Move currentMove = null;
-
-    public boolean isGameOver = false;
-    public boolean isCheckMate = false;
     public Position startPos =  null;
     public Position endPos = null;
     public List<Position> possibleMoves = new ArrayList<>();
 
+    public boolean isGameOver = false;
+    public boolean isCheckMate = false;
 
     public Game(){
         initGame();
@@ -41,10 +61,8 @@ public class Game {
     {
         currentBoard = new Board();
 
-        HistoryRecord record = new HistoryRecord();
-        record.board = new Board(currentBoard);
-        record.move = null;
-        historyRecords.add(record);
+        HistoryRecord record = new HistoryRecord(null, "新开局", "新开局", currentBoard);
+        history.add(record);
 
         startPos = null;
         endPos = null;
@@ -56,26 +74,23 @@ public class Game {
             return;
         }
 
+        int piece = currentBoard.getPieceByPosition(startPos);
+
         // create new Move object
         currentMove = new Move(this.startPos, this.endPos, currentBoard);
         String chsDesc = currentMove.getChineseStyleDescription();
         String coordDesc = currentMove.getCoordDescription();
-        currentMove.isRedMove =Piece.isRed(currentBoard.getPieceByPosition(startPos));
+        currentMove.isRedMove = Piece.isRed(piece);
 
         // move piece in currentBoard
-        int piece = currentBoard.getPieceByPosition(startPos);
         currentBoard.setPieceByPosition(endPos, piece);
         currentBoard.clearPieceByPosition(startPos);
 
-        // save the move to historyRecords
-        HistoryRecord record = new HistoryRecord();
-        record.board = new Board(currentBoard);
-        record.move = currentMove;
-        record.coordDesc = coordDesc;
-        record.chsDesc = chsDesc;
-        historyRecords.add(record);
+        // save move to history
+        HistoryRecord record = new HistoryRecord(currentMove, coordDesc, chsDesc, currentBoard);
+        history.add(record);
 
-        Log.d("Game", "Move piece from " + startPos.toString() + " to " + endPos.toString());
+        Log.d("Game", "Move piece " + Piece.getNameByValue(piece) + " from " + startPos.toString() + " to " + endPos.toString());
 
         // clear startPos and endPos
         startPos = null;
@@ -120,10 +135,9 @@ public class Game {
     }
 
     public String getLastMoveDesc(){
-        if(historyRecords.size() <= 2) return "";
-        return historyRecords.get(historyRecords.size()-1).chsDesc;
+        HistoryRecord record = history.get(history.size()-1);
+        return record.chsDesc;
     }
-
 
     public void clearStartPos(){
         this.startPos = null;

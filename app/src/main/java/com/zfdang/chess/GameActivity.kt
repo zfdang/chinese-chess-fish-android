@@ -248,6 +248,9 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
 
         // play sound
         playGameSound(status)
+
+        // update history table
+        moveHistoryAdapter.populateTable()
     }
 
     override fun onGameEvent(event: GameStatus?) {
