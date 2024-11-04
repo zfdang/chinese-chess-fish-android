@@ -119,6 +119,10 @@ public class GameController implements EngineListener, SearchListener {
                 } else {
                     gui.onGameEvent(GameStatus.MOVE, game.getLastMoveDesc());
                 }
+
+                if(isAutoPlay && isComputerPlaying) {
+                    playerForward();
+                }
             } else {
                 gui.onGameEvent(GameStatus.ILLEGAL);
             }
