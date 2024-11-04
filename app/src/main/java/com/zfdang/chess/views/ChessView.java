@@ -196,7 +196,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
             crd1 = getCoordByPosition(record.move.toPosition);
 
             // color
-            if(record.move.isRedMove) {
+            if(Piece.isRed(record.move.piece)) {
                 p.setColor(Color.RED);
             } else {
                 p.setColor(Color.BLACK);

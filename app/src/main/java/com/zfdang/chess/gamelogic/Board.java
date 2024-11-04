@@ -31,6 +31,7 @@ public class Board {
     };
 
     public static boolean isValidPosition(Position pos) {
+        if(pos == null) return false;
         return pos.x >= 0 && pos.x < BOARD_PIECE_WIDTH && pos.y >= 0 && pos.y < BOARD_PIECE_HEIGHT;
     }
 
@@ -117,8 +118,7 @@ public class Board {
     * Set piece value by position， it should not be called directly
      */
     public boolean setPieceByPosition(Position pos, int value){
-
-        if (pos.x >= 0 && pos.x <= BOARD_PIECE_WIDTH && pos.y >= 0 && pos.y <= BOARD_PIECE_HEIGHT && Piece.isValid(value)) {
+        if (isValidPosition(pos) && Piece.isValid(value)) {
             piece[pos.y][pos.x] = value;
             return true;
         } else {
@@ -127,8 +127,7 @@ public class Board {
     }
 
     public boolean clearPieceByPosition(Position pos){
-
-        if (pos.x >= 0 && pos.x <= BOARD_PIECE_WIDTH && pos.y >= 0 && pos.y <= BOARD_PIECE_HEIGHT) {
+        if (isValidPosition(pos)) {
             piece[pos.y][pos.x] = Piece.EMPTY;
             return true;
         } else {
@@ -147,7 +146,7 @@ public class Board {
     }
 
     public int getPieceByPosition(Position pos) {
-        if (pos.x >= 0 && pos.x <= 8 && pos.y >= 0 && pos.y <= 9) {
+        if(isValidPosition(pos)){
             return piece[pos.y][pos.x];
         } else {
             return -1;
@@ -155,7 +154,7 @@ public class Board {
     }
 
     public int getPieceByPosition(int x, int y) {
-        if (x >= 0 && x <= 8 && y >= 0 && y <= 9) {
+        if (x >= 0 && x <= BOARD_PIECE_WIDTH && y >= 0 && y <= BOARD_PIECE_HEIGHT) {
             return piece[y][x];
         } else {
             return -1;
@@ -202,6 +201,7 @@ public class Board {
     }
 
     public boolean restoreFromFEN(String fenString) {
+        if(fenString == null) return false;
         fenString = fenString.trim();
         String[] parts = fenString.split(" ");
         if (parts.length != 6) {

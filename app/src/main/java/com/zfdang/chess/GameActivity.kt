@@ -250,7 +250,7 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
     override fun onGameEvent(status: GameStatus?, message: String?) {
         Log.d(  "PlayActivity", "onGameEvent: $status, $message")
         when(status) {
-            GameStatus.ILLEGAL -> setStatusText("非法走法！")
+            GameStatus.ILLEGAL -> message?.let { setStatusText(it) }
             GameStatus.MOVE -> message?.let { setStatusText(it) }
             GameStatus.CAPTURE -> message?.let { setStatusText(it) }
             GameStatus.CHECK -> message?.let { setStatusText(it) }
