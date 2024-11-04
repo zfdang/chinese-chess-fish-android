@@ -20,32 +20,41 @@ import org.petero.droidfish.player.SearchRequest;
 import java.util.ArrayList;
 
 public class GameController implements EngineListener, SearchListener {
+    public ComputerPlayer player = null;
+    private String engineName = "pikafish";
     public static final int MAX_MOVES = 2048;
-    public ComputerPlayer player;
+
     public Game game = null;
     public Game oldGame = null;
     private int searchId;
+    private long searchStartTime;
+    private long searchEndTime;
+
     public boolean isComputerPlaying = true;
     public boolean isAutoPlay = true;
-    private String engineName = "pikafish";
 
     private GameControllerListener gui = null;
+
+    private boolean isRedTurn;
+
     public GameController(GameControllerListener cListener) {
         gui = cListener;
 
         isComputerPlaying = true;
         isAutoPlay = true;
         searchId = 0;
-    }
-
-    public void newGame() {
-        game = new Game();
 
         // Initialize computer player
         if(player == null) {
             player = new ComputerPlayer(this, this);
         }
-        player.queueStartEngine(searchId++,engineName);
+        player.queueStartEngine(searchId++, engineName);
+        newGame();
+    }
+
+    public void newGame() {
+        isRedTurn = true;
+        game = new Game();
         player.uciNewGame();
     }
 
@@ -56,26 +65,24 @@ public class GameController implements EngineListener, SearchListener {
     public void toggleAutoPlay() {
         isAutoPlay = !isAutoPlay;
     }
-    public void nextMove(){
-        // 判断当前move是否合法
-        game.movePiece();
 
-        // 如果合法的话，就发送给引擎
-        String fen = game.currentBoard.toFENString();
-
-        player.sendToEngine("position fen rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1 moves h2e2 h9g7 h0g2 g6g5");
-        player.sendToEngine("go depth 5");
-    }
+    private void toggleTurn() { isRedTurn = !isRedTurn; }
 
     public void playerBack() {
 
     }
 
+    // player to play his turn
     public void playerForward() {
-        long now = System.currentTimeMillis();
+        if(isRedTurn) {
+            // play only plays the black
+            return;
+        }
 
+        // trigger searchrequest, engine will call notifySearchResult for bestmove
+        searchStartTime = System.currentTimeMillis();
         SearchRequest sr = SearchRequest.searchRequest(
-                searchId,
+                searchId++,
                 game.history.get(0).board,
                 game.getMoveList(),
                 new Board(game.currentBoard),
@@ -107,20 +114,11 @@ public class GameController implements EngineListener, SearchListener {
             Move tempMove = new Move(game.startPos, pos, game.currentBoard);
             boolean valid = Rule.isValidMove(tempMove, game.currentBoard);
             if(valid) {
-                int piece = game.currentBoard.getPieceByPosition(pos);
                 game.setEndPos(pos);
-                game.movePiece();
 
-                GameStatus status = game.updateMoveStatus();
-                if(status == GameStatus.CHECKMATE) {
-                    gui.onGameEvent(GameStatus.CHECKMATE, "将死！");
-                } else if(status == GameStatus.CHECK) {
-                    gui.onGameEvent(GameStatus.CHECK, "将军！");
-                } else {
-                    gui.onGameEvent(GameStatus.MOVE, game.getLastMoveDesc());
-                }
+                doMoveAndUpdateStatus();
 
-                if(isAutoPlay && isComputerPlaying) {
+                if(isAutoPlay && isComputerPlaying && !isRedTurn) {
                     playerForward();
                 }
             } else {
@@ -135,26 +133,56 @@ public class GameController implements EngineListener, SearchListener {
     }
 
     public void playerMovePiece(String bestmove) {
+        // validate the move
         Move move = new Move(game.currentBoard);
         boolean result = move.fromUCCIString(bestmove);
+
         if(result) {
             Log.d("GameController", "Player move: " + move.getChsString());
 
-            game.startPos = move.fromPosition;
-            game.endPos = move.toPosition;
-            game.movePiece();
-
-            GameStatus status = game.updateMoveStatus();
-            if(status == GameStatus.CHECKMATE) {
-                gui.onGameEvent(GameStatus.CHECKMATE);
-            } else if(status == GameStatus.CHECK) {
-                gui.onGameEvent(GameStatus.CHECK);
-            } else {
-                gui.onGameEvent(GameStatus.MOVE);
-            }
+            game.setStartPos(move.fromPosition);
+            game.setEndPos(move.toPosition);
+            doMoveAndUpdateStatus();
         }
     }
 
+
+    public void doMoveAndUpdateStatus(){
+        // game.startPos & game.endPos should be ready
+
+        // check piece color to move
+        int piece = game.currentBoard.getPieceByPosition(game.startPos);
+        if(Piece.isRed(piece) != isRedTurn) {
+            Log.e("GameController", "Invalid move, piece color is not match");
+            if(isRedTurn) {
+                gui.onGameEvent(GameStatus.ILLEGAL, "该红方出着");
+            } else {
+                gui.onGameEvent(GameStatus.ILLEGAL, "该黑方出着");
+            }
+            // reset start/end position
+            game.startPos = null;
+            game.endPos = null;
+            return;
+        }
+
+        game.movePiece();
+
+        // update controller status
+        toggleTurn();
+
+        // update game status after the move
+        GameStatus status = game.updateGameStatus();
+
+        // send notification to GUI
+        if(status == GameStatus.CHECKMATE) {
+            gui.onGameEvent(GameStatus.CHECKMATE, "将死！");
+        } else if(status == GameStatus.CHECK) {
+            gui.onGameEvent(GameStatus.CHECK, "将军！");
+        } else {
+            gui.onGameEvent(GameStatus.MOVE, game.getLastMoveDesc());
+        }
+
+    }
 
     @Override
     public void reportEngineError(String errMsg) {
@@ -197,6 +225,7 @@ public class GameController implements EngineListener, SearchListener {
     @Override
     public void notifySearchResult(int searchId, String bestMove, String nextPonderMove) {
         Log.d("GameController", "Search result: bestMove=" + bestMove + ", nextPonderMove=" + nextPonderMove);
+        searchEndTime = System.currentTimeMillis();
         gui.runOnUIThread(() -> playerMovePiece(bestMove));
     }
 

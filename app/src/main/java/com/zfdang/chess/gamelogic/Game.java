@@ -80,7 +80,6 @@ public class Game {
         currentMove = new Move(this.startPos, this.endPos, currentBoard);
         String chsDesc = currentMove.getChsString();
         String coordDesc = currentMove.getUCCIString();
-        currentMove.isRedMove = Piece.isRed(piece);
 
         // move piece in currentBoard
         currentBoard.doMove(currentMove);
@@ -97,11 +96,11 @@ public class Game {
         possibleMoves.clear();
     }
 
-    public GameStatus updateMoveStatus(){
+    public GameStatus updateGameStatus(){
         boolean isCheck = false;
         boolean isDead = false;
         if(currentMove != null) {
-            if(currentMove.isRedMove) {
+            if(Piece.isRed(currentMove.piece)) {
                 isCheck = Rule.isJiangShuaiInDanger(Piece.BJIANG, currentBoard);
                 if(isCheck) {
                     isDead = Rule.isJiangShuaiDead(Piece.BJIANG, currentBoard);

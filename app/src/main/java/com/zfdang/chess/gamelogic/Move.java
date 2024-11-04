@@ -11,7 +11,7 @@ public class Move implements Serializable {
 
     public Position fromPosition;
     public Position toPosition;
-    public boolean isRedMove = false;
+    public int piece;
 
     // create hashmap to convert Arabic numerals to Chinese numerals
     public static final HashMap<Integer, String> arabicToChineseMap = new HashMap<>();
@@ -26,11 +26,12 @@ public class Move implements Serializable {
         arabicToChineseMap.put(8, "八");
         arabicToChineseMap.put(9, "九");
     }
+
     public Move(Position fromPosition, Position toPosition, Board board) {
         this.fromPosition = fromPosition;
         this.toPosition = toPosition;
-        this.board = board;
-        updateMoveColor();
+        this.board = new Board(board);
+        updatePieceInfo();
     }
 
     public Move(Position fromPosition, Position toPosition) {
@@ -39,31 +40,30 @@ public class Move implements Serializable {
     }
 
     public Move(Board board) {
-        this.board = board;
+        this.board = new Board(board);
     }
 
     public void setBoard(Board board) {
-        this.board = board;
-        updateMoveColor();
+        this.board = new Board(board);
+        updatePieceInfo();
     }
 
     public void setPositions(Position fromPosition, Position toPosition){
         this.fromPosition = fromPosition;
         this.toPosition = toPosition;
-        updateMoveColor();
+        updatePieceInfo();
     }
 
-    private void updateMoveColor(){
+    private void updatePieceInfo(){
         if(board == null || fromPosition == null || toPosition == null){
             return;
         }
-        int piece = board.getPieceByPosition(fromPosition);
-        isRedMove = Piece.isRed(piece);
+        piece = board.getPieceByPosition(fromPosition);
     }
 
 
     public boolean fromUCCIString(String ucciString){
-        if(ucciString.length() != 4){
+        if(ucciString == null || ucciString.length() != 4){
             return false;
         }
 
@@ -83,7 +83,7 @@ public class Move implements Serializable {
             toPosition = pos;
         }
 
-        updateMoveColor();
+        updatePieceInfo();
 
         return true;
     }
