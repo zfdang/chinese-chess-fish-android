@@ -93,6 +93,18 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
 
         // set status text
         setStatusText("电脑执黑，自动走棋")
+
+        // init button status
+        if(controller.isAutoPlay) {
+            binding.autoplaybt.setImageResource(R.drawable.play_circle)
+        } else {
+            binding.autoplaybt.setImageResource(R.drawable.pause_circle)
+        }
+        if(controller.isComputerPlaying){
+            binding.playerbt.setImageResource(R.drawable.computer)
+        } else {
+            binding.playerbt.setImageResource(R.drawable.person)
+        }
     }
 
     // fun to load audio files in raw
