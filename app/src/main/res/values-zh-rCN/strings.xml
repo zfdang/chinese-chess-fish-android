@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">象棋鱼</string>
+    <string name="title_activity_play">游戏活动</string>
+    <string name="dummy_button">虚拟按钮</string>
+    <string name="dummy_content">虚拟\n内容</string>
+
+    <string name="engine_terminated">引擎终止</string>
+    <string name="uci_protocol_error">UCI协议错误</string>
+    <string name="failed_to_start_engine">无法启动引擎</string>
+
+</resources>
