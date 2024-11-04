@@ -19,7 +19,7 @@ public class MoveTest {
     }
 
     @Test
-    public void testGetChineseStyleString() {
+    public void testGetChsString() {
         Board board = new Board();
         Move move = new Move(board);
 
@@ -27,49 +27,49 @@ public class MoveTest {
         move.fromPosition = new Position(8, 9);
         move.toPosition = new Position(8, 3);
         board.setPieceByPosition(move.fromPosition, Piece.WJU); // Set a piece at the from position
-        assertEquals("车一进六", move.getChineseStyleString());
+        assertEquals("车一进六", move.getChsString());
 
         move.fromPosition = new Position(2, 2);
         move.toPosition = new Position(2, 9);
         board.setPieceByPosition(move.fromPosition, Piece.WPAO); // Set a piece at the from position
-        assertEquals("炮七退七", move.getChineseStyleString());
+        assertEquals("炮七退七", move.getChsString());
 
         move.fromPosition = new Position(2, 9);
         move.toPosition = new Position(4, 7);
         board.setPieceByPosition(move.fromPosition, Piece.WXIANG); // Set a piece at the from position
-        assertEquals("相七进五", move.getChineseStyleString());
+        assertEquals("相七进五", move.getChsString());
 
         move.fromPosition = new Position(5, 8);
         move.toPosition = new Position(4, 8);
         board.setPieceByPosition(move.fromPosition, Piece.WSHUAI); // Set a piece at the from position
-        assertEquals("帅四平五", move.getChineseStyleString());
+        assertEquals("帅四平五", move.getChsString());
 
         move.fromPosition = new Position(3, 7);
         move.toPosition = new Position(4, 8);
         board.setPieceByPosition(move.fromPosition, Piece.WSHI); // Set a piece at the from position
-        assertEquals("仕六退五", move.getChineseStyleString());
+        assertEquals("仕六退五", move.getChsString());
 
         // black pieces
 
         move.fromPosition = new Position(3, 9);
         move.toPosition = new Position(3, 8) ;
         board.setPieceByPosition(move.fromPosition, Piece.BJU); // Set a piece at the from position
-        assertEquals("车4退1", move.getChineseStyleString());
+        assertEquals("车4退1", move.getChsString());
 
         move.fromPosition = new Position(7, 7);
         move.toPosition = new Position(3, 7) ;
         board.setPieceByPosition(move.fromPosition, Piece.BPAO); // Set a piece at the from position
-        assertEquals("炮8平4", move.getChineseStyleString());
+        assertEquals("前炮平4", move.getChsString());
 
         move.fromPosition = new Position(2, 0);
         move.toPosition = new Position(4, 2) ;
         board.setPieceByPosition(move.fromPosition, Piece.BXIANG); // Set a piece at the from position
-        assertEquals("象3进5", move.getChineseStyleString());
+        assertEquals("象3进5", move.getChsString());
 
         move.fromPosition = new Position(2, 2);
         move.toPosition = new Position(1, 4) ;
         board.setPieceByPosition(move.fromPosition, Piece.BMA); // Set a piece at the from position
-        assertEquals("马3进2", move.getChineseStyleString());
+        assertEquals("马3进2", move.getChsString());
     }
 
     @Test
