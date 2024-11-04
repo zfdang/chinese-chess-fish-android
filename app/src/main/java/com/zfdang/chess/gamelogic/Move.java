@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 public class Move implements Serializable {
-    public Board board = null;
+    private Board board = null;
 
     public Position fromPosition;
     public Position toPosition;
@@ -33,8 +33,23 @@ public class Move implements Serializable {
         updateMoveColor();
     }
 
+    public Move(Position fromPosition, Position toPosition) {
+        this.fromPosition = fromPosition;
+        this.toPosition = toPosition;
+    }
+
     public Move(Board board) {
         this.board = board;
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
+        updateMoveColor();
+    }
+
+    public void setPositions(Position fromPosition, Position toPosition){
+        this.fromPosition = fromPosition;
+        this.toPosition = toPosition;
         updateMoveColor();
     }
 
@@ -43,15 +58,9 @@ public class Move implements Serializable {
             return;
         }
         int piece = board.getPieceByPosition(fromPosition);
-        if(Piece.isValid(piece)) {
-            isRedMove = Piece.isRed(piece);
-        }
+        isRedMove = Piece.isRed(piece);
     }
 
-    public Move(Position fromPosition, Position toPosition) {
-        this.fromPosition = fromPosition;
-        this.toPosition = toPosition;
-    }
 
     public boolean fromUCCIString(String ucciString){
         if(ucciString.length() != 4){

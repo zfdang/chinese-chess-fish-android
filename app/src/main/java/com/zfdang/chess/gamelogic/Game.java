@@ -83,8 +83,7 @@ public class Game {
         currentMove.isRedMove = Piece.isRed(piece);
 
         // move piece in currentBoard
-        currentBoard.setPieceByPosition(endPos, piece);
-        currentBoard.clearPieceByPosition(startPos);
+        currentBoard.doMove(currentMove);
 
         // save move to history
         HistoryRecord record = new HistoryRecord(currentMove, coordDesc, chsDesc, currentBoard);
