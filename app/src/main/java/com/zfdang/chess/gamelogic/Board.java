@@ -1,5 +1,7 @@
 package com.zfdang.chess.gamelogic;
 
+import java.util.ArrayList;
+
 /**
  * Created by zfdang on 2016-4-17.
  * This class represents the chess board data, basically it's represention of FEN string;
@@ -45,6 +47,75 @@ public class Board {
         }
     }
 
+    public boolean doMove(Move move){
+        if(move == null) return false;
+
+        Position start = move.fromPosition;
+        Position end = move.toPosition;
+        if(!isValidPosition(start) || !isValidPosition(end)) return false;
+
+        int piece = getPieceByPosition(start);
+        if (!Piece.isValid(piece)) {
+            return false;
+        }
+
+        // move piece to end position
+        setPieceByPosition(end, piece);
+        // clear start position
+        clearPieceByPosition(start);
+        return true;
+    }
+
+    public boolean doMoves(ArrayList<Move> moves){
+        if(moves == null) return false;
+
+        // clone one board, and do moves on the cloned board
+        Board clonedBoard = new Board(this);
+        for(Move move : moves){
+            if(!clonedBoard.doMove(move)) return false;
+        }
+
+        // now it's ok to do moves on the real board
+        for(Move move : moves){
+            doMove(move);
+        }
+        return true;
+    }
+
+    public boolean doMoveFromString(String ucciString){
+        Move move = new Move(this);
+        if(!move.fromUCCIString(ucciString)) return false;
+        return doMove(move);
+    }
+
+    public boolean doMovesFromUCCIStrings(ArrayList<String> ucciStrings){
+        if(ucciStrings == null) return false;
+
+        // clone one board, and do moves on the cloned board
+        Board clonedBoard = new Board(this);
+
+        // convert ucci strings to moves
+        ArrayList<Move> moves = new ArrayList<>();
+        for(String ucciString : ucciStrings){
+            Move m = new Move(this);
+            if(!m.fromUCCIString(ucciString)) return false;
+            if(!clonedBoard.doMove(m)) return false;
+
+            moves.add(m);
+        }
+
+        // now it's ok to do moves on the real board
+        for(Move move : moves){
+            doMove(move);
+        }
+        return true;
+    }
+
+
+
+    /*
+    * Set piece value by position， it should not be called directly
+     */
     public boolean setPieceByPosition(Position pos, int value){
 
         if (pos.x >= 0 && pos.x <= BOARD_PIECE_WIDTH && pos.y >= 0 && pos.y <= BOARD_PIECE_HEIGHT && Piece.isValid(value)) {
@@ -127,7 +198,6 @@ public class Board {
             }
         }
         String result = String.format("%s %s - - %s %s", fen, bRedGo ? "w" : "b", 0, rounds);
-//        Log.d("Board", "FEN: " + result);
         return result;
     }
 
