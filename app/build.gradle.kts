@@ -80,7 +80,7 @@ android {
         outputs.all { output ->
             if (output is BaseVariantOutputImpl) {
                 val date = SimpleDateFormat("yyyyMMdd").format(Date())
-                val filename = "CChess_${date}_${versionCode}_${name}.apk"
+                val filename = "ChessFish_${date}_${versionCode}_${name}.apk"
                 output.outputFileName = filename
             }
             true
