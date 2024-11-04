@@ -78,7 +78,7 @@ public class Game {
 
         // create new Move object
         currentMove = new Move(this.startPos, this.endPos, currentBoard);
-        String chsDesc = currentMove.getChineseStyleString();
+        String chsDesc = currentMove.getChsString();
         String coordDesc = currentMove.getUCCIString();
         currentMove.isRedMove = Piece.isRed(piece);
 

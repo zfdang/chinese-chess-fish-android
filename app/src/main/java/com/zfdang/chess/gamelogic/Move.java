@@ -100,7 +100,7 @@ public class Move implements Serializable {
     * 6. 还需要处理同一列有相同的棋子，使用前后来区分，比如前炮退二，后炮进二？？
     * https://www.xqbase.com/protocol/cchess_move.htm
      */
-    public String getChineseStyleString(){
+    public String getChsString(){
         if(board == null){
             // depends on board status
             return "未知动作";
@@ -130,7 +130,13 @@ public class Move implements Serializable {
                     num2 = arabicToChineseMap.get(9 - toPosition.x);
                 }
 
-                return name + num1 + action + num2;
+                // 6.还需要处理同一列有相同的棋子，使用前后来区分，比如前炮退二，后炮进二.
+                String multiple = findPiecesOnSameVLine(piece, fromPosition);
+                if(multiple == null){
+                    return name + num1 + action + num2;
+                } else {
+                    return multiple + name + action + num2;
+                }
             } else if(Piece.isBlack(piece)) {
                 num1 = String.format("%d", fromPosition.x + 1);
 
@@ -151,9 +157,87 @@ public class Move implements Serializable {
                     num2 = String.format("%d", toPosition.x + 1);
                 }
 
-                return name + num1 + action + num2;
+                // 6.还需要处理同一列有相同的棋子，使用前后来区分，比如前炮退二，后炮进二.
+                String multiple = findPiecesOnSameVLine(piece, fromPosition);
+                if(multiple == null){
+                    return name + num1 + action + num2;
+                } else {
+                    return multiple + name + action + num2;
+                }
             }
         }
         return "未知动作";
+    }
+
+    /*
+    find same piece on the same vertical line
+    https://www.xqbase.com/protocol/cchess_move.htm
+     */
+    private String findPiecesOnSameVLine(int piece, Position pos) {
+        if(piece == Piece.BJIANG || piece == Piece.BXIANG || piece == Piece.BSHI
+                || piece == Piece.WSHUAI || piece == Piece.WXIANG || piece == Piece.WSHI)
+        {  // 仕(士)和相(象)如果在同一纵线上，不用“前”和“后”区别，因为能退的一定在前，能进的一定在后
+            return null;
+        }
+
+        // 找到这一列里有多少相同的子
+        int start, end, step;
+        if(Piece.isRed(piece)) {
+            start = 0;
+            end = 10;
+            step = 1;
+        } else {
+            start = 9;
+            end = -1;
+            step = -1;
+        }
+        int count = 0;
+        int index = 0;
+        for (int i = start; i != end; i += step) {
+            int p = board.getPieceByPosition(pos.x, i);
+            if(p == piece){
+                count++;
+                if(pos.y == i){
+                    index = count;
+                }
+            }
+        }
+
+        if(count == 1){
+            // 没有重复的子
+            return null;
+        }
+        if(piece != Piece.WBING && piece != Piece.BZU) {
+            // 非兵卒，这时count只能为2
+            if(index == 1) {
+                return "前";
+            } else {
+                return "后";
+            }
+        }
+
+        // 开始处理兵卒的情况，特别复杂，需要看其他纵线上有没有一个以上的兵，如果有，还要看这些兵的位置，再决定如何标记
+        // 在有两条纵线，每条纵线上都有一个以上的兵：按照“先从右到左，再从前到后”(即先看最左边一列，
+        // 从前到后依次标记为“一”和“二”，可能还有“三”，再看右边一列)的顺序，把这些兵的位置标依次
+        // 标记为“一”、“二”、“三”、“四”和“五”，不在这两条纵线上的兵不参与标记
+        // 具体可以看 https://www.xqbase.com/protocol/cchess_move.htm
+        // ***这里我们假设其他纵线没有多于一个以上的兵的情况 ^0^，等你遇到了来报bug吧***
+
+        // 三个以下兵在一条纵线上：用“前”、“中”和“后”来区别；
+        if(index == 1 && count <=3) {
+            return "前";
+        }
+        if(index == count && count <=3) {
+            return "后";
+        }
+        if(index == 2 && count ==3) {
+            return "中";
+        }
+        // 三个以上兵在一条纵线上：最前面的兵用“一”代替“前”，以后依次是“二”、“三”、“四”和“五”；
+        if(Piece.isRed(piece)){
+            return String.format("%s",arabicToChineseMap.get(index));
+        } else {
+            return String.format("%d",index);
+        }
     }
 }

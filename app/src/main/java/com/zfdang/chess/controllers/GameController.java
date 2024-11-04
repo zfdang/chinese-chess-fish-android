@@ -134,7 +134,7 @@ public class GameController implements EngineListener, SearchListener {
         Move move = new Move(game.currentBoard);
         boolean result = move.fromUCCIString(bestmove);
         if(result) {
-            Log.d("GameController", "Player move: " + move.getChineseStyleString());
+            Log.d("GameController", "Player move: " + move.getChsString());
 
             game.startPos = move.fromPosition;
             game.endPos = move.toPosition;
