@@ -38,9 +38,9 @@ jobs:
       run: ./gradlew assembleRelease --stacktrace
 
     - name: Create ZIPs
-      working-directory: ./app/build/outputs/apk/
+      working-directory: ./app/build/outputs/apk/release
       run: |
-        zip -r ./chessfish.zip ./release
+        zip -r ./chessfish.zip *.apk
 
     - name: Get git revision
       id: get_git_revision
@@ -66,6 +66,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./app/build/outputs/apk/chessfish.zip
+          asset_path: ./app/build/outputs/apk/release/chessfish.zip
           asset_name: chessfish.zip
           asset_content_type: application/zip
