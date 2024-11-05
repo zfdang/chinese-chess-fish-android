@@ -170,6 +170,9 @@ public class Game {
     }
 
     public String getLastMoveDesc(){
+        if(history.size() == 0){
+            return "";
+        }
         HistoryRecord record = history.get(history.size()-1);
         return record.chsString;
     }
