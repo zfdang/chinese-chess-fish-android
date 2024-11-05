@@ -136,7 +136,7 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
         // handle events for all imagebuttons in activity_player.xml
         when(v) {
             binding.playerbt -> {
-                controller.togglePlayer()
+                controller.toggleComputer()
                 if(controller.isComputerPlaying){
                     binding.playerbt.setImageResource(R.drawable.computer)
                     setStatusText("切换为电脑执黑棋")
@@ -146,13 +146,13 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                 }
             }
             binding.playerbackbt -> {
-                controller.computerBack()
+                controller.stepBack()
             }
             binding.playerforwardbt -> {
                 controller.computerForward()
             }
             binding.autoplaybt -> {
-                controller.toggleAutoPlay()
+                controller.toggleComputerAutoPlay()
                 if(controller.isAutoPlay){
                     binding.autoplaybt.setImageResource(R.drawable.play_circle)
                     setStatusText("开启自动走棋")
@@ -185,7 +185,7 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
 //                controller.newGame()
             }
             binding.backbt -> {
-//                controller.back()
+                controller.stepBack()
             }
             binding.forwardbt -> {
 //                controller.forward()

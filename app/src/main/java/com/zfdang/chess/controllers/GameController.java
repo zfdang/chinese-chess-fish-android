@@ -35,7 +35,7 @@ public class GameController implements EngineListener, SearchListener {
 
     private GameControllerListener gui = null;
     ArrayList<PvInfo> multiPVs = new ArrayList<>();
-    boolean askForMultiPV = false;
+    boolean multiPVMode = false;
 
     public boolean isRedTurn;
 
@@ -60,18 +60,25 @@ public class GameController implements EngineListener, SearchListener {
         player.uciNewGame();
     }
 
-    public void togglePlayer() {
+    public void toggleComputer() {
         isComputerPlaying = !isComputerPlaying;
     }
 
-    public void toggleAutoPlay() {
+    public void toggleComputerAutoPlay() {
         isAutoPlay = !isAutoPlay;
     }
 
     private void toggleTurn() { isRedTurn = !isRedTurn; }
 
-    public void computerBack() {
-
+    // this can be called by either GUI or computer
+    public void stepBack() {
+        if(game.history.size() > 0) {
+            Game.HistoryRecord record = game.undoMove();
+            isRedTurn = record.isRedMove;
+            gui.onGameEvent(GameStatus.MOVE, game.getLastMoveDesc());
+        } else {
+            gui.onGameEvent(GameStatus.ILLEGAL, "无棋可悔");
+        }
     }
 
     // computer to play his turn
@@ -81,12 +88,19 @@ public class GameController implements EngineListener, SearchListener {
             gui.onGameEvent(GameStatus.ILLEGAL, "该红方出着");
             return;
         }
+        gui.onGameEvent(GameStatus.SELECT, "电脑搜索着法中...");
 
         // trigger searchrequest, engine will call notifySearchResult for bestmove
         searchStartTime = System.currentTimeMillis();
+        Board board = null;
+        if (game.history.size() == 0) {
+            board = game.currentBoard;
+        } else {
+            board = game.history.get(0).move.board;
+        }
         SearchRequest sr = SearchRequest.searchRequest(
                 searchId++,
-                game.history.get(0).move.board,
+                board,
                 game.getMoveList(),
                 new Board(game.currentBoard),
                 null,
@@ -99,18 +113,24 @@ public class GameController implements EngineListener, SearchListener {
     public void playerAskForHelp() {
         if(!isRedTurn) {
             // play only plays the black
-            gui.onGameEvent(GameStatus.ILLEGAL, "己方出着时可寻求帮助");
+            gui.onGameEvent(GameStatus.ILLEGAL, "己方出着时方可寻求帮助");
             return;
         }
 
         // notifiSearchResult will check this
-        askForMultiPV = true;
+        multiPVMode = true;
 
         // trigger searchrequest, engine will call notifySearchResult for bestmove
         searchStartTime = System.currentTimeMillis();
+        Board board = null;
+        if(game.history.size() == 0) {
+            board = game.currentBoard;
+        } else {
+            board = game.history.get(0).move.board;
+        }
         SearchRequest sr = SearchRequest.searchRequest(
                 searchId++,
-                game.history.get(0).move.board,
+                board,
                 game.getMoveList(),
                 new Board(game.currentBoard),
                 null,
@@ -192,11 +212,11 @@ public class GameController implements EngineListener, SearchListener {
         game.generateSuggestedMoves(multiPVs);
 
         // notify GUI
-        gui.onGameEvent(GameStatus.MULTIPV, "建议着法：");
+        gui.onGameEvent(GameStatus.MULTIPV, "选择编号或直接移动棋子：");
     }
 
     public void selectMultiPV(int index) {
-        askForMultiPV = false;
+        multiPVMode = false;
         Move move = game.getSuggestedMove(index);
         game.clearSuggestedMoves();
 
@@ -239,7 +259,7 @@ public class GameController implements EngineListener, SearchListener {
         GameStatus status = game.updateGameStatus();
 
         // clear multipv status
-        askForMultiPV = false;
+        multiPVMode = false;
         game.clearSuggestedMoves();
 
         // send notification to GUI
@@ -299,7 +319,7 @@ public class GameController implements EngineListener, SearchListener {
         searchEndTime = System.currentTimeMillis();
 
         // engine返回bestmove, 有两种情况，一种是电脑搜索的结果，一种是红方寻求帮助的结果
-        if(askForMultiPV) {
+        if(multiPVMode) {
             // 红方寻求帮助，或者电脑被强制要求变着
             // 把multiPV的结果显示在界面上，让用户选择
             gui.runOnUIThread(() -> processMultiPVInfos());

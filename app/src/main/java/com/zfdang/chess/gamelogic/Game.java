@@ -86,6 +86,18 @@ public class Game {
         possibleToPositions.clear();
     }
 
+    public HistoryRecord undoMove(){
+        if(history.size() > 0){
+            HistoryRecord record = history.remove(history.size()-1);
+            currentBoard = new Board(record.move.board);
+            clearStartPos();
+            endPos = null;
+            clearSuggestedMoves();
+            return record;
+        }
+        return null;
+    }
+
     public GameStatus updateGameStatus(){
         boolean isCheck = false;
         boolean isDead = false;
