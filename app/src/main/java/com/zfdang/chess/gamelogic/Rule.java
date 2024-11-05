@@ -79,7 +79,7 @@ public class Rule {
     }
 
 
-    public static List<Position> PossibleMoves(int pieceId, int fromX, int fromY, Board board) {
+    public static List<Position> PossibleToPositions(int pieceId, int fromX, int fromY, Board board) {
         List<Position> ret = new ArrayList<Position>();
         int num;
         Position flyPos = null;
@@ -304,8 +304,8 @@ public class Rule {
         int fromY = move.fromPosition.y;
 
         // 检查是否是合法的走法
-        List<Position> moves = PossibleMoves(piece, fromX, fromY, board);
-        Iterator<Position> it = moves.iterator();
+        List<Position> positions = PossibleToPositions(piece, fromX, fromY, board);
+        Iterator<Position> it = positions.iterator();
         while (it.hasNext()) {
             Position pos = it.next();
             if (pos.equals(move.toPosition)) {
@@ -416,8 +416,8 @@ public class Rule {
             }
 
             // 红帅目前所有可走的棋
-            List<Position> moves = PossibleMoves(Piece.WSHUAI, pos.x, pos.y, board);
-            if(moves.size() > 0) {
+            List<Position> positions = PossibleToPositions(Piece.WSHUAI, pos.x, pos.y, board);
+            if(positions.size() > 0) {
                 Log.d("Rule", "红帅还有走的地方");
                 return false;
             }
@@ -438,8 +438,8 @@ public class Rule {
             }
 
             // 黑将目前所有可走的棋
-            List<Position> moves = PossibleMoves(Piece.BJIANG, pos.x, pos.y, board);
-            if(moves.size() > 0) {
+            List<Position> positions = PossibleToPositions(Piece.BJIANG, pos.x, pos.y, board);
+            if(positions.size() > 0) {
                 Log.d("Rule", "黑将还有走的地方");
                 return false;
             }
@@ -457,8 +457,8 @@ public class Rule {
         if(!(piece == Piece.BJU || piece == Piece.BPAO || piece == Piece.WJU || piece == Piece.WPAO)){
             return false;
         }
-        List<Position> moves = PossibleMoves(piece, x, y, board);
-        Iterator<Position> it = moves.iterator();
+        List<Position> positions = PossibleToPositions(piece, x, y, board);
+        Iterator<Position> it = positions.iterator();
         while (it.hasNext()) {
             Position pos = it.next();
             if (board.getPieceByPosition(pos) == piece) {

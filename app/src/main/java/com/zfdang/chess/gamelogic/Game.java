@@ -48,7 +48,7 @@ public class Game {
     public Move currentMove = null;
     public Position startPos =  null;
     public Position endPos = null;
-    public List<Position> possibleMoves = new ArrayList<>();
+    public List<Position> possibleToPositions = new ArrayList<>();
 
     public boolean isGameOver = false;
     public boolean isCheckMate = false;
@@ -93,7 +93,7 @@ public class Game {
         // clear startPos and endPos
         startPos = null;
         endPos = null;
-        possibleMoves.clear();
+        possibleToPositions.clear();
     }
 
     public GameStatus updateGameStatus(){
@@ -135,7 +135,7 @@ public class Game {
 
     public void setStartPos(Position pos) {
         this.startPos = pos;
-        this.possibleMoves = Rule.PossibleMoves(currentBoard.getPieceByPosition(pos), pos.x, pos.y, currentBoard);
+        this.possibleToPositions = Rule.PossibleToPositions(currentBoard.getPieceByPosition(pos), pos.x, pos.y, currentBoard);
     }
 
     public void setEndPos(Position pos) {
@@ -149,7 +149,7 @@ public class Game {
 
     public void clearStartPos(){
         this.startPos = null;
-        this.possibleMoves.clear();
+        this.possibleToPositions.clear();
     }
 
 }
