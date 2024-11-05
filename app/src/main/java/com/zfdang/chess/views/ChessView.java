@@ -199,7 +199,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
             if(Piece.isRed(record.move.piece)) {
                 p.setColor(Color.RED);
             } else {
-                p.setColor(Color.BLACK);
+                p.setColor(Color.BLUE);
             }
 
             // calculate alpha value, the last move is the most opaque one
