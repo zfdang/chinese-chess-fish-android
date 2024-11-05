@@ -157,7 +157,8 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                     binding.autoplaybt.setImageResource(R.drawable.play_circle)
                     setStatusText("开启自动走棋")
 
-                    if(!controller.isRedTurn){
+                    if(!controller.isRedTurn && controller.isComputerPlaying){
+                        // 如果电脑执黑，自动走棋
                         controller.computerForward();
                     }
                 } else {
