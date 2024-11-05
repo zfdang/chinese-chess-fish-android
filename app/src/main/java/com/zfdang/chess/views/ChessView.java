@@ -140,13 +140,13 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
             // draw all possible moves
             if(Piece.isRed(piece)) {
                 tempSrcRect = new Rect(0, 0, R_pot.getWidth(), R_pot.getHeight());
-                for (Position pos : game.possibleMoves) {
+                for (Position pos : game.possibleToPositions) {
                     tempDesRect = getDestRect(pos);
                     canvas.drawBitmap(R_pot, tempSrcRect, tempDesRect, null);
                 }
             } else if(Piece.isBlack(piece)){
                 tempSrcRect = new Rect(0, 0, B_pot.getWidth(), B_pot.getHeight());
-                for (Position pos : game.possibleMoves) {
+                for (Position pos : game.possibleToPositions) {
                     tempDesRect = getDestRect(pos);
                     canvas.drawBitmap(B_pot, tempSrcRect, tempDesRect, null);
                 }
