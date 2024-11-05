@@ -17,6 +17,7 @@ import androidx.annotation.NonNull;
 import com.zfdang.chess.R;
 import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Game;
+import com.zfdang.chess.gamelogic.Move;
 import com.zfdang.chess.gamelogic.Piece;
 import com.zfdang.chess.gamelogic.Position;
 import com.zfdang.chess.utils.ArrowShape;
@@ -38,6 +39,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     public Bitmap B_box, R_box, R_pot, B_pot;
     public Bitmap[] PieceBitmaps = new Bitmap[14];
     public Bitmap[] ChoiceBitmaps = new Bitmap[5];
+    final int MAX_SUGGESTED_MOVES = 5;
 
     // 如何设置下面的几个参数：
     // 有2个假设：棋盘的每个格子是正方形的, 棋子也是正方形的
@@ -158,6 +160,19 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
             DrawMoveHistory(canvas);
         }
 
+        // if there are suggested moves, show them on the board
+        if(game.suggestedMoves.size() > 0) {
+            for(int i = 0; i < game.suggestedMoves.size() && i < MAX_SUGGESTED_MOVES ; i++) {
+                Move move = game.suggestedMoves.get(i);
+                XYCoord crd0 = getCoordByPosition(move.fromPosition);
+                XYCoord crd1 = getCoordByPosition(move.toPosition);
+                Paint p = new Paint();
+                p.setStyle(Paint.Style.FILL);
+                p.setAntiAlias(true);
+                p.setColor(Color.GREEN);
+                DrawArrow(canvas, crd0, crd1, p, ChoiceBitmaps[i]);
+            }
+        }
     }
 
     private void HighlighSelectedPiece(Canvas canvas) {

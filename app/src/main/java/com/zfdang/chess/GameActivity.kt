@@ -1,7 +1,6 @@
 package com.zfdang.chess
 
 import android.annotation.SuppressLint
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
@@ -35,13 +34,7 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
     private lateinit var controller: GameController
 
     // mediaplayer
-    private lateinit var selectSound: MediaPlayer
-    private lateinit var moveSound: MediaPlayer
-    private lateinit var captureSound: MediaPlayer
-    private lateinit var checkSound: MediaPlayer
-    private lateinit var checkmateSound: MediaPlayer
-    private lateinit var invalidSound: MediaPlayer
-
+    private lateinit var soundPlayer: SoundPlayer
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,7 +77,7 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
         }
 
         // init audio files
-        loadAudioFiles();
+        soundPlayer = SoundPlayer(this)
 
         // Bind historyTable and initialize it with dummy data
         val historyTable = binding.historyTable
@@ -110,12 +103,6 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
     // fun to load audio files in raw
     fun loadAudioFiles() {
         // load audio files in raw
-        selectSound = MediaPlayer.create(this, R.raw.select)
-        moveSound = MediaPlayer.create(this, R.raw.move)
-        captureSound = MediaPlayer.create(this, R.raw.capture)
-        checkSound = MediaPlayer.create(this, R.raw.check)
-        invalidSound = MediaPlayer.create(this, R.raw.invalid)
-        checkmateSound = MediaPlayer.create(this, R.raw.checkmate)
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
@@ -159,10 +146,10 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                 }
             }
             binding.playerbackbt -> {
-                controller.playerBack()
+                controller.computerBack()
             }
             binding.playerforwardbt -> {
-                controller.playerForward()
+                controller.computerForward()
             }
             binding.autoplaybt -> {
                 controller.toggleAutoPlay()
@@ -171,7 +158,7 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                     setStatusText("开启自动走棋")
 
                     if(!controller.isRedTurn){
-                        controller.playerForward();
+                        controller.computerForward();
                     }
                 } else {
                     binding.autoplaybt.setImageResource(R.drawable.pause_circle)
@@ -204,7 +191,8 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
 //                controller.forward()
             }
             binding.helpbt -> {
-//                controller.search()
+                setStatusText("正在搜索建议着法...")
+                controller.playerAskForHelp();
             }
             binding.swapbt -> {
 //                controller.swap()
@@ -213,62 +201,82 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                 finish()
             }
             binding.choice1bt -> {
-                setStatusText("黑棋变着：选择1")
+                setStatusText("选择着数1")
                 binding.choice1bt.visibility = View.GONE;
                 binding.choice2bt.visibility = View.GONE;
                 binding.choice3bt.visibility = View.GONE;
+                controller.selectMultiPV(0)
             }
             binding.choice2bt -> {
-                setStatusText("黑棋变着：选择2")
+                setStatusText("选择着数2")
                 binding.choice1bt.visibility = View.GONE;
                 binding.choice2bt.visibility = View.GONE;
                 binding.choice3bt.visibility = View.GONE;
+                controller.selectMultiPV(1)
             }
             binding.choice3bt -> {
-                setStatusText("黑棋变着：选择3")
+                setStatusText("选择着数3")
                 binding.choice1bt.visibility = View.GONE;
                 binding.choice2bt.visibility = View.GONE;
                 binding.choice3bt.visibility = View.GONE;
+                controller.selectMultiPV(2)
             }
         }
 
-    }
-
-    fun playGameSound(status: GameStatus?) {
-        Log.d(  "GameActivity", "playGameSound: $status")
-        when(status) {
-            GameStatus.SELECT -> selectSound.start()
-            GameStatus.MOVE -> moveSound.start()
-            GameStatus.CAPTURE -> captureSound.start()
-            GameStatus.CHECK -> checkSound.start()
-            GameStatus.ILLEGAL -> invalidSound.start()
-            GameStatus.WIN -> invalidSound.start()
-            GameStatus.CHECKMATE -> checkmateSound.start()
-            GameStatus.LOSE -> TODO()
-            GameStatus.DRAW -> TODO()
-            GameStatus.ENGINE -> TODO()
-            null -> Log.d("PlayActivity", "Illegal status")
-        }
     }
 
     override fun onGameEvent(status: GameStatus?, message: String?) {
         Log.d(  "PlayActivity", "onGameEvent: $status, $message")
         when(status) {
-            GameStatus.ILLEGAL -> message?.let { setStatusText(it) }
-            GameStatus.MOVE -> message?.let { setStatusText(it) }
-            GameStatus.CAPTURE -> message?.let { setStatusText(it) }
-            GameStatus.CHECK -> message?.let { setStatusText(it) }
-            GameStatus.CHECKMATE -> message?.let { setStatusText(it) }
-            GameStatus.SELECT -> message?.let { setStatusText(it) }
+            GameStatus.ILLEGAL -> {
+                message?.let { setStatusText(it) }
+                soundPlayer.illegal();
+            }
+            GameStatus.MOVE -> {
+                message?.let { setStatusText(it) }
+                soundPlayer.move();
+
+                if(binding.choice1bt.visibility == View.VISIBLE){
+                    binding.choice1bt.visibility = View.GONE;
+                    binding.choice2bt.visibility = View.GONE;
+                    binding.choice3bt.visibility = View.GONE;
+                }
+            }
+            GameStatus.CAPTURE -> {
+                message?.let { setStatusText(it) }
+                soundPlayer.capture()
+            }
+            GameStatus.CHECK -> {
+                message?.let { setStatusText(it) }
+                soundPlayer.check()
+            }
+            GameStatus.CHECKMATE -> {
+                message?.let { setStatusText(it) }
+                soundPlayer.checkmate()
+            }
+            GameStatus.SELECT -> {
+                message?.let { setStatusText(it) }
+                soundPlayer.select()
+            }
             GameStatus.WIN -> message?.let { setStatusText(it) }
             GameStatus.LOSE -> message?.let { setStatusText(it) }
             GameStatus.DRAW -> message?.let { setStatusText(it) }
             GameStatus.ENGINE -> message?.let { setStatusText(it) }
             null -> TODO()
-        }
+            GameStatus.MULTIPV -> {
+                // show message
+                message?.let { setStatusText(it) }
 
-        // play sound
-        playGameSound(status)
+                // show choice buttons
+                if(binding.choice1bt.visibility == View.GONE){
+                    binding.choice1bt.visibility = View.VISIBLE;
+                    binding.choice2bt.visibility = View.VISIBLE;
+                    binding.choice3bt.visibility = View.VISIBLE;
+                }
+
+                soundPlayer.ready()
+            }
+        }
 
         // update history table
         moveHistoryAdapter.populateTable()

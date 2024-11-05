@@ -34,6 +34,8 @@ public class GameController implements EngineListener, SearchListener {
     public boolean isAutoPlay = true;
 
     private GameControllerListener gui = null;
+    ArrayList<PvInfo> multiPVs = new ArrayList<>();
+    boolean askForMultiPV = false;
 
     public boolean isRedTurn;
 
@@ -68,17 +70,41 @@ public class GameController implements EngineListener, SearchListener {
 
     private void toggleTurn() { isRedTurn = !isRedTurn; }
 
-    public void playerBack() {
+    public void computerBack() {
 
     }
 
-    // player to play his turn
-    public void playerForward() {
+    // computer to play his turn
+    public void computerForward() {
         if(isRedTurn) {
             // play only plays the black
             gui.onGameEvent(GameStatus.ILLEGAL, "该红方出着");
             return;
         }
+
+        // trigger searchrequest, engine will call notifySearchResult for bestmove
+        searchStartTime = System.currentTimeMillis();
+        SearchRequest sr = SearchRequest.searchRequest(
+                searchId++,
+                game.history.get(0).board,
+                game.getMoveList(),
+                new Board(game.currentBoard),
+                null,
+                false,
+                engineName,
+                3);
+        player.queueAnalyzeRequest(sr);
+    }
+
+    public void playerAskForHelp() {
+        if(!isRedTurn) {
+            // play only plays the black
+            gui.onGameEvent(GameStatus.ILLEGAL, "己方出着时可寻求帮助");
+            return;
+        }
+
+        // notifiSearchResult will check this
+        askForMultiPV = true;
 
         // trigger searchrequest, engine will call notifySearchResult for bestmove
         searchStartTime = System.currentTimeMillis();
@@ -131,7 +157,7 @@ public class GameController implements EngineListener, SearchListener {
                 doMoveAndUpdateStatus();
 
                 if(isAutoPlay && isComputerPlaying && !isRedTurn) {
-                    playerForward();
+                    computerForward();
                 }
             } else {
                 gui.onGameEvent(GameStatus.ILLEGAL);
@@ -144,17 +170,44 @@ public class GameController implements EngineListener, SearchListener {
         player.stopSearch();
     }
 
-    public void playerMovePiece(String bestmove) {
+    public void computerMovePiece(String bestmove) {
         // validate the move
         Move move = new Move(game.currentBoard);
         boolean result = move.fromUCCIString(bestmove);
 
         if(result) {
-            Log.d("GameController", "Player move: " + move.getChsString());
+            Log.d("GameController", "computer move: " + move.getChsString());
 
             game.setStartPos(move.fromPosition);
             game.setEndPos(move.toPosition);
             doMoveAndUpdateStatus();
+        }
+    }
+
+    public void processMultiPVInfos(){
+        // show multiPV infos
+        for(PvInfo pv : multiPVs) {
+            Log.d("GameController", "PV: " + pv);
+        }
+        game.generateSuggestedMoves(multiPVs);
+
+        // notify GUI
+        gui.onGameEvent(GameStatus.MULTIPV, "建议着法：");
+    }
+
+    public void selectMultiPV(int index) {
+        askForMultiPV = false;
+        Move move = game.getSuggestedMove(index);
+        game.clearSuggestedMoves();
+
+        if(move != null) {
+            game.startPos = move.fromPosition;
+            game.endPos = move.toPosition;
+            doMoveAndUpdateStatus();
+
+            if(isAutoPlay && isComputerPlaying && !isRedTurn) {
+                computerForward();
+            }
         }
     }
 
@@ -184,6 +237,10 @@ public class GameController implements EngineListener, SearchListener {
 
         // update game status after the move
         GameStatus status = game.updateGameStatus();
+
+        // clear multipv status
+        askForMultiPV = false;
+        game.clearSuggestedMoves();
 
         // send notification to GUI
         if(status == GameStatus.CHECKMATE) {
@@ -217,10 +274,12 @@ public class GameController implements EngineListener, SearchListener {
     }
 
     @Override
-    public void notifyPV(int id, Board board, ArrayList<PvInfo> pvInfo, Move ponderMove) {
+    public void notifyPV(int id, Board board, ArrayList<PvInfo> pvInfos, Move ponderMove) {
         // show infos about all pvInfos
-        for(PvInfo pv : pvInfo) {
+        multiPVs.clear();
+        for(PvInfo pv : pvInfos) {
             Log.d("GameController", "PV: " + pv);
+            multiPVs.add(pv);
         }
     }
 
@@ -238,7 +297,16 @@ public class GameController implements EngineListener, SearchListener {
     public void notifySearchResult(int searchId, String bestMove, String nextPonderMove) {
         Log.d("GameController", "Search result: bestMove=" + bestMove + ", nextPonderMove=" + nextPonderMove);
         searchEndTime = System.currentTimeMillis();
-        gui.runOnUIThread(() -> playerMovePiece(bestMove));
+
+        // engine返回bestmove, 有两种情况，一种是电脑搜索的结果，一种是红方寻求帮助的结果
+        if(askForMultiPV) {
+            // 红方寻求帮助，或者电脑被强制要求变着
+            // 把multiPV的结果显示在界面上，让用户选择
+            gui.runOnUIThread(() -> processMultiPVInfos());
+        } else {
+            // 电脑发起的请求，走下一步棋子
+            gui.runOnUIThread(() -> computerMovePiece(bestMove));
+        }
     }
 
     @Override
