@@ -20,19 +20,19 @@ package org.petero.droidfish.player;
 
 import android.util.Log;
 
-import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Move;
 import com.zfdang.chess.gamelogic.PvInfo;
-
-import java.util.ArrayList;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
+import com.zfdang.chess.utils.CpuInfo;
 
 import org.petero.droidfish.engine.EngineConfig;
 import org.petero.droidfish.engine.UCIEngine;
 import org.petero.droidfish.engine.UCIEngineBase;
 import org.petero.droidfish.engine.UCIOptions;
+
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * A computer algorithm player.
@@ -151,6 +151,15 @@ public class ComputerPlayer {
      */
     public final synchronized void uciNewGame() {
         newGame = true;
+    }
+
+    public final synchronized void setOptimizedThreads() {
+        // https://github.com/official-pikafish/Pikafish/wiki/Pikafish-FAQ#threads
+        int cores = CpuInfo.getCoresCount();
+        if (uciEngine != null) {
+            uciEngine.setOption("Threads", cores);
+            Log.d("ComputerPlayer", "setOptimizedThreads: " + cores);
+        }
     }
 
     /**
@@ -287,16 +296,6 @@ public class ComputerPlayer {
                 return false;
         }
     }
-
-    /**
-     * Tell engine to stop searching and return the bestmove immediately.
-     */
-    public void moveNow() {
-        if (engineState.state == EngineStateValue.SEARCH) {
-            uciEngine.writeLineToEngine("stop");
-        }
-    }
-
 
     /**
      * Return true if current search job is equal to id.
@@ -480,6 +479,7 @@ public class ComputerPlayer {
                     pendingOptions.clear();
                     uci.initConfig(engineConfig);
                     uci.applyIniFile();
+                    setOptimizedThreads();
                     uci.writeLineToEngine("ucinewgame");
                     uci.writeLineToEngine("isready");
                     engineState.setState(EngineStateValue.WAIT_READY);
