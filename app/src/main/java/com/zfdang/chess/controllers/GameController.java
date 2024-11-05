@@ -35,7 +35,7 @@ public class GameController implements EngineListener, SearchListener {
 
     private GameControllerListener gui = null;
 
-    private boolean isRedTurn;
+    public boolean isRedTurn;
 
     public GameController(GameControllerListener cListener) {
         gui = cListener;
@@ -76,6 +76,7 @@ public class GameController implements EngineListener, SearchListener {
     public void playerForward() {
         if(isRedTurn) {
             // play only plays the black
+            gui.onGameEvent(GameStatus.ILLEGAL, "该红方出着");
             return;
         }
 
@@ -115,6 +116,17 @@ public class GameController implements EngineListener, SearchListener {
             boolean valid = Rule.isValidMove(tempMove, game.currentBoard);
             if(valid) {
                 game.setEndPos(pos);
+
+                // 手工走棋，确保这时候非电脑控制
+                if(!isRedTurn && isComputerPlaying) {
+                    Log.d("GameController", "Computer is playing, please wait");
+                    gui.onGameEvent(GameStatus.ILLEGAL, "黑方为电脑控制");
+
+                    // reset start/end position
+                    game.startPos = null;
+                    game.endPos = null;
+                    return;
+                }
 
                 doMoveAndUpdateStatus();
 

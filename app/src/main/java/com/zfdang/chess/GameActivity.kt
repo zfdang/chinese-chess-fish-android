@@ -169,6 +169,10 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                 if(controller.isAutoPlay){
                     binding.autoplaybt.setImageResource(R.drawable.play_circle)
                     setStatusText("开启自动走棋")
+
+                    if(!controller.isRedTurn){
+                        controller.playerForward();
+                    }
                 } else {
                     binding.autoplaybt.setImageResource(R.drawable.pause_circle)
                     setStatusText("暂停自动走棋")
