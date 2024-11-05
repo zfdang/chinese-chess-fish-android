@@ -89,6 +89,7 @@ android {
 }
 
 dependencies {
+    implementation("com.readystatesoftware.sqliteasset:sqliteassethelper:+")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
