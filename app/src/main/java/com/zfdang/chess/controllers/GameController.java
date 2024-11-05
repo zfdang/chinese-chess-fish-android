@@ -110,6 +110,46 @@ public class GameController implements EngineListener, SearchListener {
         player.queueAnalyzeRequest(sr);
     }
 
+    public void computerMultiPV() {
+        // 如果是计算机执黑切自动出着，那么等出着后再变着，防止混乱
+        if(isComputerPlaying && isAutoPlay && !isRedTurn) {
+            // play only plays the black
+            gui.onGameEvent(GameStatus.ILLEGAL, "电脑出着后方可变着,请稍候...");
+            return;
+        }
+
+        // 判断当前的状态，如果是红方出着，那么悔棋一步
+        if(isRedTurn) {
+            // undo
+            stepBack();
+        }
+
+        gui.onGameEvent(GameStatus.SELECT, "电脑搜索着法中...");
+        // 开始搜索中
+        // notifiSearchResult will check this
+        multiPVMode = true;
+
+        // trigger searchrequest, engine will call notifySearchResult for bestmove
+        searchStartTime = System.currentTimeMillis();
+        Board board = null;
+        if(game.history.size() == 0) {
+            board = game.currentBoard;
+        } else {
+            board = game.history.get(0).move.board;
+        }
+        SearchRequest sr = SearchRequest.searchRequest(
+                searchId++,
+                board,
+                game.getMoveList(),
+                new Board(game.currentBoard),
+                null,
+                false,
+                engineName,
+                3);
+        player.queueAnalyzeRequest(sr);
+    }
+
+
     public void playerAskForHelp() {
         if(!isRedTurn) {
             // play only plays the black
@@ -164,7 +204,8 @@ public class GameController implements EngineListener, SearchListener {
                 game.setEndPos(pos);
 
                 // 手工走棋，确保这时候非电脑控制
-                if(!isRedTurn && isComputerPlaying) {
+                // 如果是multiPVMode, 这个时候暂时允许选手替电脑移动一次棋子
+                if(!isRedTurn && isComputerPlaying && !multiPVMode) {
                     Log.d("GameController", "Computer is playing, please wait");
                     gui.onGameEvent(GameStatus.ILLEGAL, "黑方为电脑控制");
 

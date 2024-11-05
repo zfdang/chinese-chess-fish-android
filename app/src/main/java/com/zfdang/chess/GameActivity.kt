@@ -166,17 +166,11 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                 }
             }
             binding.quickbt -> {
-                setStatusText("黑旗：立刻走棋")
+                setStatusText("电脑停止搜索中...")
                 controller.moveNow()
             }
             binding.playeraltbt -> {
-                setStatusText("黑棋变着：")
-                if(binding.choice1bt.visibility == View.GONE){
-                    binding.choice1bt.visibility = View.VISIBLE;
-                    binding.choice2bt.visibility = View.VISIBLE;
-                    binding.choice3bt.visibility = View.VISIBLE;
-                }
-//                controller.playerAlt()
+                controller.computerMultiPV();
             }
             binding.optionbt -> {
 //                controller.option()
