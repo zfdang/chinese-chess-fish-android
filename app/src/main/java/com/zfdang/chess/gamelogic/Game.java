@@ -11,33 +11,25 @@ public class Game {
         public Move move;
         public String ucciString;
         public String chsString;
-        public Board board;
-        public int score;
-        public long time;
-        public String bestMove;
-        public String pv;
+        public boolean isRedMove;
 
-        private HistoryRecord() {
+        public HistoryRecord() {
             move = null;
             ucciString = "";
             chsString = "";
-            board = null;
-            score = 0;
-            time = 0;
-            bestMove = "";
-            pv = "";
+            isRedMove = false;
         }
 
-        public HistoryRecord(Move move, String ucciString, String chsString, Board board) {
+        // create constructor
+        public HistoryRecord(Move move, String ucciString, String chsString, boolean isRedMove) {
             this.move = move;
             this.ucciString = ucciString;
             this.chsString = chsString;
-            // clone board, so that it won't be modified by others
-            this.board = new Board(board);
-            this.score = 0;
-            this.time = 0;
-            this.bestMove = "";
-            this.pv = "";
+            this.isRedMove = isRedMove;
+        }
+
+        public String getChsString(){
+            return chsString;
         }
     }
 
@@ -62,9 +54,6 @@ public class Game {
     {
         currentBoard = new Board();
 
-        HistoryRecord record = new HistoryRecord(null, "新开局", "新开局", currentBoard);
-        history.add(record);
-
         startPos = null;
         endPos = null;
     }
@@ -77,17 +66,17 @@ public class Game {
 
         int piece = currentBoard.getPieceByPosition(startPos);
 
-        // create new Move object
-        currentMove = new Move(this.startPos, this.endPos, currentBoard);
-        String chsDesc = currentMove.getChsString();
-        String coordDesc = currentMove.getUCCIString();
+        // save to history
+        Board b = new Board(currentBoard);
+        Move m = new Move(new Position(startPos.x, startPos.y), new Position(endPos.x, endPos.y), b);
+        String chsString = m.getChsString();
+        String ucciString = m.getUCCIString();
+        HistoryRecord record = new HistoryRecord(m, ucciString, chsString, Piece.isRed(piece));
+        history.add(record);
 
         // move piece in currentBoard
+        currentMove = new Move(startPos, endPos, currentBoard);
         currentBoard.doMove(currentMove);
-
-        // save move to history
-        HistoryRecord record = new HistoryRecord(currentMove, coordDesc, chsDesc, currentBoard);
-        history.add(record);
 
         Log.d("Game", "Move piece " + Piece.getNameByValue(piece) + " from " + startPos.toString() + " to " + endPos.toString());
 
@@ -154,9 +143,7 @@ public class Game {
     public ArrayList<Move> getMoveList(){
         ArrayList<Move> moveList = new ArrayList<>();
         for(HistoryRecord record : history){
-            if(record.move != null){
-                moveList.add(record.move);
-            }
+            moveList.add(record.move);
         }
         return moveList;
     }

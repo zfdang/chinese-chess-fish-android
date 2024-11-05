@@ -156,7 +156,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         // draw arrows for last moves
-        if(game.history.size() > 1) {
+        if(game.history.size() > 0) {
             DrawMoveHistory(canvas);
         }
 
@@ -205,7 +205,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         // draw arrow for the last several moves in historyMoves
         int num_of_moves = 2;
         // game.historyRecords.get(0) is game without any move
-        for(int i = game.history.size() - 1; i >= 1 && i >= game.history.size() - num_of_moves; i--) {
+        for(int i = game.history.size() - 1; i >= 0 && i >= game.history.size() - num_of_moves; i--) {
             Game.HistoryRecord record = game.history.get(i);
             crd0 = getCoordByPosition(record.move.fromPosition);
             crd1 = getCoordByPosition(record.move.toPosition);

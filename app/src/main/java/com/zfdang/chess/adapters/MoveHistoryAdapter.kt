@@ -15,9 +15,6 @@ class MoveHistoryAdapter(private val context: Context, private val tableLayout: 
         // add item in game.historyRecords to tableLayout in reverse order
         var moveCount = 1
         for (item in game.history) {
-            if(item.move == null) {
-                continue
-            }
             val tableRow = LayoutInflater.from(context).inflate(R.layout.history_table_row_item, tableLayout, false) as TableRow
             val col1 = tableRow.findViewById<TextView>(R.id.move_index)
             val col2 = tableRow.findViewById<TextView>(R.id.move_desc)

@@ -86,7 +86,7 @@ public class GameController implements EngineListener, SearchListener {
         searchStartTime = System.currentTimeMillis();
         SearchRequest sr = SearchRequest.searchRequest(
                 searchId++,
-                game.history.get(0).board,
+                game.history.get(0).move.board,
                 game.getMoveList(),
                 new Board(game.currentBoard),
                 null,
@@ -110,7 +110,7 @@ public class GameController implements EngineListener, SearchListener {
         searchStartTime = System.currentTimeMillis();
         SearchRequest sr = SearchRequest.searchRequest(
                 searchId++,
-                game.history.get(0).board,
+                game.history.get(0).move.board,
                 game.getMoveList(),
                 new Board(game.currentBoard),
                 null,
