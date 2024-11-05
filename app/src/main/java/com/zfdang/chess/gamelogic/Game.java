@@ -49,6 +49,7 @@ public class Game {
     public Position startPos =  null;
     public Position endPos = null;
     public List<Position> possibleToPositions = new ArrayList<>();
+    public List<Move> suggestedMoves = new ArrayList<>();
 
     public boolean isGameOver = false;
     public boolean isCheckMate = false;
@@ -121,6 +122,33 @@ public class Game {
         } else {
             return GameStatus.MOVE;
         }
+    }
+
+    public boolean generateSuggestedMoves(ArrayList<PvInfo> multiPVs) {
+        // process multiPV infos
+        suggestedMoves.clear();
+        for(PvInfo pvinfo : multiPVs) {
+            Move move = new Move(currentBoard);
+            ArrayList<Move> moves = pvinfo.pv;
+            if(moves.size() > 0) {
+                Move firstMove = moves.get(0);
+                move.fromPosition = firstMove.fromPosition;
+                move.toPosition = firstMove.toPosition;
+                suggestedMoves.add(move);
+            }
+        }
+        return true;
+    }
+
+    public Move getSuggestedMove(int index){
+        if(index >= 0 && index < suggestedMoves.size()){
+            return suggestedMoves.get(index);
+        }
+        return null;
+    }
+
+    public void clearSuggestedMoves(){
+        suggestedMoves.clear();
     }
 
     public ArrayList<Move> getMoveList(){

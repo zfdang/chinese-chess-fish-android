@@ -12,4 +12,5 @@ public enum GameStatus {
     LOSE, // 失败
     DRAW, // 和棋
     ENGINE, // 引擎事件
+    MULTIPV, // 多条pv已经准备好了，发生在要求电脑变着，或者己方寻求帮助时
 }
