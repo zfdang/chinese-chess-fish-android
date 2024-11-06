@@ -34,11 +34,6 @@ public class BookData {
                 "move='" + move + '\'' +
                 ", score=" + score +
                 ", winRate=" + winRate +
-                ", winNum=" + winNum +
-                ", drawNum=" + drawNum +
-                ", loseNum=" + loseNum +
-                ", note='" + note + '\'' +
-                ", source='" + source + '\'' +
                 '}';
     }
 

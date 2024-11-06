@@ -6,16 +6,17 @@ import com.zfdang.chess.utils.StringUtils;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class CloudOpenBook implements OpenBook {
+public class CloudOpenBook extends OpenBookBase {
 
-    private final static String URL = "http://www.chessdb.cn/chessdb.php";
+    private final static String URL = "https://www.chessdb.cn/chessdb.php";
     private final int cloudTimeout = 1000;
 
     @Override
-    public List<BookData> get(char[][] board, boolean redGo)  {
-        return null;
+    public List<BookData> get(long vkey, boolean redGo) {
+        return Collections.emptyList();
     }
 
     @Override

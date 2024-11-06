@@ -8,60 +8,19 @@ import java.util.Random;
 
 public interface OpenBook {
 
-    List<BookData> get(char[][] board, boolean redGo);
-
-    List<BookData> get(String fenCode, boolean onlyFinalPhase);
-
-    void close();
-
-    default List<BookData> query(char[][] board, boolean redGo, MoveRule mr) {
-        List<BookData> list = get(board, redGo);
-        sort(list, mr);
-        return list;
+    public enum SortRule {
+        BEST_SCORE,
+        BEST_WINRATE,
+        POSITIVE_RANDOM,
+        FULL_RANDOM
     }
 
-    default List<BookData> query(String fenCode, boolean onlyFinalPhase, MoveRule mr) {
-        List<BookData> list = get(fenCode, onlyFinalPhase);
-        sort(list, mr);
-        return list;
-    }
+    // for local openbook
+    public List<BookData> query(long vkey, boolean redGo, SortRule rule);
 
-    default void sort(List<BookData> list, MoveRule mr) {
-        Collections.sort(list, new Comparator<BookData>() {
-            private Random rd = new SecureRandom();
-            @Override
-            public int compare(BookData o1, BookData o2) {
-                switch (mr) {
-                    case BEST_SCORE: {
-                        return o1.getScore() > o2.getScore() ? -1 : (o1.getScore() < o2.getScore() ? 1 : 0);
-                    }
-                    case BEST_WINRATE: {
-                        return o1.getWinRate() > o2.getWinRate() ? -1 : (o1.getWinRate() < o2.getWinRate() ? 1 : 0);
-                    }
-                    case FULL_RANDOM: {
-                        if (rd.nextInt(100) < 50) {
-                            return 1;
-                        } else {
-                            return -1;
-                        }
-                    }
-                    case POSITIVE_RANDOM: {
-                        if (o1.getScore() > 0 && o2.getScore() > 0) {
-                            if (rd.nextInt(100) < 50) {
-                                return 1;
-                            } else {
-                                return -1;
-                            }
-                        } else {
-                            return o1.getScore() > o2.getScore() ? -1 : (o1.getScore() < o2.getScore() ? 1 : 0);
-                        }
-                    }
-                    default: {
-                        return 0;
-                    }
-                }
-            }
-        });
-    }
+    // for cloud openbook
+    public List<BookData> query(String fenCode, boolean onlyFinalPhase, SortRule rule);
 
+    // close database
+    public void close();
 }

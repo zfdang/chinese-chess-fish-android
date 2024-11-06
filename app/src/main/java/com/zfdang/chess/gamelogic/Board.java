@@ -200,6 +200,10 @@ public class Board {
         return result;
     }
 
+    public long getZobrist(boolean redGo) {
+        return ZobristUtils.getZobristFromBoard(piece, redGo);
+    }
+
     public boolean restoreFromFEN(String fenString) {
         if(fenString == null) return false;
         fenString = fenString.trim();
