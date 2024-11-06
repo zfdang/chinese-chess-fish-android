@@ -1,22 +1,26 @@
 package com.zfdang.chess.openbook;
 
+import android.content.Context;
+
+import com.zfdang.chess.gamelogic.Board;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class OpenBookManager {
-
     private volatile static OpenBookManager instance;
+    private Context context = null;
 
-    private MoveRule moveRule = MoveRule.BEST_SCORE;
+    private OpenBook.SortRule sortRule = OpenBook.SortRule.BEST_SCORE;
 
     private OpenBook cloudOpenBook;
-    private List<OpenBook> localOpenBooks;
+    private ArrayList<OpenBook> localOpenBooks;
 
-    private OpenBookManager() {
+    private OpenBookManager(Context context) {
+        this.context = context;
+
         this.cloudOpenBook = new CloudOpenBook();
-        this.localOpenBooks = new ArrayList<>();
 
+        this.localOpenBooks = new ArrayList<>();
         setLocalOpenBooks();
     }
 
@@ -29,34 +33,24 @@ public class OpenBookManager {
     public synchronized void setLocalOpenBooks() {
         close();
         localOpenBooks.clear();
-        ArrayList<String> openBookList = new ArrayList<>();
-        // init openBookList
-        for (String path : openBookList) {
-            try {
-                if (path.endsWith(".obk")) {
-                    localOpenBooks.add(new BHOpenBook(path));
-                } else if (path.endsWith(".pfBook")) {
-                    localOpenBooks.add(new PFOpenBook(path));
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+
+        // now we support BHOpenBook only
+        localOpenBooks.add(new BHOpenBook(this.context));
     }
 
-    public synchronized List<BookData> queryBook(char[][] b, boolean redGo, boolean offManual) {
+    public synchronized ArrayList<BookData> queryBook(Board board, boolean redGo, boolean onlinebook, boolean localbook) {
 
-        List<BookData> cloudResults = new ArrayList<>();
-        if (true) {
-//            String fenCode = ChessBoard.fenCode(b, redGo);
-            String fenCode = "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1";
-            cloudResults.addAll(cloudOpenBook.query(fenCode, offManual, moveRule));
+        ArrayList<BookData> cloudResults = new ArrayList<>();
+        if (onlinebook) {
+            String fenCode = board.toFENString();
+            cloudResults.addAll(cloudOpenBook.query(fenCode, false, sortRule));
         }
 
-        List<BookData> localResults = new ArrayList<>();
-        if (!offManual) {
+        ArrayList<BookData> localResults = new ArrayList<>();
+        if (localbook) {
             for (OpenBook ob : this.localOpenBooks) {
-                localResults.addAll(ob.query(b, redGo, moveRule));
+                long vkey = 0;
+                localResults.addAll(ob.query(vkey, redGo, sortRule));
             }
         }
 
@@ -69,17 +63,14 @@ public class OpenBookManager {
         }
     }
 
-    public static OpenBookManager getInstance() {
+    public static OpenBookManager getInstance(Context context) {
         if (instance == null) {
             synchronized (OpenBookManager.class) {
                 if (instance == null) {
-                    instance = new OpenBookManager();
+                    instance = new OpenBookManager(context);
                 }
             }
         }
         return instance;
     }
-
-
-
 }

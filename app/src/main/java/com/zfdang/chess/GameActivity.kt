@@ -12,6 +12,10 @@ import com.zfdang.chess.controllers.GameController
 import com.zfdang.chess.controllers.GameControllerListener
 import com.zfdang.chess.gamelogic.GameStatus
 import com.zfdang.chess.databinding.ActivityGameBinding
+import com.zfdang.chess.openbook.BHOpenBook
+import com.zfdang.chess.openbook.BookData
+import com.zfdang.chess.openbook.OpenBook
+import com.zfdang.chess.openbook.OpenBookManager
 import com.zfdang.chess.views.ChessView
 
 
@@ -36,6 +40,9 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
     // mediaplayer
     private lateinit var soundPlayer: SoundPlayer
 
+    private lateinit var bookManager: OpenBookManager
+    private lateinit var bhBook: BHOpenBook
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +53,9 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
         // new game
         controller = GameController(this)
         controller.newGame()
+
+        bookManager = OpenBookManager.getInstance(this);
+        bhBook = BHOpenBook(this)
 
         // 初始化棋盘
         chessLayout = binding.chesslayout
@@ -190,7 +200,13 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                 controller.playerAskForHelp();
             }
             binding.swapbt -> {
-//                controller.swap()
+
+                var vkey = controller.game.currentBoard.getZobrist(controller.isRedTurn);
+                var bookData = bhBook.query(vkey,true, OpenBook.SortRule.BEST_SCORE)
+                // iterate bookData
+                for (data in bookData) {
+                    Log.d("PlayActivity", "onClick: $data")
+                }
             }
             binding.exitbt -> {
                 finish()

@@ -2,10 +2,14 @@ package com.zfdang.chess
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.zfdang.chess.openbook.BHOpenBook
+import com.zfdang.chess.openbook.BookData
+import com.zfdang.chess.openbook.OpenBook
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +46,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonAbout.setOnClickListener {
+            var book: BHOpenBook = BHOpenBook(this)
+            var results : List<BookData> = book.query(4029641498683399600,true, OpenBook.SortRule.BEST_SCORE);
+            // show elements in results
+            for (i in 0 until results.size) {
+                var data: BookData = results.get(i)
+                Log.d("MainActivity", "Bookdata: " + " Best move: " + data.move + " Best score: " + data.score + " winrate" + data.winRate)
+            }
+
         }
     }
 

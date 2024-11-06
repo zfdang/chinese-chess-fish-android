@@ -1,85 +1,70 @@
 package com.zfdang.chess.openbook;
 
 
-import com.zfdang.chess.utils.ZobristUtils;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
-import java.io.File;
+import com.zfdang.chess.gamelogic.ZobristUtils;
+
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-public class BHOpenBook implements OpenBook {
+public class BHOpenBook extends OpenBookBase {
 
     private Connection connection;
 
     private String name;
+    private HSKDDatabase HSKDDatabase = null;
 
-    public BHOpenBook(String bookPath) throws ClassNotFoundException, SQLException {
-        Class.forName("org.sqlite.JDBC");
-        this.connection = DriverManager.getConnection("jdbc:sqlite:" + bookPath);
-        this.name = new File(bookPath).getName();
+    public BHOpenBook(Context context){
+        // database asset file is managed by BHDatabase class
+        HSKDDatabase = new HSKDDatabase(context);
+        name = "狂刀华山库2024N2.09";
     }
+
 
     @Override
-    public List<BookData> get(char[][] board, boolean redGo) {
+    protected List<BookData> get(long vkey, boolean redGo) {
+        List<BookData> list = new ArrayList<>();
+        try {
+            SQLiteDatabase db = HSKDDatabase.getReadableDatabase();
+            String sql = "select * from bhobk where vvalid = 1 and vkey = " + vkey;
+            Log.d("BHOpenBook", "get: " + sql);
+            Cursor cursor = db.rawQuery(sql, null);
+            // iterate result
 
-        long zobrist = ZobristUtils.getZobristFromBoard(board, redGo, false);
-        List<BookData> results = get(zobrist, false);
-
-        zobrist = ZobristUtils.getZobristFromBoard(board, redGo, true);
-        results.addAll(get(zobrist, true));
-
-        return results;
-    }
-
-    private List<BookData> get(long zobrist, boolean leftRightSwap) {
-        List<BookData> results = new ArrayList<>();
-
-        String sql;
-        if (zobrist < 0) {
-            double zobristDouble = Double.longBitsToDouble(zobrist);
-            sql = "SELECT * FROM bhobk WHERE cast(vkey as double) = " + zobristDouble + " and vvalid = 1;";
-        } else {
-            sql = "SELECT * FROM bhobk WHERE cast(vkey as integer) = " + zobrist + " and vvalid = 1;";
-        }
-
-        try (Statement stmt = this.connection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
-
-            while (rs.next()) {
+            while (cursor.moveToNext()) {
                 BookData bd = new BookData();
-                bd.setScore(rs.getInt("vscore"));
-                bd.setWinNum(rs.getInt("vwin"));
-                bd.setDrawNum(rs.getInt("vdraw"));
-                bd.setLoseNum(rs.getInt("vlost"));
-                int winRate = (int) (10000 * (bd.getWinNum() + bd.getDrawNum() / 2.0d) / (bd.getWinNum() + bd.getDrawNum() + bd.getLoseNum()));
-                bd.setWinRate(winRate / 100d);
-                bd.setNote(rs.getString("vmemo"));
-                int vmove = rs.getInt("vmove");
-                bd.setMove(ZobristUtils.getMoveFromVmove(vmove, leftRightSwap));
-
+                int vmove = cursor.getInt(cursor.getColumnIndex("vmove"));
+                String move = ZobristUtils.getMoveFromVmove(vmove);
+                bd.setMove(move);
+                bd.setScore(cursor.getInt(cursor.getColumnIndex("vscore")));
+                bd.setWinRate(cursor.getDouble(cursor.getColumnIndex("vwin")));
+                bd.setDrawNum(cursor.getInt(cursor.getColumnIndex("vdraw")));
+                bd.setLoseNum(cursor.getInt(cursor.getColumnIndex("vlost")));
+                bd.setNote(cursor.getString(cursor.getColumnIndex("vmemo")));
                 bd.setSource(this.name);
-                results.add(bd);
+                list.add(bd);
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.d("BHOpenBook", "get: " + e.getMessage());
+            Log.d("BHOpenBook", "get: " + e.getStackTrace());
         }
-
-        return results;
+        return list;
     }
 
     @Override
-    public List<BookData> get(String fenCode, boolean onlyFinalPhase) {
-        return null;
+    protected List<BookData> get(String fenCode, boolean onlyFinalPhase) {
+        return Collections.emptyList();
     }
+
 
     @Override
     public void close() {
-        try {
-            this.connection.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        HSKDDatabase.close();
     }
 }
