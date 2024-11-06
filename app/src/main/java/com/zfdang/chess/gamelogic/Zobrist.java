@@ -3,7 +3,7 @@ package com.zfdang.chess.gamelogic;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ZobristUtils {
+public class Zobrist {
 
     public static String getMoveFromVmove(int vmove) {
         int first = vmove >> 8, second = vmove & 0x00ff;
