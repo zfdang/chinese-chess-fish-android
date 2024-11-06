@@ -201,7 +201,7 @@ public class Board {
     }
 
     public long getZobrist(boolean redGo) {
-        return ZobristUtils.getZobristFromBoard(piece, redGo);
+        return Zobrist.getZobristFromBoard(piece, redGo);
     }
 
     public boolean restoreFromFEN(String fenString) {

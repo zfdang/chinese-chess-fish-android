@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
-import com.zfdang.chess.gamelogic.ZobristUtils;
+import com.zfdang.chess.gamelogic.Zobrist;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class BHOpenBook extends OpenBookBase {
             while (cursor.moveToNext()) {
                 BookData bd = new BookData();
                 int vmove = cursor.getInt(cursor.getColumnIndex("vmove"));
-                String move = ZobristUtils.getMoveFromVmove(vmove);
+                String move = Zobrist.getMoveFromVmove(vmove);
                 bd.setMove(move);
                 bd.setScore(cursor.getInt(cursor.getColumnIndex("vscore")));
                 bd.setWinRate(cursor.getDouble(cursor.getColumnIndex("vwin")));
