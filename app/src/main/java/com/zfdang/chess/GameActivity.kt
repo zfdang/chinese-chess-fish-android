@@ -40,8 +40,6 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
     // mediaplayer
     private lateinit var soundPlayer: SoundPlayer
 
-    private lateinit var bookManager: OpenBookManager
-    private lateinit var bhBook: BHOpenBook
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,9 +51,6 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
         // new game
         controller = GameController(this)
         controller.newGame()
-
-        bookManager = OpenBookManager.getInstance(this);
-        bhBook = BHOpenBook(this)
 
         // 初始化棋盘
         chessLayout = binding.chesslayout
@@ -110,10 +105,6 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
         }
     }
 
-    // fun to load audio files in raw
-    fun loadAudioFiles() {
-        // load audio files in raw
-    }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         // 防止重复点击
@@ -200,13 +191,7 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                 controller.playerAskForHelp();
             }
             binding.swapbt -> {
-
-                var vkey = controller.game.currentBoard.getZobrist(controller.isRedTurn);
-                var bookData = bhBook.query(vkey,true, OpenBook.SortRule.BEST_SCORE)
-                // iterate bookData
-                for (data in bookData) {
-                    Log.d("PlayActivity", "onClick: $data")
-                }
+                controller.swapSides()
             }
             binding.exitbt -> {
                 finish()

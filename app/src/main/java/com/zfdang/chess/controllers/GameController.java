@@ -2,6 +2,7 @@ package com.zfdang.chess.controllers;
 
 import android.util.Log;
 
+import com.zfdang.chess.ChessApp;
 import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Game;
 import com.zfdang.chess.gamelogic.GameStatus;
@@ -10,6 +11,10 @@ import com.zfdang.chess.gamelogic.Piece;
 import com.zfdang.chess.gamelogic.Position;
 import com.zfdang.chess.gamelogic.PvInfo;
 import com.zfdang.chess.gamelogic.Rule;
+import com.zfdang.chess.openbook.BHOpenBook;
+import com.zfdang.chess.openbook.BookData;
+import com.zfdang.chess.openbook.OpenBook;
+import com.zfdang.chess.openbook.OpenBookManager;
 
 import org.jetbrains.annotations.NotNull;
 import org.petero.droidfish.player.ComputerPlayer;
@@ -18,6 +23,7 @@ import org.petero.droidfish.player.SearchListener;
 import org.petero.droidfish.player.SearchRequest;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class GameController implements EngineListener, SearchListener {
     public ComputerPlayer player = null;
@@ -37,6 +43,9 @@ public class GameController implements EngineListener, SearchListener {
     ArrayList<PvInfo> multiPVs = new ArrayList<>();
     boolean multiPVMode = false;
 
+    OpenBookManager bookManager = null;
+    BHOpenBook bhBook = null;
+
     public boolean isRedTurn;
 
     public GameController(GameControllerListener cListener) {
@@ -45,6 +54,8 @@ public class GameController implements EngineListener, SearchListener {
         isComputerPlaying = true;
         isAutoPlay = true;
         searchId = 0;
+
+        bhBook = new BHOpenBook(ChessApp.getContext());
 
         // Initialize computer player
         if(player == null) {
@@ -88,8 +99,23 @@ public class GameController implements EngineListener, SearchListener {
             gui.onGameEvent(GameStatus.ILLEGAL, "该红方出着");
             return;
         }
-        gui.onGameEvent(GameStatus.SELECT, "电脑搜索着法中...");
 
+        gui.onGameEvent(GameStatus.SELECT, "检索开局库...");
+        // search openbook first
+        long vkey = game.currentBoard.getZobrist(isRedTurn);
+        List<BookData> bookData = bhBook.query(vkey, isRedTurn, OpenBook.SortRule.BEST_SCORE);
+        // iterate bookData one by one
+        for (BookData bd : bookData) {
+            Log.d("GameController", "Openbook hit: " + bd.getMove());
+        }
+
+        if(bookData!= null && bookData.size() > 0){
+            Log.d("GameController", "Openbook hit: " + bookData.get(0).getMove());
+            computerMovePiece(bookData.get(0).getMove());
+            return;
+        }
+
+        gui.onGameEvent(GameStatus.SELECT, "电脑搜索着法中...");
         // trigger searchrequest, engine will call notifySearchResult for bestmove
         searchStartTime = System.currentTimeMillis();
         Board board = null;
@@ -375,4 +401,13 @@ public class GameController implements EngineListener, SearchListener {
         Log.d("GameController", "Engine initialized");
     }
 
+    public void swapSides() {
+        // search openbook first
+        long vkey = game.currentBoard.getZobrist(isRedTurn);
+        List<BookData> bookData = bhBook.query(vkey, isRedTurn, OpenBook.SortRule.BEST_SCORE);
+        // iterate bookData one by one
+        for (BookData bd : bookData) {
+            Log.d("GameController", "Openbook hit: " + bd.getMove());
+        }
+    }
 }

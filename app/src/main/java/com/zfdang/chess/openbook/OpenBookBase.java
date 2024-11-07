@@ -8,13 +8,13 @@ import java.util.Random;
 
 abstract public class OpenBookBase implements OpenBook{
 
-    abstract protected List<BookData> get(long vkey, boolean redGo);
+    abstract protected List<BookData> get(long vkey);
 
     abstract protected List<BookData> get(String fenCode, boolean onlyFinalPhase);
 
     @Override
     public List<BookData> query(long vkey, boolean redGo, SortRule rule) {
-        List<BookData> list = get(vkey, redGo);
+        List<BookData> list = get(vkey);
         sort(list, rule);
         return list;
     }

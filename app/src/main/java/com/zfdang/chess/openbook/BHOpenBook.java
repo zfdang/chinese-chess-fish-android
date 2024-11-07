@@ -28,11 +28,11 @@ public class BHOpenBook extends OpenBookBase {
 
 
     @Override
-    protected List<BookData> get(long vkey, boolean redGo) {
+    protected List<BookData> get(long vkey) {
         List<BookData> list = new ArrayList<>();
         try {
             SQLiteDatabase db = HSKDDatabase.getReadableDatabase();
-            String sql = "select * from bhobk where vvalid = 1 and vkey = " + vkey;
+            String sql = String.format("select * from bhobk where vvalid = 1 and vkey = %d order by vscore desc, vwin desc", vkey, vkey);
             Log.d("BHOpenBook", "get: " + sql);
             Cursor cursor = db.rawQuery(sql, null);
             // iterate result
