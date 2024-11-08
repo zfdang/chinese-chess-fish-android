@@ -58,8 +58,10 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
 
         // 初始化棋盘
         chessLayout = binding.chesslayout
-        chessView.setOnTouchListener(this)
+        chessView = ChessView(this, controller)
         chessLayout.addView(chessView)
+        chessView.setOnTouchListener(this)
+
         bhBook = BHOpenBook(this)
 
         // Bind all imagebuttons here, and set their onClickListener
