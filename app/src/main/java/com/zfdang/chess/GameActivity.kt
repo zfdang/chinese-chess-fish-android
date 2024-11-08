@@ -1,11 +1,13 @@
 package com.zfdang.chess
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.zfdang.chess.adapters.MoveHistoryAdapter
 import com.zfdang.chess.controllers.GameController
@@ -54,7 +56,7 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
 
         // 初始化棋盘
         chessLayout = binding.chesslayout
-        chessView = ChessView(this, controller.game)
+        chessView = ChessView(this, controller)
         chessView.setOnTouchListener(this)
         chessLayout.addView(chessView)
 
@@ -133,6 +135,34 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
         binding.statustv.text = text
     }
 
+
+    fun showConfirmationDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("确定开始新游戏?")
+        builder.setMessage("你是否要放弃当前的游戏，开始新游戏呢?")
+
+        builder.setPositiveButton("开始新游戏") { dialog, which ->
+            // User clicked Yes button
+            controller.newGame()
+            setStatusText("开始新游戏")
+            // hide choice buttons
+            if(binding.choice1bt.visibility == View.VISIBLE){
+                binding.choice1bt.visibility = View.GONE;
+                binding.choice2bt.visibility = View.GONE;
+                binding.choice3bt.visibility = View.GONE;
+            }
+        }
+
+        builder.setNegativeButton("继续当前游戏") { dialog, which ->
+            // User clicked No button
+            dialog.dismiss()
+        }
+
+        builder.setCancelable(true)
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
     override fun onClick(v: View?) {
         // handle events for all imagebuttons in activity_player.xml
         when(v) {
@@ -178,7 +208,8 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
 //                controller.option()
             }
             binding.newbt -> {
-//                controller.newGame()
+                // display dialog to ask users for confirmation
+                showConfirmationDialog()
             }
             binding.backbt -> {
                 controller.stepBack()
@@ -194,7 +225,17 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                 controller.swapSides()
             }
             binding.exitbt -> {
-                finish()
+                // show confirmation dialog to finish this activity
+                AlertDialog.Builder(this)
+                    .setTitle("确定退出游戏?")
+                    .setMessage("你是否要退出游戏呢?")
+                    .setPositiveButton("退出") { dialog, which ->
+                        finish()
+                    }
+                    .setNegativeButton("取消") { dialog, which ->
+                        dialog.dismiss()
+                    }
+                    .show()
             }
             binding.choice1bt -> {
                 setStatusText("选择着数1")

@@ -66,8 +66,10 @@ public class GameController implements EngineListener, SearchListener {
     }
 
     public void newGame() {
-        isRedTurn = true;
+        Log.d("GameController", "New game");
         game = new Game();
+        isRedTurn = true;
+        multiPVMode = false;
         player.uciNewGame();
     }
 
