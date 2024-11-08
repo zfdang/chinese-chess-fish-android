@@ -1,19 +1,13 @@
 package com.zfdang.chess
 
 import android.annotation.SuppressLint
-<<<<<<< HEAD
 import android.app.Dialog
-=======
->>>>>>> refs/remotes/origin/master
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-<<<<<<< HEAD
 import androidx.appcompat.app.AlertDialog
-=======
->>>>>>> refs/remotes/origin/master
 import androidx.appcompat.app.AppCompatActivity
 import com.zfdang.chess.adapters.MoveHistoryAdapter
 import com.zfdang.chess.controllers.GameController
@@ -48,11 +42,8 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
     // mediaplayer
     private lateinit var soundPlayer: SoundPlayer
 
-<<<<<<< HEAD
-=======
     private lateinit var bookManager: OpenBookManager
     private lateinit var bhBook: BHOpenBook
->>>>>>> refs/remotes/origin/master
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,20 +56,11 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
         controller = GameController(this)
         controller.newGame()
 
-<<<<<<< HEAD
         // 初始化棋盘
         chessLayout = binding.chesslayout
-        chessView = ChessView(this, controller)
-=======
-        bookManager = OpenBookManager.getInstance(this);
-        bhBook = BHOpenBook(this)
-
-        // 初始化棋盘
-        chessLayout = binding.chesslayout
-        chessView = ChessView(this, controller.game)
->>>>>>> refs/remotes/origin/master
         chessView.setOnTouchListener(this)
         chessLayout.addView(chessView)
+        bhBook = BHOpenBook(this)
 
         // Bind all imagebuttons here, and set their onClickListener
         val imageButtons = listOf(
@@ -127,14 +109,6 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
         }
     }
 
-<<<<<<< HEAD
-=======
-    // fun to load audio files in raw
-    fun loadAudioFiles() {
-        // load audio files in raw
-    }
->>>>>>> refs/remotes/origin/master
-
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         // 防止重复点击
         lastClickTime = System.currentTimeMillis()
@@ -161,8 +135,6 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
     fun setStatusText(text: String) {
         binding.statustv.text = text
     }
-
-<<<<<<< HEAD
 
     fun showConfirmationDialog() {
         val builder = AlertDialog.Builder(this)
@@ -191,8 +163,6 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
         dialog.show()
     }
 
-=======
->>>>>>> refs/remotes/origin/master
     override fun onClick(v: View?) {
         // handle events for all imagebuttons in activity_player.xml
         when(v) {
@@ -238,12 +208,8 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
 //                controller.option()
             }
             binding.newbt -> {
-<<<<<<< HEAD
                 // display dialog to ask users for confirmation
                 showConfirmationDialog()
-=======
-//                controller.newGame()
->>>>>>> refs/remotes/origin/master
             }
             binding.backbt -> {
                 controller.stepBack()
@@ -256,7 +222,6 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                 controller.playerAskForHelp();
             }
             binding.swapbt -> {
-<<<<<<< HEAD
                 controller.swapSides()
             }
             binding.exitbt -> {
@@ -271,18 +236,6 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                         dialog.dismiss()
                     }
                     .show()
-=======
-
-                var vkey = controller.game.currentBoard.getZobrist(controller.isRedTurn);
-                var bookData = bhBook.query(vkey,true, OpenBook.SortRule.BEST_SCORE)
-                // iterate bookData
-                for (data in bookData) {
-                    Log.d("PlayActivity", "onClick: $data")
-                }
-            }
-            binding.exitbt -> {
-                finish()
->>>>>>> refs/remotes/origin/master
             }
             binding.choice1bt -> {
                 setStatusText("选择着数1")

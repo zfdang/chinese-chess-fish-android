@@ -716,10 +716,6 @@ public class ComputerPlayer {
      * Notify listener about search statistics.
      */
     private synchronized void notifyListener() {
-<<<<<<< HEAD
-=======
-        Log.d("ComputerPlayer", "notifyListener");
->>>>>>> refs/remotes/origin/master
         if (Thread.currentThread().isInterrupted())
             return;
 

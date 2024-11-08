@@ -19,13 +19,8 @@ public class HSKDDatabase extends SQLiteAssetHelper {
 //                       [vindex] INTEGER)
 
     // 华弈开局库V20221122（116MB）.obk
-<<<<<<< HEAD
     private static final String DATABASE_NAME = "桔库09.09.2023精修库.obk";
     private static final int DATABASE_VERSION = 15;
-=======
-    private static final String DATABASE_NAME = "狂刀华山库2024N2.09.obk";
-    private static final int DATABASE_VERSION = 8;
->>>>>>> refs/remotes/origin/master
 
     public HSKDDatabase(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);

@@ -15,10 +15,7 @@ import android.view.SurfaceView;
 import androidx.annotation.NonNull;
 
 import com.zfdang.chess.R;
-<<<<<<< HEAD
 import com.zfdang.chess.controllers.GameController;
-=======
->>>>>>> refs/remotes/origin/master
 import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Game;
 import com.zfdang.chess.gamelogic.Move;
@@ -60,37 +57,19 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     public int Board_width, Board_height;
     public float scaleRatio;
 
-<<<<<<< HEAD
     public GameController controller;
-=======
-    public Game game;
->>>>>>> refs/remotes/origin/master
 
     public String[] thinkMood = new String[]{"😀", "🙂", "😶", "😣", "😵", "😭"};
     public int thinkIndex = 0;
     public int thinkFlag = 0;
     public String thinkContent = "😀·····";
 
-<<<<<<< HEAD
     public ChessView(Context context, GameController controller) {
         super(context);
         this.controller = controller;
-=======
-    public ChessView(Context context, Game game) {
-        super(context);
-        this.game = game;
->>>>>>> refs/remotes/origin/master
         getHolder().addCallback(this);
         initBitmaps();
     }
-
-    // method to set game
-<<<<<<< HEAD
-=======
-    public void setGame(Game game) {
-        this.game = game;
-    }
->>>>>>> refs/remotes/origin/master
 
     public void initBitmaps() {
         ChessBoardBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.chessboard);
@@ -126,10 +105,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void Draw(Canvas canvas) {
-<<<<<<< HEAD
         Game game = controller.game;
-=======
->>>>>>> refs/remotes/origin/master
         if(canvas == null) {
             return;
         }
@@ -198,10 +174,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
 
     private void HighlighSelectedPiece(Canvas canvas) {
         // draw selected piece
-<<<<<<< HEAD
         Game game = controller.game;
-=======
->>>>>>> refs/remotes/origin/master
         Board board = game.currentBoard;
         Rect tempDesRect, tempSrcRect;
         Position pos = game.startPos;
@@ -220,10 +193,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void DrawMoveHistory(Canvas canvas) {
-<<<<<<< HEAD
         Game game = controller.game;
-=======
->>>>>>> refs/remotes/origin/master
         Board board = game.currentBoard;
         XYCoord crd0, crd1;
 
