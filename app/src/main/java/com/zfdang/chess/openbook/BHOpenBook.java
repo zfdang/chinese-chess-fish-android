@@ -19,11 +19,14 @@ public class BHOpenBook extends OpenBookBase {
 
     private String name;
     private HSKDDatabase HSKDDatabase = null;
+    SQLiteDatabase db = null;
 
     public BHOpenBook(Context context){
         // database asset file is managed by BHDatabase class
         HSKDDatabase = new HSKDDatabase(context);
-        name = "狂刀华山库2024N2.09";
+        db = HSKDDatabase.getReadableDatabase();
+
+        name = "桔库09.09.2023精修库";
     }
 
 
@@ -31,8 +34,7 @@ public class BHOpenBook extends OpenBookBase {
     protected List<BookData> get(long vkey) {
         List<BookData> list = new ArrayList<>();
         try {
-            SQLiteDatabase db = HSKDDatabase.getReadableDatabase();
-            String sql = String.format("select * from bhobk where vvalid = 1 and vkey = %d order by vscore desc, vwin desc", vkey, vkey);
+            String sql = String.format("select * from bhobk where vvalid = 1 and vkey = %d order by vscore desc, vwin desc limit 5", vkey, vkey);
             Log.d("BHOpenBook", "get: " + sql);
             Cursor cursor = db.rawQuery(sql, null);
             // iterate result
