@@ -15,7 +15,11 @@ public class CloudOpenBook extends OpenBookBase {
     private final int cloudTimeout = 1000;
 
     @Override
+<<<<<<< HEAD
     public List<BookData> get(long vkey) {
+=======
+    public List<BookData> get(long vkey, boolean redGo) {
+>>>>>>> refs/remotes/origin/master
         return Collections.emptyList();
     }
 

@@ -2,7 +2,10 @@ package com.zfdang.chess.controllers;
 
 import android.util.Log;
 
+<<<<<<< HEAD
 import com.zfdang.chess.ChessApp;
+=======
+>>>>>>> refs/remotes/origin/master
 import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Game;
 import com.zfdang.chess.gamelogic.GameStatus;
@@ -11,10 +14,13 @@ import com.zfdang.chess.gamelogic.Piece;
 import com.zfdang.chess.gamelogic.Position;
 import com.zfdang.chess.gamelogic.PvInfo;
 import com.zfdang.chess.gamelogic.Rule;
+<<<<<<< HEAD
 import com.zfdang.chess.openbook.BHOpenBook;
 import com.zfdang.chess.openbook.BookData;
 import com.zfdang.chess.openbook.OpenBook;
 import com.zfdang.chess.openbook.OpenBookManager;
+=======
+>>>>>>> refs/remotes/origin/master
 
 import org.jetbrains.annotations.NotNull;
 import org.petero.droidfish.player.ComputerPlayer;
@@ -23,7 +29,10 @@ import org.petero.droidfish.player.SearchListener;
 import org.petero.droidfish.player.SearchRequest;
 
 import java.util.ArrayList;
+<<<<<<< HEAD
 import java.util.List;
+=======
+>>>>>>> refs/remotes/origin/master
 
 public class GameController implements EngineListener, SearchListener {
     public ComputerPlayer player = null;
@@ -43,9 +52,12 @@ public class GameController implements EngineListener, SearchListener {
     ArrayList<PvInfo> multiPVs = new ArrayList<>();
     boolean multiPVMode = false;
 
+<<<<<<< HEAD
     OpenBookManager bookManager = null;
     BHOpenBook bhBook = null;
 
+=======
+>>>>>>> refs/remotes/origin/master
     public boolean isRedTurn;
 
     public GameController(GameControllerListener cListener) {
@@ -55,8 +67,11 @@ public class GameController implements EngineListener, SearchListener {
         isAutoPlay = true;
         searchId = 0;
 
+<<<<<<< HEAD
         bhBook = new BHOpenBook(ChessApp.getContext());
 
+=======
+>>>>>>> refs/remotes/origin/master
         // Initialize computer player
         if(player == null) {
             player = new ComputerPlayer(this, this);
@@ -66,10 +81,15 @@ public class GameController implements EngineListener, SearchListener {
     }
 
     public void newGame() {
+<<<<<<< HEAD
         Log.d("GameController", "New game");
         game = new Game();
         isRedTurn = true;
         multiPVMode = false;
+=======
+        isRedTurn = true;
+        game = new Game();
+>>>>>>> refs/remotes/origin/master
         player.uciNewGame();
     }
 
@@ -101,6 +121,7 @@ public class GameController implements EngineListener, SearchListener {
             gui.onGameEvent(GameStatus.ILLEGAL, "该红方出着");
             return;
         }
+<<<<<<< HEAD
 
         gui.onGameEvent(GameStatus.SELECT, "检索开局库...");
         // search openbook first
@@ -118,6 +139,10 @@ public class GameController implements EngineListener, SearchListener {
         }
 
         gui.onGameEvent(GameStatus.SELECT, "电脑搜索着法中...");
+=======
+        gui.onGameEvent(GameStatus.SELECT, "电脑搜索着法中...");
+
+>>>>>>> refs/remotes/origin/master
         // trigger searchrequest, engine will call notifySearchResult for bestmove
         searchStartTime = System.currentTimeMillis();
         Board board = null;
@@ -403,6 +428,7 @@ public class GameController implements EngineListener, SearchListener {
         Log.d("GameController", "Engine initialized");
     }
 
+<<<<<<< HEAD
     public void swapSides() {
         // search openbook first
         long vkey = game.currentBoard.getZobrist(isRedTurn);
@@ -412,4 +438,6 @@ public class GameController implements EngineListener, SearchListener {
             Log.d("GameController", "Openbook hit: " + bd.getMove());
         }
     }
+=======
+>>>>>>> refs/remotes/origin/master
 }

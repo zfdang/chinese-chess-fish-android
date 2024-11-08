@@ -239,6 +239,10 @@ public class ExternalEngine extends UCIEngineBase {
         } catch (IOException ignore) {
             Log.d("ExternalEngine", "Failed to write to engine: " + ignore.getMessage());
         }
+<<<<<<< HEAD
+=======
+        Log.d("ExternalEngine", "writeLineToEngine: " + data);
+>>>>>>> refs/remotes/origin/master
     }
 
     @Override
