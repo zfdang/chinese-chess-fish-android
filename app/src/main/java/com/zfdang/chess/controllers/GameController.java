@@ -78,6 +78,7 @@ public class GameController implements EngineListener, SearchListener {
         Log.d("GameController", "New game");
         state = ControllerState.WAITING_FOR_USER;
         game = new Game();
+        player.stopSearch();
         player.uciNewGame();
     }
 
@@ -195,8 +196,6 @@ public class GameController implements EngineListener, SearchListener {
             if(!result) {
                 gui.onGameEvent(GameStatus.ILLEGAL, "该红方出着，无法变着");
                 return;
-            } else {
-                toggleTurn();
             }
         }
 
@@ -325,13 +324,14 @@ public class GameController implements EngineListener, SearchListener {
         }
 
     }
-    public void moveNow() {
+    public void stopSearchNow() {
         // send "stop" to engine for "bestmove"
-        if(state == ControllerState.WAITING_FOR_ENGINE_BESTMV) {
+        if(state == ControllerState.WAITING_FOR_ENGINE_BESTMV || state == ControllerState.WAITING_FOR_ENGINE_MULTIPV) {
             player.stopSearch();
             gui.onGameEvent(GameStatus.SELECT, "已命令电脑立刻出着...");
-        } else {
-            gui.onGameEvent(GameStatus.ILLEGAL, "非搜索着法状态");
+        } else if(state == ControllerState.WAITING_FOR_USER_MULTIPV) {
+            player.stopSearch();
+            gui.onGameEvent(GameStatus.SELECT, "停止继续搜索...");
         }
     }
 
@@ -456,9 +456,9 @@ public class GameController implements EngineListener, SearchListener {
         // show infos about all pvInfos
         multiPVs.clear();
         for(PvInfo pv : pvInfos) {
-//            Log.d("GameController", "PV: " + pv);
             multiPVs.add(pv);
         }
+        Log.d("GameController", "PV: " + pvInfos);
     }
 
     @Override

@@ -74,7 +74,7 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
             binding.backbt,
             binding.forwardbt,
             binding.helpbt,
-            binding.swapbt,
+            binding.stophelpbt,
             binding.exitbt,
             binding.choice1bt,
             binding.choice2bt,
@@ -198,7 +198,7 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
             }
             binding.quickbt -> {
                 setStatusText("电脑停止搜索中...")
-                controller.moveNow()
+                controller.stopSearchNow()
             }
             binding.playeraltbt -> {
                 controller.computerAskForMultiPV();
@@ -220,8 +220,8 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                 setStatusText("正在搜索建议着法...")
                 controller.playerAskForHelp();
             }
-            binding.swapbt -> {
-                controller.swapSides()
+            binding.stophelpbt -> {
+                controller.stopSearchNow()
             }
             binding.exitbt -> {
                 // show confirmation dialog to finish this activity

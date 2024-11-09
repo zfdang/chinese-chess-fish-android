@@ -440,6 +440,7 @@ public class ComputerPlayer {
         if (s.length() == 0)
             return;
 
+//        Log.d("ComputerPlayer", "processEngineOutput: " + " state: " + engineState.state + " s: " + s);
         switch (engineState.state) {
             case READ_OPTIONS: {
                 if (readUCIOption(uci, s)) {
@@ -488,9 +489,22 @@ public class ComputerPlayer {
             }
             case STOP_FOR_BESTMOVE: {
                 String[] tokens = tokenize(s);
-                if (tokens[0].equals("bestmove")) {
-                    uci.writeLineToEngine("isready");
-                    engineState.setState(EngineStateValue.WAIT_READY);
+                int nTok = tokens.length;
+                if(nTok > 0) {
+                    if (tokens[0].equals("bestmove")) {
+                        String bestMoveStr = nTok > 1 ? tokens[1] : "";
+                        Log.d("ComputerPlayer", "bestmove: " + bestMoveStr);
+                        String nextPonderMoveStr = "";
+                        if ((nTok >= 4) && (tokens[2].equals("ponder"))) {
+                            nextPonderMoveStr = tokens[3];
+                            Log.d("ComputerPlayer", "nextPonderMoveStr: " + nextPonderMoveStr);
+                        }
+
+                        reportMove(bestMoveStr, nextPonderMoveStr);
+
+                        uci.writeLineToEngine("isready");
+                        engineState.setState(EngineStateValue.WAIT_READY);
+                    }
                 }
                 break;
             }
@@ -527,7 +541,7 @@ public class ComputerPlayer {
 
     private void reportMove(String bestMoveStr, String nextPonderMoveStr) {
         SearchRequest sr = searchRequest;
-        engineListener.notifySearchResult(sr.searchId, bestMoveStr, nextPonderMoveStr);
+        engineListener.notifySearchResult(engineState.searchId, bestMoveStr, nextPonderMoveStr);
     }
 
     /**

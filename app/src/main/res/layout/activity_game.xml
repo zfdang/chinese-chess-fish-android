@@ -56,20 +56,20 @@
                 app:srcCompat="@drawable/play_circle" />
 
             <ImageButton
-                android:id="@+id/quickbt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="6dp"
-                android:background="?android:attr/selectableItemBackground"
-                app:srcCompat="@drawable/quick" />
-
-            <ImageButton
                 android:id="@+id/playeraltbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="6dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/alt_route" />
+
+            <ImageButton
+                android:id="@+id/quickbt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/quick" />
 
             <ImageButton
                 android:id="@+id/optionbt"
@@ -130,12 +130,12 @@
                 app:srcCompat="@drawable/help" />
 
             <ImageButton
-                android:id="@+id/swapbt"
+                android:id="@+id/stophelpbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="8dp"
                 android:background="?android:attr/selectableItemBackground"
-                app:srcCompat="@drawable/swap" />
+                app:srcCompat="@drawable/quick" />
 
             <ImageButton
                 android:id="@+id/exitbt"

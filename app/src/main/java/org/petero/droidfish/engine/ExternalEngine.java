@@ -222,6 +222,7 @@ public class ExternalEngine extends UCIEngineBase {
         if (ret == null)
             return null;
         if (ret.length() > 0) {
+            Log.d("ExternalEngine", "Read from engine: " + ret);
         }
         return ret;
     }
