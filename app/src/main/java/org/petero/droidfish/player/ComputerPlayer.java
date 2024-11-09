@@ -218,42 +218,9 @@ public class ComputerPlayer {
     }
 
     /**
-     * Start a search. Search result is returned to the search listener object.
-     * The result can be a valid move string, in which case the move is played
-     * and the turn goes over to the other player. The result can also be a special
-     * command, such as "draw" and "resign".
-     */
-    public final synchronized void queueSearchRequest(SearchRequest sr) {
-        killOldEngine(sr.engineName);
-        stopSearch();
-
-        if (sr.ponderMove != null)
-            sr.mList.add(sr.ponderMove);
-
-        if (sr.ponderMove == null) {
-            ArrayList<Move> moves = movesToSearch(sr);
-            // Check if user set up a position where computer has no valid moves
-            if (moves.size() == 0) {
-                searchListener.notifySearchResult(sr.searchId, "", null);
-                return;
-            }
-            // If only one move to search, play it without searching
-            if (moves.size() == 1) {
-                Move bestMove = moves.get(0);
-                // todo
-                searchListener.notifySearchResult(sr.searchId, bestMove.getUCCIString(), null);
-                return;
-            }
-        }
-
-        searchRequest = sr;
-        handleQueue();
-    }
-
-    /**
      * Start analyzing a board.
      */
-    public final synchronized void queueAnalyzeRequest(SearchRequest sr) {
+    public final synchronized void queueSearchRequest(SearchRequest sr) {
         killOldEngine(sr.engineName);
         stopSearch();
 
@@ -393,7 +360,7 @@ public class ComputerPlayer {
             StringBuilder goStr = new StringBuilder(96);
             // 这里的命令可以根据需要设置
             // https://backscattering.de/chess/uci/#gui-go-searchmoves
-            goStr.append("go depth 20");
+            goStr.append("go depth 30");
 
             // 如果有searchMoves，就加上searchMoves, 这个以后可以从开局库获取
             if (sr.searchMoves != null) {

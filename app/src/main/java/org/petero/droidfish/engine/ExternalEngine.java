@@ -236,6 +236,7 @@ public class ExternalEngine extends UCIEngineBase {
                 ep.getOutputStream().write(data.getBytes());
                 ep.getOutputStream().flush();
             }
+            Log.d("ExternalEngine", "Wrote to engine: " + data);
         } catch (IOException ignore) {
             Log.d("ExternalEngine", "Failed to write to engine: " + ignore.getMessage());
         }
