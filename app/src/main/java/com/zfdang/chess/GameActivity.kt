@@ -1,7 +1,6 @@
 package com.zfdang.chess
 
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
@@ -15,8 +14,6 @@ import com.zfdang.chess.controllers.GameControllerListener
 import com.zfdang.chess.gamelogic.GameStatus
 import com.zfdang.chess.databinding.ActivityGameBinding
 import com.zfdang.chess.openbook.BHOpenBook
-import com.zfdang.chess.openbook.BookData
-import com.zfdang.chess.openbook.OpenBook
 import com.zfdang.chess.openbook.OpenBookManager
 import com.zfdang.chess.views.ChessView
 
@@ -204,7 +201,7 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                 controller.moveNow()
             }
             binding.playeraltbt -> {
-                controller.computerMultiPV();
+                controller.computerAskForMultiPV();
             }
             binding.optionbt -> {
 //                controller.option()
