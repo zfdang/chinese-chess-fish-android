@@ -6,31 +6,35 @@
     android:padding="16dp">
 
     <CheckBox
-        android:id="@+id/boolean_input"
+        android:id="@+id/boolean_sound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="播放音效" />
+        android:text="播放音效"
+        android:textSize="18sp"/>
 
     <View
         android:id="@+id/divider3"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="2dp"
         android:background="?android:attr/listDivider" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="horizontal">
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="2"
-            android:text="显示历史着法" />
+            android:text="显示历史着法"
+            android:textSize="18sp" />
 
         <SeekBar
-            android:id="@+id/number_seekbar"
+            android:id="@+id/seekbar_history"
             style="@style/Widget.AppCompat.SeekBar.Discrete"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -39,7 +43,7 @@
             android:progress="1" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/textview_history"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -51,97 +55,118 @@
     <View
         android:id="@+id/divider"
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="2dp"
         android:background="?android:attr/listDivider" />
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/textView_engine"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="引擎设置" />
+        android:padding="10dp"
+        android:text="引擎搜索设置"
+        android:textSize="18sp" />
 
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
         <RadioButton
-            android:id="@+id/radioButton"
+            android:id="@+id/radioButton_depth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="搜索固定深度" />
+            android:text="搜索固定深度 (建议20)" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="4dp">
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/textView_depth_caption"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:text="深度：" />
 
             <SeekBar
-                android:id="@+id/seekBar3"
+                android:id="@+id/seekBar_depth"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="3"
                 android:max="255"
-                android:progress="1"
-                android:layout_weight="3" />
+                android:min="1"
+                android:progress="1" />
 
             <TextView
-                android:id="@+id/textView9"
+                android:id="@+id/textView_depth"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="10"
-                android:textAlignment="center"/>
+                android:textAlignment="center" />
 
         </LinearLayout>
 
+        <View
+            android:id="@+id/divider21"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
         <RadioButton
-            android:id="@+id/radioButton2"
+            android:id="@+id/radioButton_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="搜索固定时间" />
+            android:text="搜索固定时间 (建议3000)" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="4dp">
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/textView_time_caption"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
                 android:text="时间(毫秒)：" />
 
             <SeekBar
-                android:id="@+id/seekBar2"
+                android:id="@+id/seekBar_time"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="3"
                 android:max="10000"
-                android:progress="100"
-                android:layout_weight="3" />
+                android:min="100"
+                android:progress="100" />
 
             <TextView
-                android:id="@+id/textView7"
+                android:id="@+id/textView_time"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
 
                 android:text="1000"
-                android:textAlignment="center"/>
+                android:textAlignment="center" />
 
         </LinearLayout>
 
+        <View
+            android:id="@+id/divider31"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider" />
+
         <RadioButton
-            android:id="@+id/radioButton3"
+            android:id="@+id/radioButton_infinite"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="无限搜索，需手动停止" />
+            android:text="无限搜索，需手动停止"
+            android:padding="4dp"/>
 
         <View
             android:id="@+id/divider2"
