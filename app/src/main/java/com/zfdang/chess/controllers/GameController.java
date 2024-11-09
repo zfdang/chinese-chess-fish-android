@@ -3,6 +3,7 @@ package com.zfdang.chess.controllers;
 import android.util.Log;
 
 import com.zfdang.chess.ChessApp;
+import com.zfdang.chess.SettingsManager;
 import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Game;
 import com.zfdang.chess.gamelogic.GameStatus;
@@ -44,6 +45,7 @@ public class GameController implements EngineListener, SearchListener {
 
     OpenBookManager bookManager = null;
     BHOpenBook bhBook = null;
+    SettingsManager setting = null;
 
     public ControllerState state;
 
@@ -65,6 +67,13 @@ public class GameController implements EngineListener, SearchListener {
         searchId = 0;
 
         bhBook = new BHOpenBook(ChessApp.getContext());
+
+        // load setting
+        setting = new SettingsManager(ChessApp.getContext());
+        setting.setString("username", "user123");
+        setting.getString("username", "defaultUser");
+        setting.saveSettings();
+
 
         // Initialize computer player
         if(player == null) {

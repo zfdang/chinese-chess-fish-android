@@ -2,6 +2,8 @@ package com.zfdang.chess
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -18,8 +20,8 @@ import com.zfdang.chess.openbook.OpenBookManager
 import com.zfdang.chess.views.ChessView
 
 
-class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerListener,
-    View.OnClickListener {
+class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameControllerListener,
+    View.OnClickListener, SettingDialogFragment.SettingDialogListener {
 
     // 防止重复点击
     private val MIN_CLICK_DELAY_TIME: Int = 100
@@ -204,6 +206,10 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
                 controller.computerAskForMultiPV();
             }
             binding.optionbt -> {
+                // Show the dialog
+                val dialog = SettingDialogFragment()
+                dialog.listener = this
+                dialog.show(supportFragmentManager, "CustomDialog")
 //                controller.option()
             }
             binding.newbt -> {
@@ -325,4 +331,13 @@ class GameActivity : AppCompatActivity(), View.OnTouchListener, GameControllerLi
     override fun runOnUIThread(runnable: Runnable?) {
             runOnUiThread(runnable);
         }
+
+    override fun onDialogPositiveClick(number: Int, booleanValue: Boolean, choice: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onDialogNegativeClick() {
+        TODO("Not yet implemented")
+    }
+
 }

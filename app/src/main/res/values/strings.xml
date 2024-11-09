@@ -8,4 +8,9 @@
     <string name="uci_protocol_error">UCI protocol error</string>
     <string name="failed_to_start_engine">Failed to start engine</string>
 
+    <string-array name="choice_values">
+        <item>Choice 1</item>
+        <item>Choice 2</item>
+        <item>Choice 3</item>
+    </string-array>
 </resources>
