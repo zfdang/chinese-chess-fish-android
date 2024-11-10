@@ -360,7 +360,7 @@ public class ComputerPlayer {
             StringBuilder goStr = new StringBuilder(96);
             // 这里的命令可以根据需要设置
             // https://backscattering.de/chess/uci/#gui-go-searchmoves
-            goStr.append("go depth 30");
+            goStr.append("go depth 20");
 
             // 如果有searchMoves，就加上searchMoves, 这个以后可以从开局库获取
             if (sr.searchMoves != null) {

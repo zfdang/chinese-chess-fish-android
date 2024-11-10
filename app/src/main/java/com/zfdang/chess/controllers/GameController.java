@@ -3,7 +3,7 @@ package com.zfdang.chess.controllers;
 import android.util.Log;
 
 import com.zfdang.chess.ChessApp;
-import com.zfdang.chess.SettingsManager;
+import com.zfdang.chess.Settings;
 import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Game;
 import com.zfdang.chess.gamelogic.GameStatus;
@@ -45,9 +45,10 @@ public class GameController implements EngineListener, SearchListener {
 
     OpenBookManager bookManager = null;
     BHOpenBook bhBook = null;
-    SettingsManager setting = null;
 
     public ControllerState state;
+
+    public Settings settings = null;
 
     // create enum for controller state
     enum ControllerState {
@@ -68,12 +69,7 @@ public class GameController implements EngineListener, SearchListener {
 
         bhBook = new BHOpenBook(ChessApp.getContext());
 
-        // load setting
-        setting = new SettingsManager(ChessApp.getContext());
-        setting.setString("username", "user123");
-        setting.getString("username", "defaultUser");
-        setting.saveSettings();
-
+        settings = new Settings(ChessApp.getContext());
 
         // Initialize computer player
         if(player == null) {

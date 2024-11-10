@@ -2,8 +2,6 @@ package com.zfdang.chess
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -208,9 +206,9 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
             binding.optionbt -> {
                 // Show the dialog
                 val dialog = SettingDialogFragment()
+                dialog.setSettings(controller.settings)
                 dialog.listener = this
                 dialog.show(supportFragmentManager, "CustomDialog")
-//                controller.option()
             }
             binding.newbt -> {
                 // display dialog to ask users for confirmation
@@ -332,12 +330,13 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
             runOnUiThread(runnable);
         }
 
-    override fun onDialogPositiveClick(number: Int, booleanValue: Boolean, choice: String) {
-        TODO("Not yet implemented")
+    override fun onDialogPositiveClick() {
+        // save setting values to variables in settings
+        Log.d("GameActivity", "onDialogPositiveClick" + controller.settings.toString())
     }
 
     override fun onDialogNegativeClick() {
-        TODO("Not yet implemented")
+        // do nothing
     }
 
 }

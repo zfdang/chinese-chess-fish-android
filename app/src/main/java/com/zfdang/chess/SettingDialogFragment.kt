@@ -5,20 +5,23 @@ import android.os.Bundle
 import android.view.View
 import android.widget.CheckBox
 import android.widget.RadioButton
-import android.widget.RadioGroup
 import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 
 class SettingDialogFragment : DialogFragment() {
-
     interface SettingDialogListener {
-        fun onDialogPositiveClick(number: Int, booleanValue: Boolean, choice: String)
+        fun onDialogPositiveClick()
         fun onDialogNegativeClick()
     }
 
+    private lateinit var settings: Settings
     var listener: SettingDialogListener? = null
+
+    fun setSettings(settings: Settings) {
+        this.settings = settings
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val builder = AlertDialog.Builder(requireActivity())
@@ -42,6 +45,25 @@ class SettingDialogFragment : DialogFragment() {
         val timeText = view.findViewById<TextView>(R.id.textView_time)
 
         val radioInfinite = view.findViewById<RadioButton>(R.id.radioButton_infinite)
+
+        // set the initial values
+        if(this.settings != null) {
+            booleanSound.isChecked = this.settings.setting_sound_effect
+            historyInput.progress = this.settings.setting_history_moves
+            historyText.text = this.settings.setting_history_moves.toString()
+
+            depthInput.progress = this.settings.setting_go_depth_value
+            depthText.text = this.settings.setting_go_depth_value.toString()
+            timeInput.progress = this.settings.setting_go_time_value
+            timeText.text = this.settings.setting_go_time_value.toString()
+            if(this.settings.setting_go_depth) {
+                radioDepth.isChecked = true
+            } else if(this.settings.setting_go_time) {
+                radioTime.isChecked = true
+            } else if(this.settings.setting_go_infinite) {
+                radioInfinite.isChecked = true
+            }
+        }
 
         historyInput.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
@@ -84,11 +106,18 @@ class SettingDialogFragment : DialogFragment() {
         })
 
 
-
         builder.setView(view)
             .setTitle("游戏设置")
             .setPositiveButton("确定") { dialog, id ->
-                val booleanValue = booleanSound.isChecked
+                settings.setting_sound_effect = booleanSound.isChecked
+                settings.setting_history_moves = historyInput.progress
+                settings.setting_go_depth = radioDepth.isChecked
+                settings.setting_go_depth_value = depthInput.progress
+                settings.setting_go_time = radioTime.isChecked
+                settings.setting_go_time_value = timeInput.progress
+                settings.setting_go_infinite = radioInfinite.isChecked
+                settings.saveSettings()
+                listener?.onDialogPositiveClick()
             }
             .setNegativeButton("取消") { dialog, id ->
                 listener?.onDialogNegativeClick()
