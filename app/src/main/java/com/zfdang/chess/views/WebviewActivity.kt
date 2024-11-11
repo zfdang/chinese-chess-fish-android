@@ -2,6 +2,7 @@ package com.zfdang.chess.views
 
 import android.os.Bundle
 import android.util.Log
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.ImageButton
@@ -37,6 +38,12 @@ class WebviewActivity : AppCompatActivity() {
         val webView: WebView = findViewById(R.id.webview)
         webView.webViewClient = WebViewClient()
         webView.settings.javaScriptEnabled = true
+
+        // https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/web-page-layout.md
+        // set width of webView to the screen width, and disable horiztional scrolling
+        webView.settings.setLoadWithOverviewMode(false)
+        webView.settings.setUseWideViewPort(false)
+        webView.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS;
 
         val url = intent.getStringExtra("url") ?: "https://fish.zfdang.com"
         webView.loadUrl(url)
