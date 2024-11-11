@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -36,7 +37,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonLearn.setOnClickListener {
-            // Handle button learn click
+            // show toast message here
+            Toast.makeText(this, "待实现...", Toast.LENGTH_SHORT).show()
         }
 
         buttonHelp.setOnClickListener {
