@@ -39,7 +39,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="3"
-            android:max="5"
+            android:max="6"
             android:progress="1" />
 
         <TextView
@@ -165,7 +165,7 @@
             android:id="@+id/radioButton_infinite"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="无限搜索，需手动停止"
+            android:text="无限搜索，须闪电出着"
             android:padding="4dp"/>
 
         <View

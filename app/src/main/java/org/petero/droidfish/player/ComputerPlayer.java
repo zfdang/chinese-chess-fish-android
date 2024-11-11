@@ -20,6 +20,8 @@ package org.petero.droidfish.player;
 
 import android.util.Log;
 
+import com.zfdang.chess.Settings;
+import com.zfdang.chess.controllers.GameController;
 import com.zfdang.chess.gamelogic.Move;
 import com.zfdang.chess.gamelogic.PvInfo;
 import com.zfdang.chess.utils.CpuInfo;
@@ -40,6 +42,7 @@ import java.util.TreeMap;
 public class ComputerPlayer {
     private EngineListener engineListener = null;
     private SearchListener searchListener = null;
+    private GameController gameController = null;
     private UCIEngine uciEngine = null;
 
     // engineOption目前为止没有实际作用，没有删除只是因为不想改动太多代码
@@ -72,9 +75,10 @@ public class ComputerPlayer {
     private Thread engineMonitor;
 
     // constructor to accept listener
-    public ComputerPlayer(EngineListener engineListener, SearchListener searchListener) {
+    public ComputerPlayer(EngineListener engineListener, SearchListener searchListener, GameController gameController) {
         this.engineListener = engineListener;
         this.searchListener = searchListener;
+        this.gameController = gameController;
     }
 
     /**
@@ -354,24 +358,31 @@ public class ComputerPlayer {
                     posStr.append(sr.mList.get(i).getUCCIString());
                 }
             }
+
             uciEngine.writeLineToEngine(posStr.toString());
             // pikafish doesn't support "UCI_AnalyseMode" command
-//            uciEngine.setOption("UCI_AnalyseMode", true);
-            StringBuilder goStr = new StringBuilder(96);
+            // uciEngine.setOption("UCI_AnalyseMode", true);
+
+            StringBuilder goCmd = new StringBuilder(96);
             // 这里的命令可以根据需要设置
-            // https://backscattering.de/chess/uci/#gui-go-searchmoves
-            goStr.append("go depth 20");
+            // https://github.com/official-pikafish/Pikafish/wiki/UCI-&-Commands#standard-commands
+            if(gameController!= null && gameController.settings != null) {
+                goCmd.append(gameController.settings.getGoCmd());
+            } else {
+                // default
+                goCmd.append("go depth 20");
+            }
 
             // 如果有searchMoves，就加上searchMoves, 这个以后可以从开局库获取
             if (sr.searchMoves != null) {
-                goStr.append(" searchmoves");
+                goCmd.append(" searchmoves");
                 for (Move m : sr.searchMoves) {
-                    goStr.append(' ');
-                    goStr.append(m.getUCCIString());
+                    goCmd.append(' ');
+                    goCmd.append(m.getUCCIString());
                 }
             }
 
-            uciEngine.writeLineToEngine(goStr.toString());
+            uciEngine.writeLineToEngine(goCmd.toString());
             engineState.setState(EngineStateValue.SEARCH);
         }
     }

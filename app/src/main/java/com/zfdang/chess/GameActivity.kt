@@ -85,11 +85,11 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         }
 
         // init audio files
-        soundPlayer = SoundPlayer(this)
+        soundPlayer = SoundPlayer(this, controller)
 
         // Bind historyTable and initialize it with dummy data
         val historyTable = binding.historyTable
-        moveHistoryAdapter = MoveHistoryAdapter(this, historyTable, controller.game)
+        moveHistoryAdapter = MoveHistoryAdapter(this, historyTable, controller)
         moveHistoryAdapter.populateTable()
 
         // set status text
@@ -135,7 +135,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         binding.statustv.text = text
     }
 
-    fun showConfirmationDialog() {
+    fun showNewGameConfirmDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("确定开始新游戏?")
         builder.setMessage("你是否要放弃当前的游戏，开始新游戏呢?")
@@ -143,6 +143,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         builder.setPositiveButton("开始新游戏") { dialog, which ->
             // User clicked Yes button
             controller.newGame()
+            moveHistoryAdapter.populateTable()
             setStatusText("开始新游戏")
             // hide choice buttons
             if(binding.choice1bt.visibility == View.VISIBLE){
@@ -153,6 +154,26 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         }
 
         builder.setNegativeButton("继续当前游戏") { dialog, which ->
+            // User clicked No button
+            dialog.dismiss()
+        }
+
+        builder.setCancelable(true)
+        val dialog: AlertDialog = builder.create()
+        dialog.show()
+    }
+
+    fun showExitConfirmDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("退出确认")
+        builder.setMessage("你是否要退出游戏呢?")
+
+        builder.setPositiveButton("退出") { dialog, which ->
+            // User clicked Yes button
+            finish()
+        }
+
+        builder.setNegativeButton("取消") { dialog, which ->
             // User clicked No button
             dialog.dismiss()
         }
@@ -197,7 +218,6 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
                 }
             }
             binding.quickbt -> {
-                setStatusText("电脑停止搜索中...")
                 controller.stopSearchNow()
             }
             binding.playeraltbt -> {
@@ -212,7 +232,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
             }
             binding.newbt -> {
                 // display dialog to ask users for confirmation
-                showConfirmationDialog()
+                showNewGameConfirmDialog()
             }
             binding.backbt -> {
                 controller.stepBack()
@@ -228,17 +248,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
                 controller.stopSearchNow()
             }
             binding.exitbt -> {
-                // show confirmation dialog to finish this activity
-                AlertDialog.Builder(this)
-                    .setTitle("确定退出游戏?")
-                    .setMessage("你是否要退出游戏呢?")
-                    .setPositiveButton("退出") { dialog, which ->
-                        finish()
-                    }
-                    .setNegativeButton("取消") { dialog, which ->
-                        dialog.dismiss()
-                    }
-                    .show()
+                showExitConfirmDialog();
             }
             binding.choice1bt -> {
                 setStatusText("选择着数1")
@@ -320,6 +330,12 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
 
         // update history table
         moveHistoryAdapter.populateTable()
+    }
+
+    // create fun to handle onbackpressed
+    override fun onBackPressed() {
+        super.onBackPressed()
+        showExitConfirmDialog()
     }
 
     override fun onGameEvent(event: GameStatus?) {

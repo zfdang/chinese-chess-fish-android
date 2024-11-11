@@ -6,14 +6,15 @@ import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
 import com.zfdang.chess.R
-import com.zfdang.chess.gamelogic.Game
+import com.zfdang.chess.controllers.GameController
 
-class MoveHistoryAdapter(private val context: Context, private val tableLayout: TableLayout, val game: Game) {
+class MoveHistoryAdapter(private val context: Context, private val tableLayout: TableLayout, val controller: GameController) {
 
     fun populateTable() {
         tableLayout.removeAllViews()
         // add item in game.historyRecords to tableLayout in reverse order
         var moveCount = 1
+        val game = controller.game
         for (item in game.history) {
             val tableRow = LayoutInflater.from(context).inflate(R.layout.history_table_row_item, tableLayout, false) as TableRow
             val col1 = tableRow.findViewById<TextView>(R.id.move_index)

@@ -48,19 +48,19 @@ class SettingDialogFragment : DialogFragment() {
 
         // set the initial values
         if(this.settings != null) {
-            booleanSound.isChecked = this.settings.setting_sound_effect
-            historyInput.progress = this.settings.setting_history_moves
-            historyText.text = this.settings.setting_history_moves.toString()
+            booleanSound.isChecked = this.settings.sound_effect
+            historyInput.progress = this.settings.history_moves
+            historyText.text = this.settings.history_moves.toString()
 
-            depthInput.progress = this.settings.setting_go_depth_value
-            depthText.text = this.settings.setting_go_depth_value.toString()
-            timeInput.progress = this.settings.setting_go_time_value
-            timeText.text = this.settings.setting_go_time_value.toString()
-            if(this.settings.setting_go_depth) {
+            depthInput.progress = this.settings.go_depth_value
+            depthText.text = this.settings.go_depth_value.toString()
+            timeInput.progress = this.settings.go_time_value
+            timeText.text = this.settings.go_time_value.toString()
+            if(this.settings.go_depth) {
                 radioDepth.isChecked = true
-            } else if(this.settings.setting_go_time) {
+            } else if(this.settings.go_time) {
                 radioTime.isChecked = true
-            } else if(this.settings.setting_go_infinite) {
+            } else if(this.settings.go_infinite) {
                 radioInfinite.isChecked = true
             }
         }
@@ -109,13 +109,13 @@ class SettingDialogFragment : DialogFragment() {
         builder.setView(view)
             .setTitle("游戏设置")
             .setPositiveButton("确定") { dialog, id ->
-                settings.setting_sound_effect = booleanSound.isChecked
-                settings.setting_history_moves = historyInput.progress
-                settings.setting_go_depth = radioDepth.isChecked
-                settings.setting_go_depth_value = depthInput.progress
-                settings.setting_go_time = radioTime.isChecked
-                settings.setting_go_time_value = timeInput.progress
-                settings.setting_go_infinite = radioInfinite.isChecked
+                settings.sound_effect = booleanSound.isChecked
+                settings.history_moves = historyInput.progress
+                settings.go_depth = radioDepth.isChecked
+                settings.go_depth_value = depthInput.progress
+                settings.go_time = radioTime.isChecked
+                settings.go_time_value = timeInput.progress
+                settings.go_infinite = radioInfinite.isChecked
                 settings.saveSettings()
                 listener?.onDialogPositiveClick()
             }

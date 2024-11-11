@@ -4,7 +4,10 @@ package com.zfdang.chess;
 import android.content.Context;
 import android.media.MediaPlayer;
 
+import com.zfdang.chess.controllers.GameController;
+
 public class SoundPlayer {
+    private final GameController controller;
     private MediaPlayer selectSound;
     private MediaPlayer moveSound;
     private MediaPlayer captureSound;
@@ -13,7 +16,7 @@ public class SoundPlayer {
     private MediaPlayer checkmateSound;
     private MediaPlayer readySound;
 
-    public SoundPlayer(Context context) {
+    public SoundPlayer(Context context, GameController gameController) {
         selectSound = MediaPlayer.create(context, R.raw.select);
         moveSound = MediaPlayer.create(context, R.raw.move);
         captureSound = MediaPlayer.create(context, R.raw.capture);
@@ -21,34 +24,50 @@ public class SoundPlayer {
         invalidSound = MediaPlayer.create(context, R.raw.invalid);
         checkmateSound = MediaPlayer.create(context, R.raw.checkmate);
         readySound = MediaPlayer.create(context, R.raw.ready);
+
+        controller = gameController;
     }
 
     public void select() {
-        selectSound.start();
+        if (controller != null && controller.settings.getSound_effect()) {
+            selectSound.start();
+        }
     }
 
     public void move() {
-        moveSound.start();
+        if (controller != null && controller.settings.getSound_effect()) {
+            moveSound.start();
+        }
     }
 
     public void capture() {
-        captureSound.start();
+        if (controller != null && controller.settings.getSound_effect()) {
+            captureSound.start();
+        }
     }
 
     public void check() {
-        checkSound.start();
+        if (controller != null && controller.settings.getSound_effect()) {
+            checkSound.start();
+        }
     }
 
     public void illegal() {
-        invalidSound.start();
+        if (controller != null && controller.settings.getSound_effect()) {
+            invalidSound.start();
+        }
     }
 
     public void checkmate() {
-        checkmateSound.start();
+        if (controller != null && controller.settings.getSound_effect()) {
+            checkmateSound.start();
+        }
     }
 
     public void ready() {
-        readySound.start();
+        if (controller != null && controller.settings.getSound_effect()) {
+            readySound.start();
+        }
     }
 
     public void release() {

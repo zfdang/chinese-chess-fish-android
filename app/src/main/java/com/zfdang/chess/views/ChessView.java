@@ -202,9 +202,11 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         p.setAntiAlias(true);
 
         // draw arrow for the last several moves in historyMoves
-        int num_of_moves = 2;
-        // game.historyRecords.get(0) is game without any move
-        for(int i = game.history.size() - 1; i >= 0 && i >= game.history.size() - num_of_moves; i--) {
+        int num_of_history_moves = 2;
+        if(controller!= null && controller.settings != null) {
+            num_of_history_moves = controller.settings.getHistory_moves();
+        }
+        for(int i = game.history.size() - 1; i >= 0 && i >= game.history.size() - num_of_history_moves; i--) {
             Game.HistoryRecord record = game.history.get(i);
             crd0 = getCoordByPosition(record.move.fromPosition);
             crd1 = getCoordByPosition(record.move.toPosition);
@@ -213,12 +215,12 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
             if(Piece.isRed(record.move.piece)) {
                 p.setColor(Color.RED);
             } else {
-                p.setColor(Color.BLUE);
+                p.setColor(Color.BLACK);
             }
 
             // calculate alpha value, the last move is the most opaque one
             int idx = (game.history.size() - 1 - i);
-            int value = 200 - idx * 50;
+            int value = 220 - idx * 40;
             if(value < 0) value = 0;
             p.setAlpha(value);
 

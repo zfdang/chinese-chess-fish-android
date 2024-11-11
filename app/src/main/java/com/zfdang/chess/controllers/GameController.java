@@ -73,7 +73,7 @@ public class GameController implements EngineListener, SearchListener {
 
         // Initialize computer player
         if(player == null) {
-            player = new ComputerPlayer(this, this);
+            player = new ComputerPlayer(this, this, this);
         }
         player.queueStartEngine(searchId++, engineName);
         newGame();
@@ -138,7 +138,7 @@ public class GameController implements EngineListener, SearchListener {
         }
         if(state != ControllerState.WAITING_FOR_ENGINE) {
             // play only plays the black
-            gui.onGameEvent(GameStatus.ILLEGAL, "搜索中，请稍候...");
+            gui.onGameEvent(GameStatus.ILLEGAL, "搜索中，请稍候或闪电出着");
             return;
         }
 
@@ -156,7 +156,11 @@ public class GameController implements EngineListener, SearchListener {
             return;
         }
 
-        gui.onGameEvent(GameStatus.SELECT, "电脑搜索着法中...");
+        if(settings.getGo_infinite()) {
+            gui.onGameEvent(GameStatus.SELECT, "无限搜索着法中, 须闪电出着!");
+        } else {
+            gui.onGameEvent(GameStatus.SELECT, "搜索着法中...");
+        }
         state = ControllerState.WAITING_FOR_ENGINE_BESTMV;
 
         // trigger searchrequest, engine will call notifySearchResult for bestmove
@@ -181,16 +185,12 @@ public class GameController implements EngineListener, SearchListener {
 
     public synchronized void computerAskForMultiPV() {
         if(state == ControllerState.WAITING_FOR_ENGINE_MULTIPV) {
-            gui.onGameEvent(GameStatus.ILLEGAL, "电脑搜索变着中,请稍候...");
-            return;
-        }
-        if(state == ControllerState.WAITING_FOR_USER_MULTIPV) {
-            gui.onGameEvent(GameStatus.ILLEGAL, "用户寻求帮助中,请稍候...");
+            gui.onGameEvent(GameStatus.ILLEGAL, "搜索变着中,请稍候或闪电出着");
             return;
         }
         if(state == ControllerState.WAITING_FOR_ENGINE_BESTMV) {
             // play only plays the black
-            gui.onGameEvent(GameStatus.ILLEGAL, "电脑自动出着后方可变着,请稍候...");
+            gui.onGameEvent(GameStatus.ILLEGAL, "电脑正在出着,请稍候或闪电出着");
             return;
         }
 
@@ -212,7 +212,11 @@ public class GameController implements EngineListener, SearchListener {
         }
 
         // 开始搜索中
-        gui.onGameEvent(GameStatus.SELECT, "电脑搜索变着中...");
+        if(settings.getGo_infinite()) {
+            gui.onGameEvent(GameStatus.SELECT, "无限搜索变着中, 须闪电出着!");
+        } else {
+            gui.onGameEvent(GameStatus.SELECT, "搜索变着中...");
+        }
         state = ControllerState.WAITING_FOR_ENGINE_MULTIPV;
 
         // trigger searchrequest, engine will call notifySearchResult for bestmove
@@ -239,7 +243,7 @@ public class GameController implements EngineListener, SearchListener {
     public synchronized void playerAskForHelp() {
         if(state == ControllerState.WAITING_FOR_USER_MULTIPV) {
             // play only plays the black
-            gui.onGameEvent(GameStatus.ILLEGAL, "正在搜索着法，请稍候...");
+            gui.onGameEvent(GameStatus.ILLEGAL, "正在寻求帮助，请稍候或闪电出着");
             return;
         }
         if(state != ControllerState.WAITING_FOR_USER) {
@@ -248,6 +252,12 @@ public class GameController implements EngineListener, SearchListener {
             return;
         }
 
+        // 开始搜索中
+        if(settings.getGo_infinite()) {
+            gui.onGameEvent(GameStatus.SELECT, "无限寻求帮助中, 须闪电出着!");
+        } else {
+            gui.onGameEvent(GameStatus.SELECT, "寻求帮助中...");
+        }
         state = ControllerState.WAITING_FOR_USER_MULTIPV;
 
         // trigger searchrequest, engine will call notifySearchResult for bestmove
@@ -333,10 +343,12 @@ public class GameController implements EngineListener, SearchListener {
         // send "stop" to engine for "bestmove"
         if(state == ControllerState.WAITING_FOR_ENGINE_BESTMV || state == ControllerState.WAITING_FOR_ENGINE_MULTIPV) {
             player.stopSearch();
-            gui.onGameEvent(GameStatus.SELECT, "已命令电脑立刻出着...");
+            gui.onGameEvent(GameStatus.SELECT, "闪电出着中...");
         } else if(state == ControllerState.WAITING_FOR_USER_MULTIPV) {
             player.stopSearch();
-            gui.onGameEvent(GameStatus.SELECT, "停止继续搜索...");
+            gui.onGameEvent(GameStatus.SELECT, "停止寻求帮助...");
+        } else {
+            gui.onGameEvent(GameStatus.ILLEGAL, "无搜索任务");
         }
     }
 
