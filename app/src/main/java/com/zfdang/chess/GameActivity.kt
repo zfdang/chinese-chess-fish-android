@@ -11,8 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.zfdang.chess.adapters.MoveHistoryAdapter
 import com.zfdang.chess.controllers.GameController
 import com.zfdang.chess.controllers.GameControllerListener
-import com.zfdang.chess.gamelogic.GameStatus
 import com.zfdang.chess.databinding.ActivityGameBinding
+import com.zfdang.chess.gamelogic.GameStatus
 import com.zfdang.chess.openbook.BHOpenBook
 import com.zfdang.chess.openbook.OpenBookManager
 import com.zfdang.chess.views.ChessView

@@ -2,15 +2,11 @@ package com.zfdang.chess
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.zfdang.chess.openbook.BHOpenBook
-import com.zfdang.chess.openbook.BookData
-import com.zfdang.chess.openbook.OpenBook
 import com.zfdang.chess.views.WebviewActivity
 
 class MainActivity : AppCompatActivity() {
