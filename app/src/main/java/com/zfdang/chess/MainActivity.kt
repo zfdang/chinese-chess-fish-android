@@ -10,6 +10,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.zfdang.chess.openbook.BHOpenBook
 import com.zfdang.chess.openbook.BookData
 import com.zfdang.chess.openbook.OpenBook
+import com.zfdang.chess.views.WebviewActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         // Bind buttons
         val buttonPlay: Button = findViewById(R.id.button_play)
         val buttonLearn: Button = findViewById(R.id.button_learn)
-        val buttonSetting: Button = findViewById(R.id.button_setting)
+        val buttonHelp: Button = findViewById(R.id.button_help)
         val buttonAbout: Button = findViewById(R.id.button_about)
 
         // Set click listeners
@@ -38,23 +39,21 @@ class MainActivity : AppCompatActivity() {
             // Handle button learn click
         }
 
-        buttonSetting.setOnClickListener {
+        buttonHelp.setOnClickListener {
             // Handle button setting click
             // launch promptactivity
-            val intent = Intent(this, PromptActivity::class.java)
+            val intent = Intent(this, WebviewActivity::class.java).apply {
+                putExtra("url", "https://fish.zfdang.com/help.html")
+            }
             startActivity(intent)
         }
 
         buttonAbout.setOnClickListener {
-            var book: BHOpenBook = BHOpenBook(this)
-            var results : List<BookData> = book.query(4029641498683399600,true, OpenBook.SortRule.BEST_SCORE);
-            // show elements in results
-            for (i in 0 until results.size) {
-                var data: BookData = results.get(i)
-                Log.d("MainActivity", "Bookdata: " + " Best move: " + data.move + " Best score: " + data.score + " winrate" + data.winRate)
+            // launch webview activity
+            val intent = Intent(this, WebviewActivity::class.java).apply {
+                putExtra("url", "https://fish.zfdang.com/")
             }
-
+            startActivity(intent)
         }
     }
-
 }
