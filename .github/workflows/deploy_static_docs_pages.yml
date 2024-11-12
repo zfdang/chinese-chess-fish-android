@@ -38,7 +38,7 @@ jobs:
         with:
           lfs: true          
           # Upload entire repository
-          path: '/docs/'
+          path: './docs/'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
