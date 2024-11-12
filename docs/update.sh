@@ -1,4 +1,4 @@
 #!/bin/bash
 git add .
-git commit -a -m "update apk"
+git commit -a -m "update docs"
 git push
