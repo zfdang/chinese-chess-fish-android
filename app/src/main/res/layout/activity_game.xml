@@ -21,7 +21,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingTop="4dp"
+            android:paddingBottom="8dp">
 
             <ImageButton
                 android:id="@+id/playerbt"
@@ -94,7 +96,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingTop="8dp"
+            android:paddingBottom="4dp">
 
             <ImageButton
                 android:id="@+id/newbt"
@@ -150,7 +154,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="30dp"
-            android:background="@color/cardview_light_background"
+            android:background="@color/game_hint_background"
             android:orientation="vertical">
 
             <LinearLayout
@@ -212,15 +216,10 @@
                 android:gravity="center_horizontal"
                 android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/movehistorytv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="着法历史" />
-
                 <ScrollView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent"
+                    android:background="@color/move_history_background">
 
                     <TableLayout
                         android:id="@+id/historyTable"
@@ -231,33 +230,6 @@
                     </TableLayout>
                 </ScrollView>
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/hinttv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="着法提示" />
-
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <TableLayout
-                        android:id="@+id/hintTable"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                    </TableLayout>
-
-                </ScrollView>
             </LinearLayout>
 
         </LinearLayout>

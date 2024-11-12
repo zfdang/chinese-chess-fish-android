@@ -12,5 +12,7 @@
     <color name="choice_color_3">#5ed500</color>
     <color name="choice_color_4">#ffbb00</color>
     <color name="choice_color_5">#00c6b0</color>
+    <color name="move_history_background">#0D000000</color>
+    <color name="game_hint_background">#80FFFFFF</color>
 
 </resources>
