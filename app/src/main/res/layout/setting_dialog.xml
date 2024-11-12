@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="播放音效"
-        android:textSize="18sp"/>
+        android:textSize="18sp" />
 
     <View
         android:id="@+id/divider3"
@@ -68,7 +68,7 @@
 
     <RadioGroup
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent">
 
         <RadioButton
             android:id="@+id/radioButton_depth"
@@ -165,8 +165,8 @@
             android:id="@+id/radioButton_infinite"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="无限搜索，须闪电出着"
-            android:padding="4dp"/>
+            android:padding="4dp"
+            android:text="无限搜索，须闪电出着" />
 
         <View
             android:id="@+id/divider2"
