@@ -1,1 +1,1 @@
-ChessFish_20241112_320_release.apk filter=lfs diff=lfs merge=lfs -text
+*.apk filter=lfs diff=lfs merge=lfs -text
