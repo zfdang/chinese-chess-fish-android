@@ -350,6 +350,7 @@ public class ComputerPlayer {
             StringBuilder posStr = new StringBuilder();
             posStr.append("position fen ");
             posStr.append(sr.prevBoard.toFENString());
+            Log.d("ComputerPlayer", "handleIdleState: " + sr.currBoard.toFENString());
             int nMoves = sr.mList.size();
             if (nMoves > 0) {
                 posStr.append(" moves");

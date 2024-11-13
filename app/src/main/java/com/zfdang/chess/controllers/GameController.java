@@ -83,6 +83,7 @@ public class GameController implements EngineListener, SearchListener {
         Log.d("GameController", "New game");
         state = ControllerState.WAITING_FOR_USER;
         game = new Game();
+//        game.currentBoard.restoreFromFEN("5kb2/4a4/2n6/p3p3p/2P3p2/4c2r1/P7P/1r2B4/4A1c2/2CAK1B2 w - - 0 1");
         player.stopSearch();
         player.uciNewGame();
     }

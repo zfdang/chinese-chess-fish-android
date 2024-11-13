@@ -103,14 +103,16 @@ public class Game {
         boolean isDead = false;
         if(currentMove != null) {
             if(Piece.isRed(currentMove.piece)) {
-                isCheck = Rule.isJiangShuaiInDanger(Piece.BJIANG, currentBoard);
+                Position pos = Rule.findJiangShuaiPos(Piece.BJIANG, currentBoard);
+                isCheck = Rule.isJiangShuaiInDanger(Piece.BJIANG, pos, currentBoard);
                 if(isCheck) {
-                    isDead = Rule.isJiangShuaiDead(Piece.BJIANG, currentBoard);
+                    isDead = Rule.isJiangShuaiDead(Piece.BJIANG, pos, currentBoard);
                 }
             } else {
-                isCheck = Rule.isJiangShuaiInDanger(Piece.WSHUAI, currentBoard);
+                Position pos = Rule.findJiangShuaiPos(Piece.WSHUAI, currentBoard);
+                isCheck = Rule.isJiangShuaiInDanger(Piece.WSHUAI, pos, currentBoard);
                 if(isCheck) {
-                    isDead = Rule.isJiangShuaiDead(Piece.WSHUAI, currentBoard);
+                    isDead = Rule.isJiangShuaiDead(Piece.WSHUAI, pos, currentBoard);
                 }
             }
         }

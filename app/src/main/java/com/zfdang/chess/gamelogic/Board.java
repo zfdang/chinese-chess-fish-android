@@ -63,7 +63,7 @@ public class Board {
         // move piece to end position
         setPieceByPosition(end, piece);
         // clear start position
-        clearPieceByPosition(start);
+        setPieceByPosition(start, Piece.EMPTY);
         return true;
     }
 
@@ -118,31 +118,23 @@ public class Board {
     * Set piece value by position， it should not be called directly
      */
     public boolean setPieceByPosition(Position pos, int value){
-        if (isValidPosition(pos) && Piece.isValid(value)) {
-            piece[pos.y][pos.x] = value;
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean clearPieceByPosition(Position pos){
         if (isValidPosition(pos)) {
-            piece[pos.y][pos.x] = Piece.EMPTY;
-            return true;
-        } else {
-            return false;
+            if(value == Piece.EMPTY || Piece.isValid(value)){
+                piece[pos.y][pos.x] = value;
+                return true;
+            }
         }
+        return false;
     }
 
-
-    public boolean setPieceByPosition(int x, int y, int value){
-        if (x >= 0 && x <= BOARD_PIECE_WIDTH && y >= 0 && y <= BOARD_PIECE_HEIGHT && Piece.isValid(value)) {
-            piece[y][x] = value;
-            return true;
-        } else {
-            return false;
+    public boolean setPieceByPosition(int x, int y, int value) {
+        if (x >= 0 && x < BOARD_PIECE_WIDTH && y >= 0 && y < BOARD_PIECE_HEIGHT) {
+            if (value == Piece.EMPTY || Piece.isValid(value)) {
+                piece[y][x] = value;
+                return true;
+            }
         }
+        return false;
     }
 
     public int getPieceByPosition(Position pos) {
@@ -154,7 +146,7 @@ public class Board {
     }
 
     public int getPieceByPosition(int x, int y) {
-        if (x >= 0 && x <= BOARD_PIECE_WIDTH && y >= 0 && y <= BOARD_PIECE_HEIGHT) {
+        if (x >= 0 && x < BOARD_PIECE_WIDTH && y >= 0 && y < BOARD_PIECE_HEIGHT) {
             return piece[y][x];
         } else {
             return -1;

@@ -317,18 +317,13 @@ public class Rule {
         return false;
     }
 
-    public static boolean isJiangShuaiInDanger(int piece, Board board) {
+    public static boolean isJiangShuaiInDanger(int piece, Position pos, Board board) {
         // 马的攻击和别腿，红帅和黑将都会用到
         int num = 4;
-        int op_block_num = 10; //反向蹩马腿
+        int op_block_num = 10; // 反向蹩马腿
 
         if (piece == Piece.WSHUAI) {
             // 找到红帅的位置
-            Position pos = findJiangShuaiPos(Piece.WSHUAI, board);
-            if(pos == null) {
-                Log.d("Rule", "红帅不存在?");
-                return true;
-            }
             int x = pos.x, y = pos.y;
 
             // 被黑马攻击
@@ -359,11 +354,6 @@ public class Rule {
             }
         } else if(piece == Piece.BJIANG) {
             // 找到黑将的位置
-            Position pos = findJiangShuaiPos(Piece.BJIANG, board);
-            if(pos == null) {
-                Log.d("Rule", "黑将不存在?");
-                return true;
-            }
             int x = pos.x, y = pos.y;
 
             // 被红马攻击
@@ -397,55 +387,86 @@ public class Rule {
     }
 
     /*
-       判断将帅是否被将死，
-       目前的逻辑还有问题，需要去修改
+       判断将帅是否被将死
+       判断逻辑比较简单：将自己一方的所有棋子的所有可能移动的位置都走一遍，如果将帅还在被将军的状态，那么就返回true；否则返回false。
      */
-    public static boolean isJiangShuaiDead(int piece, Board board) {
+    public static boolean isJiangShuaiDead(int piece, Position bosspos, Board b) {
+        Board board = new Board(b);
         if (piece == Piece.WSHUAI) {
-            // 找到红帅的位置
-            Position pos = findJiangShuaiPos(Piece.WSHUAI, board);
-            if(pos == null) {
-                Log.d("Rule", "红帅不存在?");
-                return true;
-            }
+            // 遍历所有的棋子，找到红方的所有棋子
+            for (int y = 0; y < Board.BOARD_PIECE_HEIGHT; y++) {
+                for (int x = 0; x < Board.BOARD_PIECE_WIDTH; x++) {
+                    int pieceid = board.getPieceByPosition(x, y);
+                    if (Piece.isRed(pieceid)) {
+                        // 是红方的棋子
+                        List<Position> positions = PossibleToPositions(pieceid, x, y, board);
+                        Iterator<Position> it = positions.iterator();
+                        while (it.hasNext()) {
+                            Position pos = it.next();
+                            int tempPieceId = board.getPieceByPosition(pos);
 
-            // 红帅当前是否被将军
-            if (!isJiangShuaiInDanger(Piece.WSHUAI, board)) {
-                Log.d("Rule", "红帅没有被将军");
-                return false;
-            }
+                            // move piece
+                            board.setPieceByPosition(x, y, Piece.EMPTY);
+                            board.setPieceByPosition(pos, pieceid);
 
-            // 红帅目前所有可走的棋
-            List<Position> positions = PossibleToPositions(Piece.WSHUAI, pos.x, pos.y, board);
-            if(positions.size() > 0) {
-                Log.d("Rule", "红帅还有走的地方");
-                return false;
-            }
+                            boolean result;
+                            if(pieceid == Piece.WSHUAI){
+                                // 将帅移动了位置
+                                result = isJiangShuaiInDanger(Piece.WSHUAI, pos, board);
+                            } else {
+                                result = isJiangShuaiInDanger(Piece.WSHUAI, bosspos, board);
+                            }
 
-            return true;
+                            if (!result) {
+                                // 移动了某个棋子后，红帅不再被将军，则返回false
+                                return false;
+                            }
+
+                            // revert
+                            board.setPieceByPosition(x, y, pieceid);
+                            board.setPieceByPosition(pos, tempPieceId);
+                        }
+                    }
+                }
+            }
         } else if(piece == Piece.BJIANG) {
-            // 找到黑将的位置
-            Position pos = findJiangShuaiPos(Piece.BJIANG, board);
-            if(pos == null) {
-                Log.d("Rule", "黑将不存在?");
-                return true;
-            }
+            // 遍历所有的棋子，找到黑方的所有棋子
+            for (int y = 0; y < Board.BOARD_PIECE_HEIGHT; y++) {
+                for (int x = 0; x < Board.BOARD_PIECE_WIDTH; x++) {
+                    int pieceid = board.getPieceByPosition(x, y);
+                    if (Piece.isBlack(pieceid)) {
+                        // 是黑方的棋子
+                        List<Position> positions = PossibleToPositions(pieceid, x, y, board);
+                        Iterator<Position> it = positions.iterator();
+                        while (it.hasNext()) {
+                            Position pos = it.next();
+                            int tempPieceId = board.getPieceByPosition(pos);
 
-            // 黑将当前是否被将军
-            if (!isJiangShuaiInDanger(Piece.BJIANG, board)) {
-                Log.d("Rule", "黑将没有被将军");
-                return false;
-            }
+                            // move piece
+                            board.setPieceByPosition(x, y, Piece.EMPTY);
+                            board.setPieceByPosition(pos, pieceid);
 
-            // 黑将目前所有可走的棋
-            List<Position> positions = PossibleToPositions(Piece.BJIANG, pos.x, pos.y, board);
-            if(positions.size() > 0) {
-                Log.d("Rule", "黑将还有走的地方");
-                return false;
+                            boolean result;
+                            if(pieceid == Piece.BJIANG){
+                                // 将帅移动了位置
+                                result = isJiangShuaiInDanger(Piece.BJIANG, pos, board);
+                            } else {
+                                result = isJiangShuaiInDanger(Piece.WSHUAI, bosspos, board);
+                            }
+
+                            if (!result) {
+                                // 移动了某个棋子后，黑将不再被将军，则返回false
+                                return false;
+                            }
+
+                            // revert
+                            board.setPieceByPosition(x, y, pieceid);
+                            board.setPieceByPosition(pos, tempPieceId);
+                        }
+                    }
+                }
             }
-            return true;
         }
-        Log.d("Rule", "不是将帅");
         return true;
     }
 
@@ -491,7 +512,7 @@ public class Rule {
     private static Position flyKing(int id, int fromX, int fromY, Board board) {
         int i;
         if (id == Piece.BJIANG) {  //将
-            for (i = fromY + 1; i <= Board.BOARD_PIECE_HEIGHT; i++) {
+            for (i = fromY + 1; i < Board.BOARD_PIECE_HEIGHT; i++) {
                 int pieceid = board.getPieceByPosition(fromX, i);
                 if (Piece.isValid(pieceid)) {
                     // 是合法的棋子
