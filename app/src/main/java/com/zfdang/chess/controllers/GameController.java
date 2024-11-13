@@ -456,6 +456,7 @@ public class GameController implements EngineListener, SearchListener {
     @Override
     public void notifyEngineName(String engineName) {
         Log.d("GameController", "Engine name: " + engineName);
+        gui.runOnUIThread(() -> gui.onGameEvent(GameStatus.ENGINE, "引擎：" + engineName));
     }
 
     @Override
