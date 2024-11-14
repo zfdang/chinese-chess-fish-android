@@ -1,5 +1,7 @@
 package com.zfdang.chess.gamelogic;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -64,6 +66,8 @@ public class Board {
         setPieceByPosition(end, piece);
         // clear start position
         setPieceByPosition(start, Piece.EMPTY);
+        bRedGo = !bRedGo;
+        rounds++;
         return true;
     }
 
@@ -201,6 +205,7 @@ public class Board {
         fenString = fenString.trim();
         String[] parts = fenString.split(" ");
         if (parts.length != 6) {
+            Log.e("Board", "Failed to parse FEN string: " + fenString);
             return false;
         }
 
@@ -212,6 +217,7 @@ public class Board {
         } else if(side.equals("b")) {
             bRedGo = false;
         } else {
+            Log.e("Board", "Failed to parse side from FEN string: " + fenString);
             return false;
         }
 
@@ -220,6 +226,7 @@ public class Board {
         try {
             rounds = Integer.parseInt(part5);
         } catch (NumberFormatException e) {
+            Log.e("Board", "Failed to parse rounds from FEN string: " + fenString);
             return false;
         }
 
