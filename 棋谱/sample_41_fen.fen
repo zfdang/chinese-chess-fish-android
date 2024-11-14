@@ -1,0 +1,7 @@
+[FEN_INDEX "001_19aa0594"]
+[EVENT "标准象棋开局"]
+[FEN "rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR w - - 0 1"]
+
+[FEN_INDEX "002_19aa0595"]
+[EVENT "例2"]
+[FEN "rnbak4/9/1c7/p8/9/9/9/9/9/5K3 w - - 0 1"]
