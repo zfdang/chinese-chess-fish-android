@@ -9,13 +9,15 @@
 <img src="chessfish.png" alt="象棋鱼" style="width:200px;"/>
 
 
-## 下载
+详情请看项目官网：[https://fish.zfdang.com](https://fish.zfdang.com)
 
-### 项目网站：
+## 下载应用
 
-[https://fish.zfdang.com](https://fish.zfdang.com)
+#### 官网下载：
 
-### Github的实时Release:
+[https://fish.zfdang.com/release.html](https://fish.zfdang.com/release.html)
+
+#### Github下载（实时编译）:
 
 [Github Release](https://github.com/zfdang/chinese-chess-fish-android/releases)
 
@@ -23,6 +25,17 @@
 ## 开源免费
 
 希望更多人能参与进来，一起打造一个好用的安卓Android版的中国象棋学习工具！
+
+## 参考
+
+
+#### 基于Android的中国象棋
+https://github.com/kongxiangchx/ChineseChess
+
+#### DroidFish Android Chess App
+https://github.com/peterosterlund2/droidfish
+
+
 
 
 
