@@ -76,14 +76,33 @@ public class GameController implements EngineListener, SearchListener {
             player = new ComputerPlayer(this, this, this);
         }
         player.queueStartEngine(searchId++, engineName);
-        newGame();
+        startNewGame();
     }
 
-    public synchronized void newGame() {
+    public synchronized void startNewGame() {
         Log.d("GameController", "New game");
         state = ControllerState.WAITING_FOR_USER;
         game = new Game();
-//        game.currentBoard.restoreFromFEN("5kb2/4a4/2n6/p3p3p/2P3p2/4c2r1/P7P/1r2B4/4A1c2/2CAK1B2 w - - 0 1");
+        player.stopSearch();
+        player.uciNewGame();
+    }
+
+    public synchronized void startFENGame(String fen) {
+        Log.d("GameController", "New FEN game" + fen);
+        Game tempGame = new Game();
+        boolean result = tempGame.currentBoard.restoreFromFEN(fen);
+        if(!result) {
+            Log.e("GameController", "Failed to restore from FEN: " + fen);
+            gui.onGameEvent(GameStatus.ILLEGAL, "无效的FEN串");
+            return;
+        }
+
+        game = tempGame;
+        if(game.currentBoard.bRedGo) {
+            state = ControllerState.WAITING_FOR_USER;
+        } else {
+            state = ControllerState.WAITING_FOR_ENGINE;
+        }
         player.stopSearch();
         player.uciNewGame();
     }

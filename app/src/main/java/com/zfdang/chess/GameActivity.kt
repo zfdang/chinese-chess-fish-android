@@ -1,10 +1,13 @@
 package com.zfdang.chess
 
 import android.annotation.SuppressLint
+import android.content.ClipboardManager
+import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -51,7 +54,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
 
         // new game
         controller = GameController(this)
-        controller.newGame()
+        controller.startNewGame()
 
         // 初始化棋盘
         chessLayout = binding.chesslayout
@@ -72,7 +75,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
             binding.optionbt,
             binding.newbt,
             binding.backbt,
-            binding.forwardbt,
+            binding.importbt,
             binding.helpbt,
             binding.stophelpbt,
             binding.exitbt,
@@ -142,7 +145,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
 
         builder.setPositiveButton("开始新游戏") { dialog, which ->
             // User clicked Yes button
-            controller.newGame()
+            controller.startNewGame()
             moveHistoryAdapter.populateTable()
             setStatusText("开始新游戏")
             // hide choice buttons
@@ -181,6 +184,39 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         builder.setCancelable(true)
         val dialog: AlertDialog = builder.create()
         dialog.show()
+    }
+
+    fun showInputFENDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("从FEN串开始新游戏")
+        builder.setMessage("请输入棋局的FEN串：")
+
+        // Set up the input
+        val input = EditText(this)
+
+        // get content from clipboard
+        val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = clipboard.primaryClip
+        if (clip != null && clip.itemCount > 0) {
+            val text = clip.getItemAt(0).text
+            input.setText(text)
+        }
+        input.setSelection(input.text.length)
+        input.setSelectAllOnFocus(true)
+
+        builder.setView(input)
+
+        // Set up the buttons
+        builder.setPositiveButton("确定", DialogInterface.OnClickListener { dialog, which ->
+            val userInput = input.text.toString()
+            controller.startFENGame(userInput)
+            // Handle the input string here
+        })
+        builder.setNegativeButton("取消", DialogInterface.OnClickListener { dialog, which ->
+            dialog.cancel()
+        })
+
+        builder.show()
     }
 
     override fun onClick(v: View?) {
@@ -237,8 +273,8 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
             binding.backbt -> {
                 controller.stepBack()
             }
-            binding.forwardbt -> {
-//                controller.forward()
+            binding.importbt -> {
+                showInputFENDialog()
             }
             binding.helpbt -> {
                 setStatusText("正在搜索建议着法...")

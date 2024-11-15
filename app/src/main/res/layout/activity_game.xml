@@ -109,6 +109,15 @@
                 app:srcCompat="@drawable/new_window" />
 
             <ImageButton
+                android:id="@+id/importbt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="8dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/import_fen" />
+
+
+            <ImageButton
                 android:id="@+id/backbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -117,13 +126,6 @@
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/arrow_back" />
 
-            <ImageButton
-                android:id="@+id/forwardbt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
-                android:background="?android:attr/selectableItemBackground"
-                app:srcCompat="@drawable/arrow_forward" />
 
             <ImageButton
                 android:id="@+id/helpbt"
