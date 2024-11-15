@@ -22,6 +22,7 @@ import com.zfdang.chess.gamelogic.Move;
 import com.zfdang.chess.gamelogic.Piece;
 import com.zfdang.chess.gamelogic.Position;
 import com.zfdang.chess.utils.ArrowShape;
+import com.zfdang.chess.utils.DrawableUtil;
 
 import android.graphics.Path;
 
@@ -40,6 +41,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     public Bitmap B_box, R_box, R_pot, B_pot;
     public Bitmap[] PieceBitmaps = new Bitmap[14];
     public Bitmap[] ChoiceBitmaps = new Bitmap[5];
+    public Bitmap ThinkBitmap;
     final int MAX_SUGGESTED_MOVES = 5;
 
     // 如何设置下面的几个参数：
@@ -102,6 +104,9 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         ChoiceBitmaps[2] = BitmapFactory.decodeResource(getResources(), R.drawable.digit3);
         ChoiceBitmaps[3] = BitmapFactory.decodeResource(getResources(), R.drawable.digit4);
         ChoiceBitmaps[4] = BitmapFactory.decodeResource(getResources(), R.drawable.digit5);
+
+        // get drawable for think state
+        ThinkBitmap = DrawableUtil.drawableToBitmap(getResources().getDrawable(R.drawable.intelligence));
     }
 
     public void Draw(Canvas canvas) {
@@ -113,6 +118,9 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         canvas.drawBitmap(ChessBoardBitmap, srcBoardRect, destBoardRect, null);
 
         Board board = game.currentBoard;
+
+        // draw controller state in the middle of destBoardRect
+        showControllerState(canvas);
 
         // draw piece
         Rect tempSrcRect, tempDesRect;
@@ -169,6 +177,26 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
                 p.setColor(Color.GREEN);
                 DrawArrow(canvas, crd0, crd1, p, ChoiceBitmaps[i]);
             }
+        }
+    }
+
+    private void showControllerState(Canvas canvas) {
+        int targetSize = Scale(30);
+        int xOffset = Scale(BOARD_GRID_INTERVAL * 4 + 45);
+        Rect tempDesRect = new Rect(destBoardRect.centerX() - targetSize + xOffset, destBoardRect.centerY() - targetSize,
+                destBoardRect.centerX() + targetSize + xOffset, destBoardRect.centerY() + targetSize);
+        if (controller.isRedTurn()) {
+            Bitmap bitmap = PieceBitmaps[0];
+            Rect tempSrcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            canvas.drawBitmap(bitmap, tempSrcRect, tempDesRect, null);
+        } else if (controller.isBlackTurn()) {
+            Bitmap bitmap = PieceBitmaps[7];
+            Rect tempSrcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            canvas.drawBitmap(bitmap, tempSrcRect, tempDesRect, null);
+        } else {
+            Bitmap bitmap = ThinkBitmap;
+            Rect tempSrcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+            canvas.drawBitmap(bitmap, tempSrcRect, tempDesRect, null);
         }
     }
 
