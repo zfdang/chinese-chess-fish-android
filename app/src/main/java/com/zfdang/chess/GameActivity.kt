@@ -369,8 +369,8 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
     }
 
     // create fun to handle onbackpressed
+    @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        super.onBackPressed()
         showExitConfirmDialog()
     }
 
