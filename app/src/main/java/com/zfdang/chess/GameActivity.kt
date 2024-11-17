@@ -168,7 +168,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
 
     fun saveThenExit() {
         // in case there is any ongoing searching task
-        controller.stopSearchNow()
+        controller.player.stopSearch()
         // delay 300 ms to save game status
         Thread.sleep(100)
         controller.saveGameStatus();
