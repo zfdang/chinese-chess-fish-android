@@ -23,16 +23,15 @@ import org.petero.droidfish.player.EngineListener;
 import org.petero.droidfish.player.SearchListener;
 import org.petero.droidfish.player.SearchRequest;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GameController implements EngineListener, SearchListener {
     public ComputerPlayer player = null;
     private String engineName = "pikafish";
-    public static final int MAX_MOVES = 2048;
 
     public Game game = null;
-    public Game oldGame = null;
     private int searchId;
     private long searchStartTime;
     private long searchEndTime;
@@ -545,6 +544,33 @@ public class GameController implements EngineListener, SearchListener {
         // iterate bookData one by one
         for (BookData bd : bookData) {
             Log.d("GameController", "Openbook hit: " + bd.getMove());
+        }
+    }
+
+    public void saveGameStatus() {
+        // save game status
+        try {
+            game.saveToFile(ChessApp.getContext());
+            Log.d("GameController", "Game status saved");
+        } catch (IOException e) {
+            Log.e("GameController", "Failed to save game status" + e);
+        }
+    }
+
+    public void loadGameStatus() {
+        // load game status
+        try {
+            game = Game.loadFromFile(ChessApp.getContext());
+            if(game.currentBoard.bRedGo) {
+                state = ControllerState.WAITING_FOR_USER;
+            } else {
+                state = ControllerState.WAITING_FOR_ENGINE;
+            }
+            Log.d("GameController", "Game status loaded");
+        } catch (IOException e) {
+            Log.e("GameController", "Failed to load game status" + e);
+        } catch (ClassNotFoundException e) {
+            Log.e("GameController", "Failed to load game status" + e);
         }
     }
 }

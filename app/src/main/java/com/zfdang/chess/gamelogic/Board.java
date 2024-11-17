@@ -2,13 +2,14 @@ package com.zfdang.chess.gamelogic;
 
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  * Created by zfdang on 2016-4-17.
  * This class represents the chess board data, basically it's represention of FEN string;
  */
-public class Board {
+public class Board implements Serializable {
     private static final long serialVersionUID = 2194052829642412444L;
 
     public boolean bRedGo = true;

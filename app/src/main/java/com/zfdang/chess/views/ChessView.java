@@ -14,6 +14,7 @@ import android.view.SurfaceView;
 
 import androidx.annotation.NonNull;
 
+import com.zfdang.chess.ChessApp;
 import com.zfdang.chess.R;
 import com.zfdang.chess.controllers.GameController;
 import com.zfdang.chess.gamelogic.Board;
@@ -106,7 +107,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         ChoiceBitmaps[4] = BitmapFactory.decodeResource(getResources(), R.drawable.digit5);
 
         // get drawable for think state
-        ThinkBitmap = DrawableUtil.drawableToBitmap(getResources().getDrawable(R.drawable.intelligence));
+        ThinkBitmap = DrawableUtil.drawableToBitmap(ChessApp.getContext().getDrawable(R.drawable.intelligence));
     }
 
     public void Draw(Canvas canvas) {

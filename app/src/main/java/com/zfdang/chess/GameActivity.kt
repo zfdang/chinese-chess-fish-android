@@ -55,6 +55,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         // new game
         controller = GameController(this)
         controller.startNewGame()
+        controller.loadGameStatus()
 
         // 初始化棋盘
         chessLayout = binding.chesslayout
@@ -166,24 +167,9 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         dialog.show()
     }
 
-    fun showExitConfirmDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("退出确认")
-        builder.setMessage("你是否要退出游戏呢?")
-
-        builder.setPositiveButton("退出") { dialog, which ->
-            // User clicked Yes button
-            finish()
-        }
-
-        builder.setNegativeButton("取消") { dialog, which ->
-            // User clicked No button
-            dialog.dismiss()
-        }
-
-        builder.setCancelable(true)
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
+    fun saveThenExit() {
+        controller.saveGameStatus();
+        finish()
     }
 
     fun showInputFENDialog() {
@@ -284,7 +270,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
                 controller.stopSearchNow()
             }
             binding.exitbt -> {
-                showExitConfirmDialog();
+                saveThenExit();
             }
             binding.choice1bt -> {
                 setStatusText("选择着数1")
@@ -371,7 +357,8 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
     // create fun to handle onbackpressed
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        showExitConfirmDialog()
+        // save game to file
+        saveThenExit()
     }
 
     override fun onGameEvent(event: GameStatus?) {

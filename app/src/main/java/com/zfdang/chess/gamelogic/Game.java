@@ -1,13 +1,26 @@
 package com.zfdang.chess.gamelogic;
 
+import android.content.Context;
 import android.util.Log;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Game {
+public class Game implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private static final String SAVE_FILENAME = "GameSaveFile";
+
     //  create public data class HistoryRecord
-    public static class HistoryRecord {
+    public static class HistoryRecord implements Serializable {
+        private static final long serialVersionUID = 1L;
+
         public Move move;
         public String ucciString;
         public String chsString;
@@ -37,11 +50,11 @@ public class Game {
     public ArrayList<HistoryRecord> history = new ArrayList<>();
 
     public Board currentBoard = null;
-    public Move currentMove = null;
-    public Position startPos =  null;
-    public Position endPos = null;
-    public List<Position> possibleToPositions = new ArrayList<>();
-    public List<Move> suggestedMoves = new ArrayList<>();
+    public transient Move currentMove = null;
+    public transient Position startPos =  null;
+    public transient Position endPos = null;
+    public transient List<Position> possibleToPositions = new ArrayList<>();
+    public transient List<Move> suggestedMoves = new ArrayList<>();
 
     public boolean isGameOver = false;
     public boolean isCheckMate = false;
@@ -184,4 +197,18 @@ public class Game {
         this.possibleToPositions.clear();
     }
 
+    public void saveToFile(Context context) throws IOException {
+        try (ObjectOutputStream oos = new ObjectOutputStream(context.openFileOutput(SAVE_FILENAME, Context.MODE_PRIVATE))) {
+            oos.writeObject(this);
+        }
+    }
+
+    public static Game loadFromFile(Context context) throws IOException, ClassNotFoundException {
+        try (ObjectInputStream ois = new ObjectInputStream(context.openFileInput(SAVE_FILENAME))) {
+            Game game =  (Game) ois.readObject();
+            game.possibleToPositions = new ArrayList<>();
+            game.suggestedMoves = new ArrayList<>();
+            return game;
+        }
+    }
 }
