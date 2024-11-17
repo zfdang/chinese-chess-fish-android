@@ -54,7 +54,6 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
 
         // new game
         controller = GameController(this)
-        controller.startNewGame()
         controller.loadGameStatus()
 
         // 初始化棋盘
@@ -168,6 +167,10 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
     }
 
     fun saveThenExit() {
+        // in case there is any ongoing searching task
+        controller.stopSearchNow()
+        // delay 300 ms to save game status
+        Thread.sleep(100)
         controller.saveGameStatus();
         finish()
     }
