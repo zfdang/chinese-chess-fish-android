@@ -20,6 +20,7 @@
         android:layout_weight="5"
         android:padding="2dp"
         android:text=""
+        android:typeface="monospace"
         android:textAlignment="center"
         android:textColor="#F44336" />
 
@@ -30,6 +31,7 @@
         android:layout_weight="5"
         android:padding="2dp"
         android:text=""
+        android:typeface="monospace"
         android:textAlignment="center" />
 
 </TableRow>
