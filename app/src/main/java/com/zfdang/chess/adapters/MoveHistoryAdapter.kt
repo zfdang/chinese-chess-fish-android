@@ -8,7 +8,7 @@ import android.widget.TextView
 import com.zfdang.chess.R
 import com.zfdang.chess.controllers.GameController
 
-class MoveHistoryAdapter(private val context: Context, private val tableLayout: TableLayout, val controller: GameController) {
+class MoveHistoryAdapter(private val context: Context, private val tableLayout: TableLayout, private val controller: GameController) {
 
     fun populateTable() {
         tableLayout.removeAllViews()
@@ -16,7 +16,7 @@ class MoveHistoryAdapter(private val context: Context, private val tableLayout: 
         var moveCount = 1
         val game = controller.game
         for(i in 0 until game.history.size step 2) {
-            val item = game.history.get(i)
+            val item = game.history[i]
             val tableRow = LayoutInflater.from(context).inflate(R.layout.history_table_row_item, tableLayout, false) as TableRow
             val col1 = tableRow.findViewById<TextView>(R.id.move_index)
             val col2 = tableRow.findViewById<TextView>(R.id.move_1)
@@ -25,7 +25,7 @@ class MoveHistoryAdapter(private val context: Context, private val tableLayout: 
             col1.text = moveCount.toString()
             col2.text = String.format("%s (%s)", item.chsString, item.ucciString)
             if(i < game.history.size - 1) {
-                val nextItem = game.history.get(i + 1)
+                val nextItem = game.history[i + 1]
                 col3.text = String.format("%s (%s)", nextItem.chsString, nextItem.ucciString)
             }
             tableLayout.addView(tableRow, 0)
