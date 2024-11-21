@@ -80,15 +80,20 @@ public class GameController implements EngineListener, SearchListener {
 
     public synchronized void startNewGame() {
         Log.d("GameController", "New game");
-        state = ControllerState.WAITING_FOR_USER;
-        game = new Game();
+        if(settings.getRed_go_first())
+        {
+            state = ControllerState.WAITING_FOR_USER;
+        } else {
+            state = ControllerState.WAITING_FOR_ENGINE;
+        }
+        game = new Game(settings.getRed_go_first());
         player.stopSearch();
         player.uciNewGame();
     }
 
     public synchronized void startFENGame(String fen) {
         Log.d("GameController", "New FEN game" + fen);
-        Game tempGame = new Game();
+        Game tempGame = new Game(true);
         boolean result = tempGame.currentBoard.restoreFromFEN(fen);
         if(!result) {
             Log.e("GameController", "Failed to restore from FEN: " + fen);

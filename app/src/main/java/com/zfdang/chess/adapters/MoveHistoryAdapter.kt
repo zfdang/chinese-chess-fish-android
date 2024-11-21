@@ -1,6 +1,7 @@
 package com.zfdang.chess.adapters
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.widget.TableLayout
 import android.widget.TableRow
@@ -22,6 +23,10 @@ class MoveHistoryAdapter(private val context: Context, private val tableLayout: 
             val col2 = tableRow.findViewById<TextView>(R.id.move_1)
             val col3 = tableRow.findViewById<TextView>(R.id.move_2)
 
+            if(!controller.settings.red_go_first) {
+                col3.setTextColor(0xFFF44336.toInt())
+                col2.setTextColor(0xFF000000.toInt())
+            }
             col1.text = moveCount.toString()
             col2.text = String.format("%s (%s)", item.chsString, item.ucciString)
             if(i < game.history.size - 1) {

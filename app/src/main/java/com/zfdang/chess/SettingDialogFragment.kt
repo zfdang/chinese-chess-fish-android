@@ -46,6 +46,8 @@ class SettingDialogFragment : DialogFragment() {
 
         val radioInfinite = view.findViewById<RadioButton>(R.id.radioButton_infinite)
 
+        val redgoFirst = view.findViewById<CheckBox>(R.id.boolean_redgofirst)
+
         // set the initial values
         if(this.settings != null) {
             booleanSound.isChecked = this.settings.sound_effect
@@ -63,6 +65,7 @@ class SettingDialogFragment : DialogFragment() {
             } else if(this.settings.go_infinite) {
                 radioInfinite.isChecked = true
             }
+            redgoFirst.isChecked = this.settings.red_go_first
         }
 
         historyInput.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -116,6 +119,7 @@ class SettingDialogFragment : DialogFragment() {
                 settings.go_time = radioTime.isChecked
                 settings.go_time_value = timeInput.progress
                 settings.go_infinite = radioInfinite.isChecked
+                settings.red_go_first = redgoFirst.isChecked
                 settings.saveSettings()
                 listener?.onDialogPositiveClick()
             }

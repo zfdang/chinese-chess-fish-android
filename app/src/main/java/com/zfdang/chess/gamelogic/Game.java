@@ -59,13 +59,14 @@ public class Game implements Serializable {
     public boolean isGameOver = false;
     public boolean isCheckMate = false;
 
-    public Game(){
-        initGame();
+    public Game(boolean isRedGoFirst){
+        initGame(isRedGoFirst);
     }
 
-    public void initGame()
+    public void initGame(boolean isRedGoFirst)
     {
         currentBoard = new Board();
+        currentBoard.bRedGo = isRedGoFirst;
 
         startPos = null;
         endPos = null;

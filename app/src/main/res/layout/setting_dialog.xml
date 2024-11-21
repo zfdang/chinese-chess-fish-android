@@ -5,12 +5,43 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="2dp">
+
     <CheckBox
         android:id="@+id/boolean_sound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="播放音效"
         android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider1"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="2dp">
+
+        <CheckBox
+            android:id="@+id/boolean_redgofirst"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="红方先行 (新建游戏有效)"
+            android:textSize="18sp" />
+
+    </LinearLayout>
 
     <View
         android:id="@+id/divider3"
@@ -95,8 +126,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="8"
-                android:max="255"
-                android:min="1"
+                android:max="200"
+                android:min="10"
                 android:progress="1" />
 
             <TextView
@@ -119,7 +150,7 @@
             android:id="@+id/radioButton_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="搜索固定时间 (建议3000)" />
+            android:text="搜索固定时间 (建议3000毫秒)" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -133,7 +164,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
-                android:text="时间(毫秒)：" />
+                android:text="时间：" />
 
             <SeekBar
                 android:id="@+id/seekBar_time"

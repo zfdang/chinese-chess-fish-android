@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.content.ClipboardManager
 import android.content.DialogInterface
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -95,9 +97,6 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         moveHistoryAdapter = MoveHistoryAdapter(this, historyTable, controller)
         moveHistoryAdapter.populateTable()
 
-        // set status text
-        setStatusText("电脑执黑，自动走棋")
-
         // init button status
         if(controller.isAutoPlay) {
             binding.autoplaybt.setImageResource(R.drawable.play_circle)
@@ -147,13 +146,23 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
             // User clicked Yes button
             controller.startNewGame()
             moveHistoryAdapter.populateTable()
-            setStatusText("开始新游戏")
+            if(controller.settings.red_go_first) {
+                setStatusText("新游戏，红方先行")
+            } else {
+                setStatusText("新游戏，黑方先行")
+            }
             // hide choice buttons
             if(binding.choice1bt.visibility == View.VISIBLE){
                 binding.choice1bt.visibility = View.GONE;
                 binding.choice2bt.visibility = View.GONE;
                 binding.choice3bt.visibility = View.GONE;
             }
+
+            Handler(Looper.getMainLooper()).postDelayed({
+                if(controller.isComputerPlaying && controller.isAutoPlay && !controller.settings.red_go_first){
+                    controller.computerForward()
+                }
+            }, 1000)
         }
 
         builder.setNegativeButton("继续当前游戏") { dialog, which ->

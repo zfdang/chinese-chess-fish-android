@@ -32,6 +32,7 @@
         android:padding="2dp"
         android:text=""
         android:typeface="monospace"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:textColor="#000000" />
 
 </TableRow>
