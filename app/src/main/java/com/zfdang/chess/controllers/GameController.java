@@ -427,12 +427,13 @@ public class GameController implements EngineListener, SearchListener {
             doMoveAndUpdateStatus(pvinfo);
 
             if(isAutoPlay && isComputerPlaying && isBlackTurn()) {
+                // 因为要显示预测着法，所以让电脑延迟3s走棋
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         computerForward();
                     }
-                }, 1000);
+                }, 3000);
             }
         }
     }
