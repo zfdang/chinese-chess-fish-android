@@ -30,6 +30,7 @@ import java.util.List;
 public class GameController implements EngineListener, SearchListener {
     public ComputerPlayer player = null;
     private String engineName = "pikafish";
+    public String engineInfo; // returned by engine
 
     public Game game = null;
     private int searchId;
@@ -480,7 +481,7 @@ public class GameController implements EngineListener, SearchListener {
     @Override
     public void notifyEngineName(String engineName) {
         Log.d("GameController", "Engine name: " + engineName);
-        gui.runOnUIThread(() -> gui.onGameEvent(GameStatus.ENGINE, "引擎：" + engineName));
+        this.engineInfo = engineName;
     }
 
     @Override

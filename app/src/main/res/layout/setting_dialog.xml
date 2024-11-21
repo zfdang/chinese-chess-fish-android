@@ -12,6 +12,28 @@
         android:orientation="horizontal"
         android:padding="2dp">
 
+        <TextView
+            android:id="@+id/textView_engine_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:text="引擎"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider11"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="2dp">
+
     <CheckBox
         android:id="@+id/boolean_sound"
         android:layout_width="wrap_content"

@@ -17,10 +17,15 @@ class SettingDialogFragment : DialogFragment() {
     }
 
     private lateinit var settings: Settings
+    private lateinit var engineInfo: String
     var listener: SettingDialogListener? = null
 
     fun setSettings(settings: Settings) {
         this.settings = settings
+    }
+
+    fun setEngineInfo(info: String) {
+        engineInfo = info
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -29,8 +34,10 @@ class SettingDialogFragment : DialogFragment() {
         val view: View = inflater.inflate(R.layout.setting_dialog, null)
 
         // bind all items in setting_dialog.xml
-        val booleanSound = view.findViewById<CheckBox>(R.id.boolean_sound)
+        val engineInfoTV = view.findViewById<TextView>(R.id.textView_engine_info)
+        engineInfoTV.text = "引擎信息：" + engineInfo
 
+        val booleanSound = view.findViewById<CheckBox>(R.id.boolean_sound)
 
         val historyInput = view.findViewById<SeekBar>(R.id.seekbar_history)
         val historyText = view.findViewById<TextView>(R.id.textview_history)
@@ -38,7 +45,6 @@ class SettingDialogFragment : DialogFragment() {
         val radioDepth = view.findViewById<RadioButton>(R.id.radioButton_depth)
         val depthInput = view.findViewById<SeekBar>(R.id.seekBar_depth)
         val depthText = view.findViewById<TextView>(R.id.textView_depth)
-
 
         val radioTime = view.findViewById<RadioButton>(R.id.radioButton_time)
         val timeInput = view.findViewById<SeekBar>(R.id.seekBar_time)

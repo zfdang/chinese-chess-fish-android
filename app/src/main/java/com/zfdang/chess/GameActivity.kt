@@ -108,6 +108,13 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         } else {
             binding.playerbt.setImageResource(R.drawable.person)
         }
+
+        // init status text
+        if(controller.isRedTurn){
+            setStatusText("等待红方走棋")
+        } else if(controller.isBlackTurn) {
+            setStatusText("等待黑方走棋")
+        }
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
@@ -262,6 +269,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
                 val dialog = SettingDialogFragment()
                 dialog.setSettings(controller.settings)
                 dialog.listener = this
+                dialog.setEngineInfo(controller.engineInfo)
                 dialog.show(supportFragmentManager, "CustomDialog")
             }
             binding.newbt -> {
