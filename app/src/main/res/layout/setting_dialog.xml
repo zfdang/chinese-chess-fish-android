@@ -22,7 +22,7 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/divider11"
+        android:id="@+id/divider1"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="?android:attr/listDivider" />
@@ -44,7 +44,7 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/divider1"
+        android:id="@+id/divider2"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="?android:attr/listDivider" />
@@ -79,12 +79,12 @@
         android:padding="10dp">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/textView_history_caption"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="6"
             android:text="显示历史着法"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
         <SeekBar
             android:id="@+id/seekbar_history"
@@ -99,14 +99,56 @@
             android:id="@+id/textview_history"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:text="1"
             android:textAlignment="center" />
 
     </LinearLayout>
 
     <View
-        android:id="@+id/divider"
+        android:id="@+id/divider4"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/textView_hash_caption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:text="Hash表大小(M)"
+            android:textSize="14sp" />
+
+        <SeekBar
+            android:id="@+id/seekbar_hash"
+            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="6"
+            android:max="8192"
+            android:min="128"
+            android:stepSize="128"
+            android:progress="256" />
+
+        <TextView
+            android:id="@+id/textview_hash"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:text="256"
+            android:textAlignment="center" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/divider5"
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="?android:attr/listDivider" />
@@ -115,8 +157,8 @@
         android:id="@+id/textView_engine"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:text="引擎搜索设置"
+        android:padding="8dp"
+        android:text="搜索设置"
         android:textSize="18sp" />
 
     <RadioGroup
@@ -163,7 +205,7 @@
         </LinearLayout>
 
         <View
-            android:id="@+id/divider21"
+            android:id="@+id/divider6"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="?android:attr/listDivider" />
@@ -208,7 +250,7 @@
         </LinearLayout>
 
         <View
-            android:id="@+id/divider31"
+            android:id="@+id/divider7"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="?android:attr/listDivider" />
@@ -220,11 +262,12 @@
             android:padding="4dp"
             android:text="无限搜索，须闪电出着" />
 
-        <View
-            android:id="@+id/divider2"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
     </RadioGroup>
+
+    <View
+        android:id="@+id/divider8"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
 
 </LinearLayout>

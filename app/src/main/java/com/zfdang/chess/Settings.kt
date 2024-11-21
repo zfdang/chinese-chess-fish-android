@@ -29,6 +29,9 @@ class Settings(private val context: Context) {
     private val red_go_first_key: String = "red_go_first"
     var red_go_first = true
 
+    private val hash_size_key: String = "hash_size"
+    var hash_size = 512
+
     init {
         loadSettings()
 
@@ -41,6 +44,7 @@ class Settings(private val context: Context) {
         go_time_value = getInt(go_time_value_key, 3000)
         go_infinite = getBoolean(go_infinite_key, false)
         red_go_first =  getBoolean(red_go_first_key, true)
+        hash_size = getInt(hash_size_key, 512)
     }
 
     private fun loadSettings() {
@@ -64,6 +68,7 @@ class Settings(private val context: Context) {
         setInt(go_time_value_key, go_time_value)
         setBoolean(go_infinite_key, go_infinite)
         setBoolean(red_go_first_key, red_go_first)
+        setInt(hash_size_key, hash_size)
 
         // save to file
         try {

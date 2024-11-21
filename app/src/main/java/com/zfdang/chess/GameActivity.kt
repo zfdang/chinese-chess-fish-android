@@ -267,7 +267,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
             binding.optionbt -> {
                 // Show the dialog
                 val dialog = SettingDialogFragment()
-                dialog.setSettings(controller.settings)
+                dialog.setController(controller)
                 dialog.listener = this
                 dialog.setEngineInfo(controller.engineInfo)
                 dialog.show(supportFragmentManager, "CustomDialog")

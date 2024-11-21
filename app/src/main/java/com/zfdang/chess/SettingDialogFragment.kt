@@ -9,6 +9,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
+import com.zfdang.chess.controllers.GameController
 
 class SettingDialogFragment : DialogFragment() {
     interface SettingDialogListener {
@@ -17,11 +18,13 @@ class SettingDialogFragment : DialogFragment() {
     }
 
     private lateinit var settings: Settings
+    private lateinit var controller: GameController
     private lateinit var engineInfo: String
     var listener: SettingDialogListener? = null
 
-    fun setSettings(settings: Settings) {
-        this.settings = settings
+    fun setController(controller: GameController) {
+        this.controller = controller
+        this.settings = controller.settings
     }
 
     fun setEngineInfo(info: String) {
@@ -54,6 +57,9 @@ class SettingDialogFragment : DialogFragment() {
 
         val redgoFirst = view.findViewById<CheckBox>(R.id.boolean_redgofirst)
 
+        val seekbarHash = view.findViewById<SeekBar>(R.id.seekbar_hash)
+        val textviewHash = view.findViewById<TextView>(R.id.textview_hash)
+
         // set the initial values
         if(this.settings != null) {
             booleanSound.isChecked = this.settings.sound_effect
@@ -72,6 +78,8 @@ class SettingDialogFragment : DialogFragment() {
                 radioInfinite.isChecked = true
             }
             redgoFirst.isChecked = this.settings.red_go_first
+            seekbarHash.progress = this.settings.hash_size
+            textviewHash.text = this.settings.hash_size.toString()
         }
 
         historyInput.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -113,6 +121,19 @@ class SettingDialogFragment : DialogFragment() {
                 // Do something
             }
         })
+        seekbarHash.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                textviewHash.text = "$progress"
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                // Do something
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                // Do something
+            }
+        })
 
 
         builder.setView(view)
@@ -126,7 +147,9 @@ class SettingDialogFragment : DialogFragment() {
                 settings.go_time_value = timeInput.progress
                 settings.go_infinite = radioInfinite.isChecked
                 settings.red_go_first = redgoFirst.isChecked
+                settings.hash_size = seekbarHash.progress
                 settings.saveSettings()
+                controller.applySetting()
                 listener?.onDialogPositiveClick()
             }
             .setNegativeButton("取消") { dialog, id ->

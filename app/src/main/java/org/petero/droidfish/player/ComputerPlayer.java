@@ -347,6 +347,9 @@ public class ComputerPlayer {
         }
 
         if (isSearch){
+            // A value higher than 1 weakens the quality of the best move computed, as resources are used to compute other moves.
+//            uciEngine.setOption("MultiPV", 1);
+
             StringBuilder posStr = new StringBuilder();
             posStr.append("position fen ");
             posStr.append(sr.prevBoard.toFENString());
@@ -361,8 +364,6 @@ public class ComputerPlayer {
             }
 
             uciEngine.writeLineToEngine(posStr.toString());
-            // pikafish doesn't support "UCI_AnalyseMode" command
-            // uciEngine.setOption("UCI_AnalyseMode", true);
 
             StringBuilder goCmd = new StringBuilder(96);
             // 这里的命令可以根据需要设置

@@ -25,7 +25,9 @@ import org.petero.droidfish.player.SearchRequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class GameController implements EngineListener, SearchListener {
     public ComputerPlayer player = null;
@@ -77,6 +79,7 @@ public class GameController implements EngineListener, SearchListener {
         }
         player.queueStartEngine(searchId++, engineName);
         startNewGame();
+        applySetting();
     }
 
     public synchronized void startNewGame() {
@@ -377,6 +380,14 @@ public class GameController implements EngineListener, SearchListener {
             gui.onGameEvent(GameStatus.ILLEGAL, "无搜索任务");
         }
     }
+
+    public void applySetting() {
+        // apply settings to engine
+        Map<String,String> uciOptions = new HashMap<>();
+        uciOptions.put("Hash", String.valueOf(settings.getHash_size()));
+        player.setUCIOptions(uciOptions);
+    }
+
 
     public void computerMovePiece(String bestmove) {
         // validate the move
