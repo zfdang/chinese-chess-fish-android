@@ -89,11 +89,11 @@ public class PikafishExternalEngine extends ExternalEngine {
     @Override
     protected boolean editableOption(String name) {
         name = name.toLowerCase(Locale.US);
-        if (!super.editableOption(name))
-            return false;
+        if (super.editableOption(name))
+            return true;
         // pikafish可修改的选项
         String[] editable = {"numapolicy", "threads", "hash", "clear hash", "ponder", "multipv", "move overhead", "skill level",
-                "mate threat depth", "repetition rule", "draw rule", "rule60maxply", "scoretype", "lu_output", "evalfile", "uci_showwdl"};
+                "mate threat depth", "repetition rule", "draw rule", "rule60maxply", "scoretype", "lu_output", "evalfile"};
         return Arrays.asList(editable).contains(name);
     }
 

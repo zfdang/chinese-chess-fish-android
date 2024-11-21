@@ -100,7 +100,9 @@ public abstract class UCIEngineBase implements UCIEngine {
         for (Map.Entry<String, String> ent : uciOptions.entrySet()) {
             String key = ent.getKey().toLowerCase(Locale.US);
             String value = ent.getValue();
-            if (editableOption(key)) {
+            boolean editable = editableOption(key);
+            Log.d("UCIEngineBase", "setUCIOptions, key: " + key + ", value: " + value + ", editable: " + editable);
+            if (editable) {
                 if (uciOptions.containsKey(key)) {
                     // key should exist and configurable, and value is different with previous value
                     modified |= setOption(key, value);

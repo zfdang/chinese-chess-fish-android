@@ -383,9 +383,9 @@ public class GameController implements EngineListener, SearchListener {
 
     public void applySetting() {
         // apply settings to engine
-        Map<String,String> uciOptions = new HashMap<>();
-        uciOptions.put("Hash", String.valueOf(settings.getHash_size()));
-        player.setUCIOptions(uciOptions);
+//        Map<String,String> uciOptions = new HashMap<>();
+//        uciOptions.put("Hash", String.valueOf(settings.getHash_size()));
+//        player.setUCIOptions(uciOptions);
     }
 
 
