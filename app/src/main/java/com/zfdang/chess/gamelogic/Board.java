@@ -204,6 +204,13 @@ public class Board implements Serializable {
     public boolean restoreFromFEN(String fenString) {
         if(fenString == null) return false;
         fenString = fenString.trim();
+
+        // append missing parts
+        if(fenString.endsWith("w") || fenString.endsWith("b")) {
+            fenString += " - - 0 1";
+        }
+
+        // parse fen string
         String[] parts = fenString.split(" ");
         if (parts.length != 6) {
             Log.e("Board", "Failed to parse FEN string: " + fenString);
