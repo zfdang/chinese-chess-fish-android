@@ -206,7 +206,7 @@ public class GameController implements EngineListener, SearchListener {
                 null,
                 false,
                 engineName,
-                3);
+                1);
         player.queueSearchRequest(sr);
     }
 

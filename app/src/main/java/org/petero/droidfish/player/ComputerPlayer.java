@@ -62,8 +62,9 @@ public class ComputerPlayer {
      * >1 if multiPV mode is supported.
      * this value will be read from engine options during initialization
      * so we don't have to set it manually
+     * defined in pikafish.ini: 5
      */
-    private int maxPV = 1;
+    private int maxPV = 5;
 
     public int getMaxPV() {
         return maxPV;
@@ -350,9 +351,6 @@ public class ComputerPlayer {
         }
 
         if (isSearch){
-            // A value higher than 1 weakens the quality of the best move computed, as resources are used to compute other moves.
-//            uciEngine.setOption("MultiPV", 1);
-
             StringBuilder posStr = new StringBuilder();
             posStr.append("position fen ");
             posStr.append(sr.prevBoard.toFENString());
