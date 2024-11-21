@@ -402,6 +402,9 @@ public class GameController implements EngineListener, SearchListener {
             game.setStartPos(move.fromPosition);
             game.setEndPos(move.toPosition);
             doMoveAndUpdateStatus(null);
+        } else {
+            Log.e("GameController", "Invalid move: " + bestmove);
+            gui.onGameEvent(GameStatus.CHECKMATE, "无路可逃");
         }
     }
 
@@ -597,6 +600,10 @@ public class GameController implements EngineListener, SearchListener {
         for (BookData bd : bookData) {
             Log.d("GameController", "Openbook hit: " + bd.getMove());
         }
+    }
+
+    public int getMultiPVSize() {
+        return multiPVs.size();
     }
 
     public void saveGameStatus() {

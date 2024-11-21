@@ -362,8 +362,12 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
                 // show choice buttons
                 if(binding.choice1bt.visibility == View.GONE){
                     binding.choice1bt.visibility = View.VISIBLE;
-                    binding.choice2bt.visibility = View.VISIBLE;
-                    binding.choice3bt.visibility = View.VISIBLE;
+                    if(controller.getMultiPVSize() >= 2){
+                        binding.choice2bt.visibility = View.VISIBLE;
+                    }
+                    if(controller.getMultiPVSize() >= 3){
+                        binding.choice3bt.visibility = View.VISIBLE;
+                    }
                 }
 
                 soundPlayer.ready()
