@@ -104,7 +104,7 @@
                 android:id="@+id/newbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="6dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/new_window" />
 
@@ -112,9 +112,17 @@
                 android:id="@+id/importbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="6dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/import_fen" />
+
+            <ImageButton
+                android:id="@+id/exportbt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/export" />
 
 
             <ImageButton
@@ -122,7 +130,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="6dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/arrow_back" />
 
@@ -131,7 +139,7 @@
                 android:id="@+id/helpbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="6dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/help" />
 
@@ -139,7 +147,7 @@
                 android:id="@+id/stophelpbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="6dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/quick" />
 
@@ -147,7 +155,7 @@
                 android:id="@+id/exitbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="6dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/logout" />
 

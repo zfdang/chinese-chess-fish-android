@@ -78,6 +78,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
             binding.newbt,
             binding.backbt,
             binding.importbt,
+            binding.exportbt,
             binding.helpbt,
             binding.stophelpbt,
             binding.exitbt,
@@ -281,6 +282,15 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
             }
             binding.importbt -> {
                 showInputFENDialog()
+            }
+            binding.exportbt -> {
+                val fenString = controller.game.currentBoard.toFENString()
+                // copy to clipboard
+                val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = android.content.ClipData.newPlainText("FEN", fenString)
+                clipboard.setPrimaryClip(clip)
+                setStatusText("FEN串已复制到剪贴板")
+                Log.d("GameActivity", "fenString: $fenString")
             }
             binding.helpbt -> {
                 setStatusText("正在搜索建议着法...")
