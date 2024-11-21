@@ -404,7 +404,7 @@ public class GameController implements EngineListener, SearchListener {
             doMoveAndUpdateStatus(null);
         } else {
             Log.e("GameController", "Invalid move: " + bestmove);
-            gui.onGameEvent(GameStatus.CHECKMATE, "无路可逃");
+            gui.onGameEvent(GameStatus.LOSE, "无路可走");
         }
     }
 
