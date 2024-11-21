@@ -1,5 +1,7 @@
 package com.zfdang.chess.controllers;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.zfdang.chess.ChessApp;
@@ -355,7 +357,7 @@ public class GameController implements EngineListener, SearchListener {
                     return;
                 }
 
-                doMoveAndUpdateStatus();
+                doMoveAndUpdateStatus(null);
 
                 if(isAutoPlay && isComputerPlaying && isBlackTurn()) {
                     computerForward();
@@ -399,7 +401,7 @@ public class GameController implements EngineListener, SearchListener {
 
             game.setStartPos(move.fromPosition);
             game.setEndPos(move.toPosition);
-            doMoveAndUpdateStatus();
+            doMoveAndUpdateStatus(null);
         }
     }
 
@@ -417,22 +419,27 @@ public class GameController implements EngineListener, SearchListener {
     public void selectMultiPV(int index) {
         Move move = game.getSuggestedMove(index);
         game.clearSuggestedMoves();
+        PvInfo pvinfo = multiPVs.get(index);
 
         if(move != null) {
             game.startPos = move.fromPosition;
             game.endPos = move.toPosition;
-            doMoveAndUpdateStatus();
+            doMoveAndUpdateStatus(pvinfo);
 
             if(isAutoPlay && isComputerPlaying && isBlackTurn()) {
-                computerForward();
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        computerForward();
+                    }
+                }, 1000);
             }
         }
     }
 
 
-    public void doMoveAndUpdateStatus(){
+    public void doMoveAndUpdateStatus(PvInfo pvinfo){
         // game.startPos & game.endPos should be ready
-
         if(state != ControllerState.WAITING_FOR_USER && state != ControllerState.WAITING_FOR_ENGINE) {
             Log.e("GameController", "Invalid state, doMoveAndUpdateStatus should not be called now." + state);
             return;
@@ -470,7 +477,23 @@ public class GameController implements EngineListener, SearchListener {
         } else if(status == GameStatus.CHECK) {
             gui.onGameEvent(GameStatus.CHECK, "将军！");
         } else {
-            gui.onGameEvent(GameStatus.MOVE, game.getLastMoveDesc());
+            if(pvinfo != null) {
+                Log.d("GameController", "PV: " + pvinfo);
+
+                // show multiPV infos
+                Board b = new Board(game.currentBoard);
+                ArrayList<Move> moves = pvinfo.pv;
+                String desc = "预测着法：";
+                for(int i = 1; i< moves.size() && i <= 4; i++) {
+                    Move m = moves.get(i);
+                    m.setBoard(b);
+                    b.doMove(m);
+                    desc += m.getChsString() + " ";
+                }
+                gui.onGameEvent(GameStatus.MOVE, desc);
+            } else {
+                gui.onGameEvent(GameStatus.MOVE, game.getLastMoveDesc());
+            }
         }
 
     }

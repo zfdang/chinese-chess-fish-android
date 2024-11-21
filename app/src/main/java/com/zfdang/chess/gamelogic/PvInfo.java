@@ -14,7 +14,7 @@ public class PvInfo {
     boolean isMate;
     boolean upperBound;
     boolean lowerBound;
-    ArrayList<Move> pv;
+    public ArrayList<Move> pv;
     String pvStr = "";
 
     public PvInfo(int depth, int score, int time, long nodes, int nps, long tbHits, int hash, int seldepth,
@@ -38,7 +38,6 @@ public class PvInfo {
         // show info in pv
         for(int i = 0; i < pv.size(); i++) {
             result +=  pv.get(i).getUCCIString() + ",";
-            if (i == 2) break;
         }
         result += "}";
 
