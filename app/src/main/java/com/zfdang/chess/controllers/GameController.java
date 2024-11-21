@@ -359,10 +359,11 @@ public class GameController implements EngineListener, SearchListener {
                     computerForward();
                 }
             } else {
-                gui.onGameEvent(GameStatus.ILLEGAL);
+                // clear start position
+                game.startPos = null;
+                gui.onGameEvent(GameStatus.ILLEGAL, "非法走法");
             }
         }
-
     }
     public void stopSearchNow() {
         // send "stop" to engine for "bestmove"
