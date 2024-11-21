@@ -405,11 +405,21 @@ public class GameController implements EngineListener, SearchListener {
         }
     }
 
-    public void processMultiPVInfos(){
+    public void processMultiPVInfos(String bestmove){
         // show multiPV infos
         for(PvInfo pv : multiPVs) {
             Log.d("GameController", "PV: " + pv);
         }
+        if(multiPVs.size() == 0) {
+            // add bestmove to multiPVs
+            ArrayList<Move> moves = new ArrayList<>();
+            Move m = new Move(null, null);
+            m.fromUCCIString(bestmove);
+            moves.add(m);
+            PvInfo pvinfo = new PvInfo(0, 0, 0, 0, 0, 0, 0, 0, false, false, false, moves);
+            multiPVs.add(pvinfo);
+        }
+
         game.generateSuggestedMoves(multiPVs);
 
         // notify GUI
@@ -560,13 +570,13 @@ public class GameController implements EngineListener, SearchListener {
             // 红方寻求帮助
             // 把multiPV的结果显示在界面上，让用户选择
             state = ControllerState.WAITING_FOR_USER;
-            gui.runOnUIThread(() -> processMultiPVInfos());
+            gui.runOnUIThread(() -> processMultiPVInfos(bestMove));
 
         } else if(state == ControllerState.WAITING_FOR_ENGINE_MULTIPV) {
             // 电脑被强制要求变着
             // 把multiPV的结果显示在界面上，让用户选择
             state = ControllerState.WAITING_FOR_ENGINE;
-            gui.runOnUIThread(() -> processMultiPVInfos());
+            gui.runOnUIThread(() -> processMultiPVInfos(bestMove));
         } else if(state == ControllerState.WAITING_FOR_ENGINE_BESTMV) {
             // 电脑发起的请求，走下一步棋子
             state = ControllerState.WAITING_FOR_ENGINE;
