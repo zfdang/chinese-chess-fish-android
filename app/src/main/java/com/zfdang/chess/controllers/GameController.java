@@ -79,7 +79,6 @@ public class GameController implements EngineListener, SearchListener {
         }
         player.queueStartEngine(searchId++, engineName);
         startNewGame();
-        applySetting();
     }
 
     public synchronized void startNewGame() {
@@ -381,11 +380,12 @@ public class GameController implements EngineListener, SearchListener {
         }
     }
 
-    public void applySetting() {
+    public void applyEngineSetting() {
         // apply settings to engine
-//        Map<String,String> uciOptions = new HashMap<>();
-//        uciOptions.put("Hash", String.valueOf(settings.getHash_size()));
-//        player.setUCIOptions(uciOptions);
+        Log.d("GameController", "Apply engine settings");
+        Map<String,String> uciOptions = new HashMap<>();
+        uciOptions.put("Hash", String.valueOf(settings.getHash_size()));
+        player.setUCIOptions(uciOptions);
     }
 
 

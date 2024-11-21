@@ -128,6 +128,7 @@ public class ComputerPlayer {
      * Send pending UCI option changes to the engine.
      */
     private synchronized boolean applyPendingOptions() {
+        Log.d("ComputerPlayer", "applyPendingOptions: " + pendingOptions.toString());
         if (pendingOptions.isEmpty())
             return false;
         boolean modified = false;
@@ -139,6 +140,7 @@ public class ComputerPlayer {
     }
 
     public synchronized void setUCIOptions(Map<String, String> uciOptions) {
+        Log.d("ComputerPlayer", "setUCIOptions: " + uciOptions.toString());
         pendingOptions.putAll(uciOptions);
         boolean modified = true;
         if (engineState.state == EngineStateValue.IDLE)
@@ -303,6 +305,7 @@ public class ComputerPlayer {
      * Determine what to do next when in idle state.
      */
     private void handleIdleState() {
+        Log.d("ComputerPlayer", "handleIdleState: ");
         SearchRequest sr = searchRequest;
         if (sr == null)
             return;
@@ -442,6 +445,7 @@ public class ComputerPlayer {
      * Process one line of data from the engine.
      */
     private synchronized void processEngineOutput(UCIEngine uci, String s) {
+        Log.d("ComputerPlayer", "processEngineOutput: " + " state: " + engineState.state + " s: " + s);
         if (Thread.currentThread().isInterrupted())
             return;
 

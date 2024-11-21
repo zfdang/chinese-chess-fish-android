@@ -149,7 +149,7 @@ class SettingDialogFragment : DialogFragment() {
                 settings.red_go_first = redgoFirst.isChecked
                 settings.hash_size = seekbarHash.progress
                 settings.saveSettings()
-                controller.applySetting()
+                controller.applyEngineSetting()
                 listener?.onDialogPositiveClick()
             }
             .setNegativeButton("取消") { dialog, id ->

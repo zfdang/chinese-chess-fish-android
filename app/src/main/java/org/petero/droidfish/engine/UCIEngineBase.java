@@ -103,10 +103,9 @@ public abstract class UCIEngineBase implements UCIEngine {
             boolean editable = editableOption(key);
             Log.d("UCIEngineBase", "setUCIOptions, key: " + key + ", value: " + value + ", editable: " + editable);
             if (editable) {
-                if (uciOptions.containsKey(key)) {
-                    // key should exist and configurable, and value is different with previous value
-                    modified |= setOption(key, value);
-                }
+                // key should exist and configurable, and value is different with previous value
+                Log.d("UCIEngineBase", "setUCIOptions, key: do the job " + key + ", value: " + value);
+                modified |= setOption(key, value);
             }
         }
         return modified;

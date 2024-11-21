@@ -52,7 +52,8 @@ public class PikafishExternalEngine extends ExternalEngine {
         super("pikafish", workDir, listener);
 
         // uci_showwdl is not included in the uci response, so we need to add it manually
-        registerOption("option name uci_showwdl type check default false".split("\\s+"));
+        // pikafish does not support uci_showwdl :)
+//        registerOption("option name uci_showwdl type check default false".split("\\s+"));
     }
 
     @Override

@@ -291,4 +291,15 @@ public class UCIOptions implements Serializable, Cloneable {
         options.put(name, p);
         Log.d("UCIOptions", "Added option " + name + " type " + p.type + " value " + p.getStringValue());
     }
+
+    // toString() method
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (String name : names) {
+            OptionBase o = options.get(name);
+            sb.append(o.name).append(" = ").append(o.getStringValue()).append("\n");
+        }
+        return sb.toString();
+    }
 }
