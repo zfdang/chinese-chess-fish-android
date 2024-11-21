@@ -38,7 +38,7 @@ class SettingDialogFragment : DialogFragment() {
 
         // bind all items in setting_dialog.xml
         val engineInfoTV = view.findViewById<TextView>(R.id.textView_engine_info)
-        engineInfoTV.text = "引擎信息：" + engineInfo
+        engineInfoTV.text = "引擎:" + engineInfo
 
         val booleanSound = view.findViewById<CheckBox>(R.id.boolean_sound)
 
