@@ -451,7 +451,7 @@ public class Rule {
                                 // 将帅移动了位置
                                 result = isJiangShuaiInDanger(Piece.BJIANG, pos, board);
                             } else {
-                                result = isJiangShuaiInDanger(Piece.WSHUAI, bosspos, board);
+                                result = isJiangShuaiInDanger(Piece.BJIANG, bosspos, board);
                             }
 
                             if (!result) {
