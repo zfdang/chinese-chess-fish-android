@@ -66,6 +66,28 @@
     </LinearLayout>
 
     <View
+        android:id="@+id/divider21"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="?android:attr/listDivider" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="2dp">
+
+        <CheckBox
+            android:id="@+id/boolean_randommove"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="增加电脑走棋的随机性"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <View
         android:id="@+id/divider3"
         android:layout_width="match_parent"
         android:layout_height="2dp"

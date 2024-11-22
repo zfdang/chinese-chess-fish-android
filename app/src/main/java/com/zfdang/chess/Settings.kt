@@ -32,6 +32,9 @@ class Settings(private val context: Context) {
     private val hash_size_key: String = "hash_size"
     var hash_size = 512
 
+    private val random_move_key: String = "random_move"
+    var random_move = false
+
     init {
         loadSettings()
 
@@ -45,6 +48,7 @@ class Settings(private val context: Context) {
         go_infinite = getBoolean(go_infinite_key, false)
         red_go_first =  getBoolean(red_go_first_key, true)
         hash_size = getInt(hash_size_key, 512)
+        random_move = getBoolean(random_move_key, false)
     }
 
     private fun loadSettings() {
@@ -69,6 +73,7 @@ class Settings(private val context: Context) {
         setBoolean(go_infinite_key, go_infinite)
         setBoolean(red_go_first_key, red_go_first)
         setInt(hash_size_key, hash_size)
+        setBoolean(random_move_key, random_move)
 
         // save to file
         try {
