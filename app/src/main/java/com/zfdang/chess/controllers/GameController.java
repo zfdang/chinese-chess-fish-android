@@ -247,6 +247,7 @@ public class GameController implements EngineListener, SearchListener {
             gui.onGameEvent(GameStatus.SELECT, "搜索变着中...");
         }
         state = ControllerState.WAITING_FOR_ENGINE_MULTIPV;
+        multiPVs.clear();
 
         // trigger searchrequest, engine will call notifySearchResult for bestmove
         searchStartTime = System.currentTimeMillis();
@@ -288,6 +289,7 @@ public class GameController implements EngineListener, SearchListener {
             gui.onGameEvent(GameStatus.SELECT, "寻求帮助中...");
         }
         state = ControllerState.WAITING_FOR_USER_MULTIPV;
+        multiPVs.clear();
 
         // trigger searchrequest, engine will call notifySearchResult for bestmove
         searchStartTime = System.currentTimeMillis();
@@ -416,11 +418,17 @@ public class GameController implements EngineListener, SearchListener {
         if(multiPVs.size() == 0) {
             // add bestmove to multiPVs
             ArrayList<Move> moves = new ArrayList<>();
-            Move m = new Move(null, null);
-            m.fromUCCIString(bestmove);
-            moves.add(m);
-            PvInfo pvinfo = new PvInfo(0, 0, 0, 0, 0, 0, 0, 0, false, false, false, moves);
-            multiPVs.add(pvinfo);
+            Move m = new Move(game.currentBoard);
+            boolean result = m.fromUCCIString(bestmove);
+            if(result) {
+                moves.add(m);
+                PvInfo pvinfo = new PvInfo(0, 0, 0, 0, 0, 0, 0, 0, false, false, false, moves);
+                multiPVs.add(pvinfo);
+            } else {
+                Log.e("GameController", "Invalid move: " + bestmove);
+                gui.onGameEvent(GameStatus.LOSE, "无路可走");
+                return;
+            }
         }
 
         game.generateSuggestedMoves(multiPVs);
