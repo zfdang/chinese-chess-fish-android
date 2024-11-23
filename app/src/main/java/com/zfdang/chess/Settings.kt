@@ -7,6 +7,7 @@ import java.util.Properties
 
 class Settings(private val context: Context) {
     private val properties = Properties()
+
     companion object {
         private const val FILE_NAME = "settings.ini"
     }
@@ -46,7 +47,7 @@ class Settings(private val context: Context) {
         go_time = getBoolean(go_time_key, false)
         go_time_value = getInt(go_time_value_key, 3000)
         go_infinite = getBoolean(go_infinite_key, false)
-        red_go_first =  getBoolean(red_go_first_key, true)
+        red_go_first = getBoolean(red_go_first_key, true)
         hash_size = getInt(hash_size_key, 256)
         random_move = getBoolean(random_move_key, false)
     }
@@ -87,11 +88,11 @@ class Settings(private val context: Context) {
 
     fun getGoCmd(): String {
         var goCmd = "go"
-        if(go_depth){
+        if (go_depth) {
             goCmd += " depth $go_depth_value"
-        } else if(go_time){
+        } else if (go_time) {
             goCmd += " movetime $go_time_value"
-        } else if(go_infinite){
+        } else if (go_infinite) {
             goCmd += " infinite"
         }
         return goCmd
@@ -124,8 +125,6 @@ class Settings(private val context: Context) {
     fun setBoolean(key: String?, value: Boolean) {
         properties.setProperty(key, value.toString())
     }
-
-
 
 
 }

@@ -63,7 +63,7 @@ class SettingDialogFragment : DialogFragment() {
         val textviewHash = view.findViewById<TextView>(R.id.textview_hash)
 
         // set the initial values
-        if(this.settings != null) {
+        if (this.settings != null) {
             booleanSound.isChecked = this.settings.sound_effect
             historyInput.progress = this.settings.history_moves
             historyText.text = this.settings.history_moves.toString()
@@ -72,11 +72,11 @@ class SettingDialogFragment : DialogFragment() {
             depthText.text = this.settings.go_depth_value.toString()
             timeInput.progress = this.settings.go_time_value
             timeText.text = this.settings.go_time_value.toString()
-            if(this.settings.go_depth) {
+            if (this.settings.go_depth) {
                 radioDepth.isChecked = true
-            } else if(this.settings.go_time) {
+            } else if (this.settings.go_time) {
                 radioTime.isChecked = true
-            } else if(this.settings.go_infinite) {
+            } else if (this.settings.go_infinite) {
                 radioInfinite.isChecked = true
             }
             redgoFirst.isChecked = this.settings.red_go_first
