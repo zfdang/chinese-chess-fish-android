@@ -47,7 +47,7 @@ class Settings(private val context: Context) {
         go_time_value = getInt(go_time_value_key, 3000)
         go_infinite = getBoolean(go_infinite_key, false)
         red_go_first =  getBoolean(red_go_first_key, true)
-        hash_size = getInt(hash_size_key, 512)
+        hash_size = getInt(hash_size_key, 256)
         random_move = getBoolean(random_move_key, false)
     }
 
