@@ -175,13 +175,10 @@ public class GameController implements EngineListener, SearchListener {
         // search openbook first
         long vkey = game.currentBoard.getZobrist(isRedTurn());
         List<BookData> bookData = bhBook.query(vkey, isRedTurn(), OpenBook.SortRule.BEST_SCORE);
-        // iterate bookData one by one
-        for (BookData bd : bookData) {
-            Log.d("GameController", "Openbook hit: " + bd.getMove());
-        }
         if(bookData!= null && bookData.size() > 0){
-            Log.d("GameController", "Openbook hit: " + bookData.get(0).getMove());
-            computerMovePiece(bookData.get(0).getMove());
+            int idx = settings.getRandom_move()? (int)(Math.random() * bookData.size()): 0;
+            Log.d("GameController", "Openbook hit: bestmove = " + bookData.get(0).getMove() + " currentMove = " + bookData.get(idx).getMove());
+            computerMovePiece(bookData.get(idx).getMove());
             return;
         }
 
@@ -208,7 +205,7 @@ public class GameController implements EngineListener, SearchListener {
                 null,
                 false,
                 engineName,
-                1);
+                settings.getRandom_move()? 3: 1);
         player.queueSearchRequest(sr);
     }
 
@@ -591,7 +588,15 @@ public class GameController implements EngineListener, SearchListener {
         } else if(state == ControllerState.WAITING_FOR_ENGINE_BESTMV) {
             // 电脑发起的请求，走下一步棋子
             state = ControllerState.WAITING_FOR_ENGINE;
-            gui.runOnUIThread(() -> computerMovePiece(bestMove));
+            // 如果设置了引擎的随机性，则从multiPV中随机选择一个着法
+            if (settings.getRandom_move() && multiPVs.size() > 0) {
+                int idx = (int) (Math.random() * multiPVs.size());
+                String randomMove = multiPVs.get(idx).pv.get(0).getUCCIString();
+                gui.runOnUIThread(() -> computerMovePiece(randomMove));
+                Log.d("GameController", "Search result: bestMove=" + bestMove + ", randomMove=" + randomMove);
+            } else {
+                gui.runOnUIThread(() -> computerMovePiece(bestMove));
+            }
         }
     }
 

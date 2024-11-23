@@ -57,6 +57,8 @@ class SettingDialogFragment : DialogFragment() {
 
         val redgoFirst = view.findViewById<CheckBox>(R.id.boolean_redgofirst)
 
+        val randomMove = view.findViewById<CheckBox>(R.id.boolean_randommove)
+
         val seekbarHash = view.findViewById<SeekBar>(R.id.seekbar_hash)
         val textviewHash = view.findViewById<TextView>(R.id.textview_hash)
 
@@ -80,6 +82,7 @@ class SettingDialogFragment : DialogFragment() {
             redgoFirst.isChecked = this.settings.red_go_first
             seekbarHash.progress = this.settings.hash_size
             textviewHash.text = this.settings.hash_size.toString()
+            randomMove.isChecked = this.settings.random_move
         }
 
         historyInput.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -148,6 +151,7 @@ class SettingDialogFragment : DialogFragment() {
                 settings.go_infinite = radioInfinite.isChecked
                 settings.red_go_first = redgoFirst.isChecked
                 settings.hash_size = seekbarHash.progress
+                settings.random_move = randomMove.isChecked
                 settings.saveSettings()
                 controller.applyEngineSetting()
                 listener?.onDialogPositiveClick()
