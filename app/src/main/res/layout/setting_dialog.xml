@@ -138,9 +138,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-
-        >
+        android:paddingBottom="6dp">
 
         <TextView
             android:id="@+id/textView_hash_caption"
@@ -158,8 +156,7 @@
             android:layout_weight="7"
             android:max="1024"
             android:min="128"
-            android:progress="256"
-            android:stepSize="128" />
+            android:progress="256" />
 
         <TextView
             android:id="@+id/textview_hash"
@@ -215,7 +212,7 @@
                 android:id="@+id/seekBar_depth"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="8"
+                android:layout_weight="6"
                 android:max="120"
                 android:min="10"
                 android:progress="1" />
@@ -261,7 +258,7 @@
                 android:id="@+id/seekBar_time"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="8"
+                android:layout_weight="6"
                 android:max="20000"
                 android:min="500"
                 android:progress="3000" />
