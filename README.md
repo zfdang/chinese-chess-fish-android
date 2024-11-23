@@ -13,14 +13,24 @@
 
 ## 下载应用
 
-#### 官网下载：
-
-[https://fish.zfdang.com/release.html](https://fish.zfdang.com/release.html)
-
 #### Github下载（实时编译）:
 
 [Github Release](https://github.com/zfdang/chinese-chess-fish-android/releases)
 
+#### 官网下载：
+
+[https://fish.zfdang.com/release.html](https://fish.zfdang.com/release.html)
+
+#### 问题：我该下载哪个apk？
+
+有两个版本：
+
+1. chessfish-armv8-dotprod.zip
+2. chessfish-armv8.zip
+
+如果你的手机是最近几年买的，你的CPU应该支持dotprod技术，那么就下载chessfish-armv8-dotprod.zip。
+
+dotprod没法正常工作，就下载chessfish-armv8.zip。
 
 ## 开源免费
 
