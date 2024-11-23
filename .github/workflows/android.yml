@@ -39,10 +39,15 @@ jobs:
     - name: Assemble Release APK
       run: ./gradlew assembleRelease --stacktrace
 
-    - name: Create ZIPs
-      working-directory: ./app/build/outputs/apk/release
+    - name: Create ZIP armv8
+      working-directory: ./app/build/outputs/apk/armv8-/release/
       run: |
-        zip -r ./chessfish.zip *.apk
+        zip -r ./chessfish-armv8.zip *.apk
+
+    - name: Create ZIP armv8-dotprod
+      working-directory: ./app/build/outputs/apk/armv8-dotprod-/release/
+      run: |
+        zip -r ./chessfish-armv8-dotprod.zip *.apk
 
     - name: Get git revision
       id: get_git_revision
@@ -61,13 +66,12 @@ jobs:
           draft: false
           prerelease: false
 
-    - name: Upload Release APK
-      id: upload-release-asset-images
-      uses: actions/upload-release-asset@v1
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload Release APKs
+      id: upload-release-apks
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/')
       with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./app/build/outputs/apk/release/chessfish.zip
-          asset_name: chessfish.zip
-          asset_content_type: application/zip
+        files: |
+          ./app/build/outputs/apk/armv8-/release/chessfish-armv8.zip
+          ./app/build/outputs/apk/armv8-dotprod-/release/chessfish-armv8-dotprod.zip
+            
