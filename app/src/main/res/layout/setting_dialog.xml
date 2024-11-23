@@ -16,15 +16,16 @@
             android:id="@+id/textView_engine_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
             android:text="引擎"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
     </LinearLayout>
 
     <View
         android:id="@+id/divider1"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dp"
         android:background="?android:attr/listDivider" />
 
     <LinearLayout
@@ -32,21 +33,21 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="2dp">
+        >
 
     <CheckBox
         android:id="@+id/boolean_sound"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="播放音效"
-        android:textSize="18sp" />
+        android:textSize="16sp" />
 
     </LinearLayout>
 
     <View
         android:id="@+id/divider2"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dp"
         android:background="?android:attr/listDivider" />
 
     <LinearLayout
@@ -54,21 +55,21 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="2dp">
+        >
 
         <CheckBox
             android:id="@+id/boolean_redgofirst"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="红方先行 (新建游戏有效)"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
     </LinearLayout>
 
     <View
         android:id="@+id/divider21"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dp"
         android:background="?android:attr/listDivider" />
 
     <LinearLayout
@@ -76,21 +77,21 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="2dp">
+        >
 
         <CheckBox
             android:id="@+id/boolean_randommove"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="增加电脑走棋的随机性"
-            android:textSize="18sp" />
+            android:textSize="16sp" />
 
     </LinearLayout>
 
     <View
         android:id="@+id/divider3"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dp"
         android:background="?android:attr/listDivider" />
 
     <LinearLayout
@@ -98,7 +99,9 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="10dp">
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        >
 
         <TextView
             android:id="@+id/textView_history_caption"
@@ -106,14 +109,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="6"
             android:text="显示历史着法"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
 
         <SeekBar
             android:id="@+id/seekbar_history"
             style="@style/Widget.AppCompat.SeekBar.Discrete"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="6"
+            android:layout_weight="7"
             android:max="6"
             android:progress="1" />
 
@@ -130,7 +133,7 @@
     <View
         android:id="@+id/divider4"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dp"
         android:background="?android:attr/listDivider" />
 
     <LinearLayout
@@ -138,7 +141,10 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="10dp">
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+
+        >
 
         <TextView
             android:id="@+id/textView_hash_caption"
@@ -146,14 +152,14 @@
             android:layout_height="wrap_content"
             android:layout_weight="6"
             android:text="Hash大小(M)"
-            android:textSize="14sp" />
+            android:textSize="16sp" />
 
         <SeekBar
             android:id="@+id/seekbar_hash"
             style="@style/Widget.AppCompat.SeekBar.Discrete"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="6"
+            android:layout_weight="7"
             android:max="1024"
             android:min="128"
             android:stepSize="128"
@@ -172,16 +178,17 @@
     <View
         android:id="@+id/divider5"
         android:layout_width="match_parent"
-        android:layout_height="2dp"
+        android:layout_height="1dp"
         android:background="?android:attr/listDivider" />
 
     <TextView
         android:id="@+id/textView_engine"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="搜索设置"
-        android:textSize="18sp" />
+        android:paddingTop="6dp"
+        android:paddingBottom="0dp"
+        android:text="搜索设置："
+        android:textSize="16sp" />
 
     <RadioGroup
         android:layout_width="match_parent"
@@ -198,13 +205,15 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="4dp">
+            android:paddingBottom="6dp"
+            >
 
             <TextView
                 android:id="@+id/textView_depth_caption"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
+                android:textSize="14sp"
                 android:text="深度：" />
 
             <SeekBar
@@ -243,13 +252,15 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="4dp">
+            android:paddingBottom="6dp"
+            >
 
             <TextView
                 android:id="@+id/textView_time_caption"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
+                android:textSize="14sp"
                 android:text="时间：" />
 
             <SeekBar
@@ -281,7 +292,10 @@
             android:id="@+id/radioButton_infinite"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="4dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"
+            android:textSize="14sp"
+
             android:text="无限搜索，须闪电出着" />
 
     </RadioGroup>
