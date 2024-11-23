@@ -207,7 +207,7 @@
                 android:id="@+id/textView_depth_caption"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="4"
+                android:layout_weight="2"
                 android:text="深度："
                 android:textSize="14sp" />
 
@@ -216,7 +216,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="8"
-                android:max="200"
+                android:max="120"
                 android:min="10"
                 android:progress="1" />
 
@@ -224,7 +224,7 @@
                 android:id="@+id/textView_depth"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
+                android:layout_weight="2"
                 android:text="10"
                 android:textAlignment="center" />
 
@@ -253,7 +253,7 @@
                 android:id="@+id/textView_time_caption"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="4"
+                android:layout_weight="2"
                 android:text="时间："
                 android:textSize="14sp" />
 
@@ -262,15 +262,15 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="8"
-                android:max="10000"
-                android:min="100"
-                android:progress="100" />
+                android:max="20000"
+                android:min="500"
+                android:progress="3000" />
 
             <TextView
                 android:id="@+id/textView_time"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="3"
+                android:layout_weight="2"
                 android:text="1000"
                 android:textAlignment="center" />
 
