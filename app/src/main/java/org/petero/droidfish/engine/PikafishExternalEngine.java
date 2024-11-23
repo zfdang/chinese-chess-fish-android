@@ -44,9 +44,9 @@ public class PikafishExternalEngine extends ExternalEngine {
     private static final String[] networkAsssetFiles = {"pikafish.nnue", "pikafish.ini", "version.txt"};
     private static final String[] networkOptions = {"evalfile"};
 
-    // PikafishEngineFile: the name of the engine file in the assets directory
-    // ChineseChess/app/src/main/assets/pikafish-armv8
-//    private static final String PikafishEngineFile = "pikafish-armv8";
+    // PikafishEngineFile: the name of the engine file in the assets directory, two flavors:
+    // app/src/main/assets/pikafish-armv8
+    // app/src/main/assets/pikafish-armv8-dotprod
     private static final String PikafishEngineFile = BuildConfig.PIKAFISH_ENGINE_FILE;
 
     private final File[] networkFiles = {null, null, null}; // Full path of the copied network files
