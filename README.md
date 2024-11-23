@@ -28,9 +28,9 @@
 1. chessfish-armv8-dotprod.zip
 2. chessfish-armv8.zip
 
-如果你的手机是最近几年买的，你的CPU应该支持dotprod技术，那么就下载chessfish-armv8-dotprod.zip。
+如果你的手机是最近几年买的，你的CPU支持dotprod技术，那么就下载chessfish-armv8-dotprod.zip。
 
-dotprod没法正常工作，就下载chessfish-armv8.zip。
+如果dotprod版本没法正常工作，就下载chessfish-armv8.zip。
 
 ## 开源免费
 
