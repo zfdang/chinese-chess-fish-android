@@ -28,6 +28,10 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.zfdang.chess"
         minSdk = 26
@@ -44,12 +48,27 @@ android {
         }
     }
 
+    flavorDimensions += "pikafish"
+    productFlavors {
+        create("armv8-") {
+            //flavor configurations here
+            dimension = "pikafish"
+            buildConfigField("String", "PIKAFISH_ENGINE_FILE", "\"pikafish-armv8\"")
+        }
+        create("armv8-dotprod-") {
+            //flavor configurations here
+            dimension = "pikafish"
+            buildConfigField("String", "PIKAFISH_ENGINE_FILE", "\"pikafish-armv8-dotprod\"")
+        }
+    }
+
+
     // https://gist.github.com/mileskrell/7074c10cb3298a2c9d75e733be7061c2
     // Example of declaring Android signing configs using Gradle Kotlin DSL
     signingConfigs {
         create("release") {
             storeFile = file("cchess.release.jks")
-            keyAlias = "cchess" as String
+            keyAlias = "cchess"
             storePassword = "cchess-store-pwd"
             keyPassword = "cchess-key-pwd"
         }

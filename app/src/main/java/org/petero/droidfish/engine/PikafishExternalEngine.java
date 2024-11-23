@@ -33,6 +33,8 @@ import java.util.Locale;
 
 import android.util.Log;
 
+import com.zfdang.chess.BuildConfig;
+
 import org.petero.droidfish.player.EngineListener;
 
 /**
@@ -44,7 +46,8 @@ public class PikafishExternalEngine extends ExternalEngine {
 
     // PikafishEngineFile: the name of the engine file in the assets directory
     // ChineseChess/app/src/main/assets/pikafish-armv8
-    private static final String PikafishEngineFile = "pikafish-armv8";
+//    private static final String PikafishEngineFile = "pikafish-armv8";
+    private static final String PikafishEngineFile = BuildConfig.PIKAFISH_ENGINE_FILE;
 
     private final File[] networkFiles = {null, null, null}; // Full path of the copied network files
 
