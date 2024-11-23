@@ -32,15 +32,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
-    <CheckBox
-        android:id="@+id/boolean_sound"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="播放音效"
-        android:textSize="16sp" />
+        <CheckBox
+            android:id="@+id/boolean_sound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="播放音效"
+            android:textSize="16sp" />
 
     </LinearLayout>
 
@@ -54,8 +53,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <CheckBox
             android:id="@+id/boolean_redgofirst"
@@ -76,8 +74,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
 
         <CheckBox
             android:id="@+id/boolean_randommove"
@@ -100,8 +97,7 @@
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingTop="6dp"
-        android:paddingBottom="6dp"
-        >
+        android:paddingBottom="6dp">
 
         <TextView
             android:id="@+id/textView_history_caption"
@@ -162,8 +158,8 @@
             android:layout_weight="7"
             android:max="1024"
             android:min="128"
-            android:stepSize="128"
-            android:progress="256" />
+            android:progress="256"
+            android:stepSize="128" />
 
         <TextView
             android:id="@+id/textview_hash"
@@ -205,16 +201,15 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingBottom="6dp"
-            >
+            android:paddingBottom="6dp">
 
             <TextView
                 android:id="@+id/textView_depth_caption"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
-                android:textSize="14sp"
-                android:text="深度：" />
+                android:text="深度："
+                android:textSize="14sp" />
 
             <SeekBar
                 android:id="@+id/seekBar_depth"
@@ -252,16 +247,15 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingBottom="6dp"
-            >
+            android:paddingBottom="6dp">
 
             <TextView
                 android:id="@+id/textView_time_caption"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
-                android:textSize="14sp"
-                android:text="时间：" />
+                android:text="时间："
+                android:textSize="14sp" />
 
             <SeekBar
                 android:id="@+id/seekBar_time"
@@ -294,9 +288,9 @@
             android:layout_height="wrap_content"
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
-            android:textSize="14sp"
+            android:text="无限搜索，须闪电出着"
 
-            android:text="无限搜索，须闪电出着" />
+            android:textSize="14sp" />
 
     </RadioGroup>
 
