@@ -588,14 +588,15 @@ public class GameController implements EngineListener, SearchListener {
         } else if (state == ControllerState.WAITING_FOR_ENGINE_BESTMV) {
             // 电脑发起的请求，走下一步棋子
             state = ControllerState.WAITING_FOR_ENGINE;
-            // 如果设置了引擎的随机性，则从multiPV中随机选择一个着法
-            if (settings.getRandom_move() && multiPVs.size() > 0) {
+            // 如果设置了引擎的随机性，则从multiPV中随机选择一个着法。这个真针对前10步有效，后期不让电脑随机选择，否则棋力降低太多
+            if (settings.getRandom_move() && multiPVs.size() > 0 && game.currentBoard.rounds <= 11) {
                 int idx = (int) (Math.random() * multiPVs.size());
                 String randomMove = multiPVs.get(idx).pv.get(0).getUCCIString();
                 gui.runOnUIThread(() -> computerMovePiece(randomMove));
                 Log.d("GameController", "Search result: bestMove=" + bestMove + ", randomMove=" + randomMove);
             } else {
                 gui.runOnUIThread(() -> computerMovePiece(bestMove));
+                Log.d("GameController", "Search result: bestMove=" + bestMove);
             }
         }
     }
