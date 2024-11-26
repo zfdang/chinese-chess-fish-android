@@ -1,4 +1,4 @@
-package com.zfdang.chess.pgn;
+package com.zfdang.chess.manuals;
 
 import java.io.BufferedReader;
 import java.io.IOException;

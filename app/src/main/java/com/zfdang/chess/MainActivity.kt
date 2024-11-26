@@ -7,7 +7,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.zfdang.chess.manuals.XQFGame
 import com.zfdang.chess.views.WebviewActivity
+import java.io.InputStream
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,7 +36,13 @@ class MainActivity : AppCompatActivity() {
 
         buttonLearn.setOnClickListener {
             // show toast message here
-            Toast.makeText(this, "待实现...", Toast.LENGTH_SHORT).show()
+            // load xqf file from assets/xqf/learn.xqf
+            InputStream::class.java.getResourceAsStream("/assets/xqf/learn.xqf").use {
+                // parse xqf with XQFGame
+                val xqfGames = XQFGame.parse(it)
+                // show toast message
+                Toast.makeText(this, xqfGames.toString(), Toast.LENGTH_LONG).show()
+            }
         }
 
         buttonHelp.setOnClickListener {

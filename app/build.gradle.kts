@@ -62,7 +62,6 @@ android {
         }
     }
 
-
     // https://gist.github.com/mileskrell/7074c10cb3298a2c9d75e733be7061c2
     // Example of declaring Android signing configs using Gradle Kotlin DSL
     signingConfigs {
@@ -117,4 +116,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.junit.jupiter)
 }
