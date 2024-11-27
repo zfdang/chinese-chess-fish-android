@@ -62,7 +62,8 @@ class MainActivity : AppCompatActivity() {
     private fun processAssetPath(path: String) {
         val files = assets.list(path)
         for (file in files!!) {
-            if(file.endsWith(".xqf")) {
+            // check the file extension, ignoring the case
+            if(file.endsWith(".xqf", ignoreCase = true)) {
                 readXQFFile(path, file)
             } else {
                 processAssetPath(path + "/" + file)
@@ -72,7 +73,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun readXQFFile(path: String, file: String) {
         val xqfFile = path + "/" + file
-        if(xqfFile.endsWith(".xqf")) {
+        if(xqfFile.endsWith(".xqf", ignoreCase = true)) {
             Log.d("MainActivity", "Found XQF file: $xqfFile")
 
             // load content from file assets/xqf/, and store it into char buffer
@@ -84,10 +85,16 @@ class MainActivity : AppCompatActivity() {
 
             // use XQFGame to parse the buffer
             val xqfGame = XQFGame.parse(buffer)
+            if(xqfGame == null) {
+                Log.e("MainActivity", "Failed to parse XQF game")
+                return
+            }
+
             val result = xqfGame.validateMoves()
             if (!result) {
                 Log.e("MainActivity", "Failed to validate moves")
             }
+
             Log.d("MainActivity", "Parsed XQF game: " + xqfGame.title + " with result: " + xqfGame.result)
         } else {
             Log.d("MainActivity", "Not a XQF file: $xqfFile")
