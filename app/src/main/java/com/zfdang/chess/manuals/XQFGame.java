@@ -272,18 +272,24 @@ public class XQFGame {
 //        录，并且该记录的8个字节为:0x18,0x20,0x00,0xFF,0x00,0x00,0x00,0x00。 详细的
 //        格式请参见本文后面的文件例子。
         int offset = 0x408;
-        while (offset + 7 < bytesRead) {
+        boolean hasNext = true;
+        while (offset + 7 < bytesRead && hasNext) {
             Position from = getPosFromValue(buffer[offset] - 24);
             Position to = getPosFromValue(buffer[offset + 1] - 32);
             Move m = new Move(from, to);
             game.moves.add(m);
+
+            int flag = buffer[offset+2];
+            if(flag == 0x00) {
+                hasNext = false;
+            }
+
             // 第5-8字节:  为一个32位整数(x86格式,高字节在后)，表明本步注解的大小，
             //                   如果没有注解，则为0x00000000。
             int size = buffer[offset + 4] + (buffer[offset + 5] << 8) + (buffer[offset + 6] << 16) + (buffer[offset + 7] << 24);
             if (size > 0) {
                 Log.d("XQFGame", "Comment size: " + buffer[offset + 4] + " " + buffer[offset + 5] + " " + buffer[offset + 6] + " " + buffer[offset + 7] + " " + size);
 
-                // skip the size of the comment
                 offset += 8;
                 // read the comment, make sure does not exceed the length of the buffer
                 if (offset + size > bytesRead) {
@@ -291,7 +297,6 @@ public class XQFGame {
                     break;
                 } else {
                     String comment = new String(buffer, offset, size, GB2312);
-                    Log.d("XQFGame", "Comment: " + comment);
                     m.setComment(comment);
                     offset += size;
                 }
@@ -303,6 +308,10 @@ public class XQFGame {
 
     private static String readString(byte[] buffer, int start, int end) {
         int length = buffer[start];
+        if(length < 0) {
+            Log.e("XQFGame", "Invalid string length: " + length);
+            return "";
+        }
         return new String(buffer, start + 1, length, GB2312).trim();
     }
 
