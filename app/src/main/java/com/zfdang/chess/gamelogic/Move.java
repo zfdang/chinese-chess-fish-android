@@ -15,6 +15,16 @@ public class Move implements Serializable {
     public Position toPosition;
     public int piece;
 
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String comment;
+
     // create hashmap to convert Arabic numerals to Chinese numerals
     public static final HashMap<Integer, String> arabicToChineseMap = new HashMap<>();
     static {
@@ -250,5 +260,16 @@ public class Move implements Serializable {
         } else {
             return String.format("%d",index);
         }
+    }
+
+    // create toString
+    @Override
+    public String toString() {
+        return "Move{" +
+                "fromPosition=" + fromPosition +
+                ", toPosition=" + toPosition +
+                ", piece=" + piece +
+                ", comment='" + comment + '\'' +
+                '}';
     }
 }

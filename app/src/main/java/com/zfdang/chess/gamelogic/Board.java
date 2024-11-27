@@ -51,6 +51,15 @@ public class Board implements Serializable {
         }
     }
 
+    public void clear(){
+        // clear all pieces to empty
+        for (int y = 0; y < BOARD_PIECE_HEIGHT; y++) {
+            for (int x = 0; x < BOARD_PIECE_WIDTH; x++) {
+                piece[y][x] = Piece.EMPTY;
+            }
+        }
+    }
+
     public boolean doMove(Move move){
         if(move == null) return false;
 

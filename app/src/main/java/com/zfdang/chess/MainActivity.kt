@@ -2,6 +2,7 @@ package com.zfdang.chess
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -9,12 +10,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.zfdang.chess.manuals.XQFGame
 import com.zfdang.chess.views.WebviewActivity
+import java.io.BufferedReader
 import java.io.InputStream
+import java.io.InputStreamReader
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -35,13 +37,27 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonLearn.setOnClickListener {
-            // show toast message here
-            // load xqf file from assets/xqf/learn.xqf
-            InputStream::class.java.getResourceAsStream("/assets/xqf/learn.xqf").use {
-                // parse xqf with XQFGame
-                val xqfGames = XQFGame.parse(it)
-                // show toast message
-                Toast.makeText(this, xqfGames.toString(), Toast.LENGTH_LONG).show()
+            // iterate all *.xqf in assets XQF folder
+            val xqfFiles = assets.list("XQF/")
+            for (xqfFile in xqfFiles!!) {
+                Log.d("MainActivity", "Found XQF file: $xqfFile")
+
+                // load content from file assets/xqf/, and store it into char buffer
+                val inputStream = assets.open("XQF/" + xqfFile)
+                val buffer = inputStream.readBytes()
+                inputStream.close()
+
+                Log.d("MainActivity", "Read ${buffer.size} bytes from ${xqfFile}")
+
+                // use XQFGame to parse the buffer
+                val xqfGame = XQFGame.parse(buffer)
+                val result = xqfGame.validateMoves()
+                if (!result) {
+                    Log.e("MainActivity", "Failed to validate moves")
+                    Log.e("MainActivity", xqfGame.toString())
+                }
+
+                Log.d("MainActivity", "Parsed XQF game" + xqfGame.toString())
             }
         }
 
