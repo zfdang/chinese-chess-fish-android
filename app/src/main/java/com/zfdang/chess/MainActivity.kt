@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                 Log.e("MainActivity", "Failed to validate moves")
             }
 
-            Log.d("MainActivity", "Parsed XQF game: " + xqfGame.title + " with result: " + xqfGame.result)
+            Log.d("MainActivity", "Parsed XQF game: " + xqfGame.title + ", result: " + xqfGame.result + ", total moves: " + xqfGame.moves.size)
         } else {
             Log.d("MainActivity", "Not a XQF file: $xqfFile")
         }
