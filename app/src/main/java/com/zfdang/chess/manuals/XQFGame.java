@@ -25,9 +25,9 @@ public class XQFGame {
     private String category;
 
     private String title;
-    private String match;
+    private String event;
     private String date;
-    private String place;
+    private String site;
     private String red;
     private String black;
     private String redDuration;
@@ -54,12 +54,12 @@ public class XQFGame {
         this.title = title;
     }
 
-    public String getMatch() {
-        return match;
+    public String getEvent() {
+        return event;
     }
 
-    public void setMatch(String match) {
-        this.match = match;
+    public void setEvent(String event) {
+        this.event = event;
     }
 
     public String getDate() {
@@ -164,9 +164,9 @@ public class XQFGame {
         game.setCategory(parseCategory(buffer[0x0040]));
 
         game.setTitle(readString(buffer, 0x50, 0x90));
-        game.setMatch(readString(buffer, 0xD0, 0x110));
+        game.setEvent(readString(buffer, 0xD0, 0x110));
         game.setDate(readString(buffer, 0x110, 0x120));
-        game.setPlace(readString(buffer, 0x120, 0x130));
+        game.setSite(readString(buffer, 0x120, 0x130));
 
         game.setRed(readString(buffer, 0x130, 0x140));
         game.setBlack(readString(buffer, 0x140, 0x150));
@@ -355,9 +355,9 @@ public class XQFGame {
                 ", result='" + result + '\'' +
                 ", category='" + category + '\'' +
                 ", title='" + title + '\'' +
-                ", match='" + match + '\'' +
+                ", event='" + event + '\'' +
                 ", date='" + date + '\'' +
-                ", place='" + place + '\'' +
+                ", site='" + site + '\'' +
                 ", red='" + red + '\'' +
                 ", black='" + black + '\'' +
                 ", redDuration='" + redDuration + '\'' +
@@ -368,11 +368,11 @@ public class XQFGame {
                 '}';
     }
 
-    public String getPlace() {
-        return place;
+    public String getSite() {
+        return site;
     }
 
-    public void setPlace(String place) {
-        this.place = place;
+    public void setSite(String site) {
+        this.site = site;
     }
 }
