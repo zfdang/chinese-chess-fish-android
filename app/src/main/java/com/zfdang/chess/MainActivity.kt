@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.zfdang.chess.manuals.XQFGame
 import com.zfdang.chess.views.WebviewActivity
 import java.io.BufferedReader
+import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
 
@@ -37,28 +38,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonLearn.setOnClickListener {
-            // iterate all *.xqf in assets XQF folder
-            val xqfFiles = assets.list("XQF/")
-            for (xqfFile in xqfFiles!!) {
-                Log.d("MainActivity", "Found XQF file: $xqfFile")
-
-                // load content from file assets/xqf/, and store it into char buffer
-                val inputStream = assets.open("XQF/" + xqfFile)
-                val buffer = inputStream.readBytes()
-                inputStream.close()
-
-                Log.d("MainActivity", "Read ${buffer.size} bytes from ${xqfFile}")
-
-                // use XQFGame to parse the buffer
-                val xqfGame = XQFGame.parse(buffer)
-                val result = xqfGame.validateMoves()
-                if (!result) {
-                    Log.e("MainActivity", "Failed to validate moves")
-                    Log.e("MainActivity", xqfGame.toString())
-                }
-
-                Log.d("MainActivity", "Parsed XQF game" + xqfGame.toString())
-            }
+            processAssetPath("XQF")
         }
 
         buttonHelp.setOnClickListener {
@@ -76,6 +56,41 @@ class MainActivity : AppCompatActivity() {
                 putExtra("url", "https://fish.zfdang.com/")
             }
             startActivity(intent)
+        }
+    }
+
+    private fun processAssetPath(path: String) {
+        val files = assets.list(path)
+        for (file in files!!) {
+            if(file.endsWith(".xqf")) {
+                readXQFFile(path, file)
+            } else {
+                processAssetPath(path + "/" + file)
+            }
+        }
+    }
+
+    private fun readXQFFile(path: String, file: String) {
+        val xqfFile = path + "/" + file
+        if(xqfFile.endsWith(".xqf")) {
+            Log.d("MainActivity", "Found XQF file: $xqfFile")
+
+            // load content from file assets/xqf/, and store it into char buffer
+            val inputStream = assets.open(xqfFile)
+            val buffer = inputStream.readBytes()
+            inputStream.close()
+
+            Log.d("MainActivity", "Read ${buffer.size} bytes from ${xqfFile}")
+
+            // use XQFGame to parse the buffer
+            val xqfGame = XQFGame.parse(buffer)
+            val result = xqfGame.validateMoves()
+            if (!result) {
+                Log.e("MainActivity", "Failed to validate moves")
+            }
+            Log.d("MainActivity", "Parsed XQF game: " + xqfGame.title + " with result: " + xqfGame.result)
+        } else {
+            Log.d("MainActivity", "Not a XQF file: $xqfFile")
         }
     }
 }
