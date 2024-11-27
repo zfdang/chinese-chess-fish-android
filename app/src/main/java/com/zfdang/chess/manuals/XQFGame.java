@@ -33,7 +33,7 @@ public class XQFGame {
     private String redDuration;
     private String blackDuration;
 
-    private String commenter;
+    private String annotator;
     private String author;
 
     private List<Move> moves;
@@ -174,7 +174,7 @@ public class XQFGame {
         game.setRedDuration(readString(buffer, 0x190, 0x1A0));
         game.setBlackDuration(readString(buffer, 0x1A0, 0x1B0));
 
-        game.setCommenter(readString(buffer, 0x1D0, 0x1E0));
+        game.setAnnotator(readString(buffer, 0x1D0, 0x1E0));
         game.setAuthor(readString(buffer, 0x1E0, 0x1F0));
 
         parseMoves(buffer, game, buffer.length);
@@ -320,12 +320,12 @@ public class XQFGame {
         }
     }
 
-    public String getCommenter() {
-        return commenter;
+    public String getAnnotator() {
+        return annotator;
     }
 
-    public void setCommenter(String commenter) {
-        this.commenter = commenter;
+    public void setAnnotator(String annotator) {
+        this.annotator = annotator;
     }
 
     public String getAuthor() {
@@ -362,7 +362,7 @@ public class XQFGame {
                 ", black='" + black + '\'' +
                 ", redDuration='" + redDuration + '\'' +
                 ", blackDuration='" + blackDuration + '\'' +
-                ", commenter='" + commenter + '\'' +
+                ", annotator='" + annotator + '\'' +
                 ", author='" + author + '\'' +
                 ", moves counts=" + moves.size() +
                 '}';
