@@ -25,8 +25,9 @@ public class XQFGame {
     private String category;
 
     private String title;
-    private String site;
+    private String match;
     private String date;
+    private String place;
     private String red;
     private String black;
     private String redDuration;
@@ -53,12 +54,12 @@ public class XQFGame {
         this.title = title;
     }
 
-    public String getSite() {
-        return site;
+    public String getMatch() {
+        return match;
     }
 
-    public void setSite(String site) {
-        this.site = site;
+    public void setMatch(String match) {
+        this.match = match;
     }
 
     public String getDate() {
@@ -163,8 +164,9 @@ public class XQFGame {
         game.setCategory(parseCategory(buffer[0x0040]));
 
         game.setTitle(readString(buffer, 0x50, 0x90));
-        game.setSite(readString(buffer, 0xD0, 0x110));
+        game.setMatch(readString(buffer, 0xD0, 0x110));
         game.setDate(readString(buffer, 0x110, 0x120));
+        game.setPlace(readString(buffer, 0x120, 0x130));
 
         game.setRed(readString(buffer, 0x130, 0x140));
         game.setBlack(readString(buffer, 0x140, 0x150));
@@ -350,19 +352,27 @@ public class XQFGame {
         return "XQFGame{" +
                 "format='" + format + '\'' +
                 ", version=" + version +
-                ", board=" + board +
                 ", result='" + result + '\'' +
                 ", category='" + category + '\'' +
                 ", title='" + title + '\'' +
-                ", site='" + site + '\'' +
+                ", match='" + match + '\'' +
                 ", date='" + date + '\'' +
+                ", place='" + place + '\'' +
                 ", red='" + red + '\'' +
-                ", redDuration'" + redDuration + '\'' +
                 ", black='" + black + '\'' +
+                ", redDuration='" + redDuration + '\'' +
                 ", blackDuration='" + blackDuration + '\'' +
                 ", commenter='" + commenter + '\'' +
                 ", author='" + author + '\'' +
-                ", move counts=" + moves.size() +
+                ", moves counts=" + moves.size() +
                 '}';
+    }
+
+    public String getPlace() {
+        return place;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
     }
 }
