@@ -4,16 +4,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.zfdang.chess.manuals.XQFGame
+import com.zfdang.chess.manuals.XQFManual
+import com.zfdang.chess.manuals.XQFParser
 import com.zfdang.chess.views.WebviewActivity
-import java.io.BufferedReader
-import java.io.File
-import java.io.InputStream
-import java.io.InputStreamReader
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonLearn.setOnClickListener {
-            processAssetPath("XQF")
+            processAssetPath("XQF/eleeye")
         }
 
         buttonHelp.setOnClickListener {
@@ -84,18 +80,19 @@ class MainActivity : AppCompatActivity() {
             Log.d("MainActivity", "Read ${buffer.size} bytes from ${xqfFile}")
 
             // use XQFGame to parse the buffer
-            val xqfGame = XQFGame.parse(buffer)
-            if(xqfGame == null) {
+//            val xqfManual = XQFManual.parse(buffer)
+            val xqfManual = XQFParser.parse(buffer)
+            if(xqfManual == null) {
                 Log.e("MainActivity", "Failed to parse XQF game")
                 return
             }
 
-            val result = xqfGame.validateMoves()
+            val result = xqfManual.validateMoves()
             if (!result) {
                 Log.e("MainActivity", "Failed to validate moves")
             }
 
-            Log.d("MainActivity", "Parsed XQF game: " + xqfGame.title + ", result: " + xqfGame.result + ", total moves: " + xqfGame.moves.size)
+            Log.d("MainActivity", "Parsed XQF game: " + xqfManual.title + ", result: " + xqfManual.result + ", total moves: " + xqfManual.moves.size)
         } else {
             Log.d("MainActivity", "Not a XQF file: $xqfFile")
         }
