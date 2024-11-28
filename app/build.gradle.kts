@@ -110,6 +110,8 @@ dependencies {
     implementation("com.readystatesoftware.sqliteasset:sqliteassethelper:+")
     // https://mvnrepository.com/artifact/com.igormaznitsa/jbbp
     implementation("com.igormaznitsa:jbbp:3.0.0")
+    // https://github.com/PhilJay/MPAndroidChart
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

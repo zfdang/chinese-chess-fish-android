@@ -5,6 +5,7 @@ import android.util.Log;
 import com.igormaznitsa.jbbp.JBBPParser;
 import com.igormaznitsa.jbbp.model.JBBPFieldArrayByte;
 import com.igormaznitsa.jbbp.model.JBBPFieldStruct;
+import com.igormaznitsa.jbbp.model.JBBPFieldUByte;
 import com.zfdang.chess.gamelogic.Move;
 import com.zfdang.chess.gamelogic.Piece;
 import com.zfdang.chess.gamelogic.Position;
@@ -52,7 +53,9 @@ public class XQFParser {
         XQFManual manual = new XQFManual();
 
         final JBBPParser headerParser = JBBPParser.prepare(
-                    "byte[16] szTag;"
+                "byte[2] szMagic;"
+                        + "byte[1] szVersion;"
+                        + "byte[13] szKeys;"
                         + "byte[32] szPiecePos;"
                         + "byte[16] szResult;"
                         + "byte[16] szSetUp;"
@@ -75,7 +78,9 @@ public class XQFParser {
         try {
             // use JBBP to unpack header
             final JBBPFieldStruct header =  headerParser.parse(buffer);
-            byte[] szTag = header.findFieldForNameAndType("szTag", JBBPFieldArrayByte.class).getArray();
+            byte[] szMagic = header.findFieldForNameAndType("szMagic", JBBPFieldArrayByte.class).getArray();
+            byte[] szVersion = header.findFieldForNameAndType("szVersion", JBBPFieldArrayByte.class).getArray();
+            byte[] szKeys = header.findFieldForNameAndType("szKeys", JBBPFieldArrayByte.class).getArray();
             byte[] szPiecePos = header.findFieldForNameAndType("szPiecePos", JBBPFieldArrayByte.class).getArray();
             byte[] szResult = header.findFieldForNameAndType("szResult", JBBPFieldArrayByte.class).getArray();
             byte[] szSetUp = header.findFieldForNameAndType("szSetUp", JBBPFieldArrayByte.class).getArray();
@@ -92,7 +97,7 @@ public class XQFParser {
             byte[] szAuthor = header.findFieldForNameAndType("szAuthor", JBBPFieldArrayByte.class).getArray();
 
             // format
-            if(szTag[0] == 'X' && szTag[1] == 'Q'){
+            if(szMagic[0] == 'X' && szMagic[1] == 'Q'){
                 manual.setFormat("XQ");
             } else {
                 Log.e("XQFParser", "Invalid XQF file format");
@@ -100,32 +105,7 @@ public class XQFParser {
             }
 
             // version
-            manual.setVersion(szTag[2]);
-            if(manual.getVersion() < 11){
-                // 非加密文件
-                nPieceOff = nSrcOff = nDstOff = nCommentOff = 0;
-                for (int i = 0; i < 32; i++) {
-                    nEncStream[i] = 0;
-                }
-            } else {
-                // 加密文件
-                nPieceOff = (byte) (square54Plus221((byte) szTag[13]) * (byte) szTag[13]);
-                nSrcOff = (byte) (square54Plus221((byte) szTag[14]) * nPieceOff);
-                nDstOff = (byte) (square54Plus221((byte) szTag[15]) * nSrcOff);
-                nCommentOff = ((byte) szTag[12] * 256 + (byte) szTag[13]) % 32000 + 767;
-                // 基本掩码
-                int nArg0 = szTag[3];
-                int[] nArgs = new int[4];
-                // 密钥 = 前段密钥 | (后段密钥 & 基本掩码)
-                for (int i = 0; i < 4; i ++) {
-                    nArgs[i] = szTag[8 + i] | (szTag[12 + i] & nArg0);
-                }
-                // 密钥流 = 密钥 & 密钥流掩码
-                for (int i = 0; i < 32; i ++) {
-                    nEncStream[i] = (byte) (nArgs[i % 4] & cszEncStreamMask.charAt(i));
-                }
-            }
-            nEncIndex = 0;
+            manual.setVersion(szVersion[0]);
 
             // process other head fields
             manual.setTitle(readString(szTitle));
@@ -140,6 +120,32 @@ public class XQFParser {
             manual.setAuthor(readString(szAuthor));
             manual.setResult(parseResult(szResult[3]));
             manual.setCategory(parseCategory(szSetUp[0]));
+
+            if(manual.getVersion() <= 0x0A){
+                // 非加密文件
+                nPieceOff = nSrcOff = nDstOff = nCommentOff = 0;
+                for (int i = 0; i < 32; i++) {
+                    nEncStream[i] = 0;
+                }
+            } else {
+                // 加密文件
+//                nPieceOff = (square54Plus221(szTag[13] & 0xFF) * szTag[13] & 0xFF) & 0xFF;
+//                nSrcOff = (square54Plus221(szTag[14] & 0xFF) * nPieceOff) & 0xFF;
+//                nDstOff = (square54Plus221(szTag[15] & 0xFF) * nSrcOff) & 0xFF;
+//                nCommentOff = ((szTag[12] & 0xFF) * 256 + (szTag[13] & 0xFF)) % 32000 + 767;
+//                // 基本掩码
+//                int nArg0 = szTag[3];
+//                int[] nArgs = new int[4];
+//                // 密钥 = 前段密钥 | (后段密钥 & 基本掩码)
+//                for (int i = 0; i < 4; i ++) {
+//                    nArgs[i] = szTag[8 + i] | (szTag[12 + i] & nArg0);
+//                }
+//                // 密钥流 = 密钥 & 密钥流掩码
+//                for (int i = 0; i < 32; i ++) {
+//                    nEncStream[i] = (byte) (nArgs[i % 4] & cszEncStreamMask.charAt(i));
+//                }
+            }
+            nEncIndex = 0;
 
             // now to process board info
             // 0010 - 002F      这32个字节是棋局的开局局面，局面说明见“局面表示”
@@ -199,6 +205,56 @@ public class XQFParser {
             Log.e("XQFParser", "Error parsing header", e);
         }
         return manual;
+    }
+
+    private static void init_crypt_keys(byte[] buffer) {
+        if(buffer.length != 13) {
+            Log.e("XQFParser", "Invalid key length: " + buffer.length);
+        }
+        // 加密key的格式
+        //    # KeyMask   : dTByte;                         // 加密掩码
+        //    # ProductId : dTDWord;                        // 产品号(厂商的产品号)
+        //    # KeyOrA    : dTByte;
+        //    # KeyOrB    : dTByte;
+        //    # KeyOrC    : dTByte;
+        //    # KeyOrD    : dTByte;
+        //    # KeysSum   : dTByte;                         // 加密的钥匙
+        //    # KeyXY     : dTByte;                         // 棋子布局位置钥匙
+        //    # KeyXYf    : dTByte;                         // 棋谱起点钥匙
+        //    # KeyXYt    : dTByte;                         // 棋谱终点钥匙
+
+        int Head_keyMask = buffer[0] & 0xFF;
+        int Head_keyOrA = buffer[5] & 0xFF;
+        int Head_keyOrB = buffer[6] & 0xFF;
+        int Head_keyOrC = buffer[7] & 0xFF;
+        int Head_keyOrD = buffer[8] & 0xFF;
+        int Head_keysSum = buffer[9] & 0xFF;
+        int Head_keyXY = buffer[10] & 0xFF;
+        int Head_keyXYf = buffer[11] & 0xFF;
+        int Head_keyXYt = buffer[12] & 0xFF;
+
+        // 棋子32个位置加密因子
+        int KeyXY = ((((((Head_keyXY * Head_keyXY) * 3 + 9) * 3 + 8) * 2 + 1) * 3 + 8) * Head_keyXY) & 0xFF;
+
+        // 棋谱加密因子(起点)
+        int KeyXYf = ((((((Head_keyXYf * Head_keyXYf) * 3 + 9) * 3 + 8) * 2 + 1) * 3 + 8) * KeyXY) & 0xFF;
+
+        // 棋谱加密因子(终点)
+        int KeyXYt = ((((((Head_keyXYt * Head_keyXYt) * 3 + 9) * 3 + 8) * 2 + 1) * 3 + 8) * KeyXYf) & 0xFF;
+
+        // 注解长度加密因子
+        int KeyRMKSize = (((Head_keysSum * 256 + Head_keyXY) % 32000) + 767) & 0xFFFF;
+
+        int[] B = new int[4];
+        B[0] = (Head_keysSum & Head_keyMask) | Head_keyOrA;
+        B[1] = (Head_keyXY & Head_keyMask) | Head_keyOrB;
+        B[2] = (Head_keyXYf & Head_keyMask) | Head_keyOrC;
+        B[3] = (Head_keyXYt & Head_keyMask) | Head_keyOrD;
+
+        int[] F32Keys = new int[]{Byte.parseByte("[(C) Copyright Mr. Dong Shiwei.]")};
+        for (int i = 0; i < 32; i++) {
+            F32Keys[i] = (B[i % 4] & F32Keys[i]);
+        }
     }
 
     private static void DecryptBuffer(byte[] buffer, int offset, int nLen) {

@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -34,7 +35,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonLearn.setOnClickListener {
-            processAssetPath("XQF/eleeye")
+            // show toast
+             Toast.makeText(this, "待实现", Toast.LENGTH_SHORT).show()
+//            processAssetPath("XQF/eleeye")
         }
 
         buttonHelp.setOnClickListener {
@@ -80,7 +83,6 @@ class MainActivity : AppCompatActivity() {
             Log.d("MainActivity", "Read ${buffer.size} bytes from ${xqfFile}")
 
             // use XQFGame to parse the buffer
-//            val xqfManual = XQFManual.parse(buffer)
             val xqfManual = XQFParser.parse(buffer)
             if(xqfManual == null) {
                 Log.e("MainActivity", "Failed to parse XQF game")
