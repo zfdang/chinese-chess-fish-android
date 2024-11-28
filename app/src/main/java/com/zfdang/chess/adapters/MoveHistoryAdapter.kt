@@ -6,12 +6,40 @@ import android.view.LayoutInflater
 import android.widget.TableLayout
 import android.widget.TableRow
 import android.widget.TextView
+import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.zfdang.chess.R
 import com.zfdang.chess.controllers.GameController
+import java.lang.StrictMath.random
 
-class MoveHistoryAdapter(private val context: Context, private val tableLayout: TableLayout, private val controller: GameController) {
+class MoveHistoryAdapter(private val context: Context, private val tableLayout: TableLayout, private val chart: LineChart, private val controller: GameController) {
 
-    fun populateTable() {
+    fun update() {
+        if(controller.isShowTrends) {
+            updateChart()
+        } else {
+            updateTable()
+        }
+    }
+
+    private fun updateChart() {
+        val entries = ArrayList<Entry>();
+        for(i in 0 until controller.game.history.size) {
+            val item = controller.game.history[i]
+            entries.add(Entry(i.toFloat(), random().toFloat()));
+        }
+        val dataSet = LineDataSet(entries, ""); // add entries to dataset
+//        dataSet.setColor(...);
+//        dataSet.setValueTextColor(...); // styling, ...
+
+        val lineData = LineData(dataSet);
+        chart.setData(lineData);
+        chart.invalidate(); // refresh
+    }
+
+    private fun updateTable() {
         tableLayout.removeAllViews()
         // add item in game.historyRecords to tableLayout in reverse order
         var moveCount = 1

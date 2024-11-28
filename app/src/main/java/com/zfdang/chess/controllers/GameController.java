@@ -44,6 +44,8 @@ public class GameController implements EngineListener, SearchListener {
     public boolean isComputerPlaying = true;
     public boolean isAutoPlay = true;
 
+    public boolean isShowTrends = false;
+
     private GameControllerListener gui = null;
     ArrayList<PvInfo> multiPVs = new ArrayList<>();
 
@@ -53,6 +55,10 @@ public class GameController implements EngineListener, SearchListener {
     public ControllerState state;
 
     public Settings settings = null;
+
+    public void toggleShowTrends() {
+        isShowTrends = !isShowTrends;
+    }
 
     // create enum for controller state
     enum ControllerState {

@@ -13,6 +13,7 @@ import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.github.mikephil.charting.components.Description
 import com.zfdang.chess.adapters.MoveHistoryAdapter
 import com.zfdang.chess.controllers.GameController
 import com.zfdang.chess.controllers.GameControllerListener
@@ -81,6 +82,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
             binding.exportbt,
             binding.helpbt,
             binding.stophelpbt,
+            binding.trendsbt,
             binding.exitbt,
             binding.choice1bt,
             binding.choice2bt,
@@ -95,8 +97,12 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
 
         // Bind historyTable and initialize it with dummy data
         val historyTable = binding.historyTable
-        moveHistoryAdapter = MoveHistoryAdapter(this, historyTable, controller)
-        moveHistoryAdapter.populateTable()
+        val chart = binding.trendchart
+        moveHistoryAdapter = MoveHistoryAdapter(this, historyTable, chart, controller)
+        moveHistoryAdapter.update()
+        chart.description = Description().apply {
+            text = "局势评估图"
+        }
 
         // init button status
         if(controller.isAutoPlay) {
@@ -153,7 +159,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         builder.setPositiveButton("开始新游戏") { dialog, which ->
             // User clicked Yes button
             controller.startNewGame()
-            moveHistoryAdapter.populateTable()
+            moveHistoryAdapter.update()
             if(controller.settings.red_go_first) {
                 setStatusText("新游戏，红方先行")
             } else {
@@ -299,6 +305,24 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
             binding.stophelpbt -> {
                 controller.stopSearchNow()
             }
+            binding.trendsbt -> {
+                // get image resource of trends button
+                controller.toggleShowTrends()
+                val imageResource = if(controller.isShowTrends) R.drawable.trend else R.drawable.history
+                binding.trendsbt.setImageResource(imageResource)
+
+                if(controller.isShowTrends){
+                    setStatusText("显示走势图")
+                    binding.trendchart.visibility = View.VISIBLE
+                    binding.historyscroll.visibility = View.GONE
+                } else {
+                    setStatusText("显示走法历史")
+                    binding.trendchart.visibility = View.GONE
+                    binding.historyscroll.visibility = View.VISIBLE
+                }
+
+                moveHistoryAdapter.update()
+            }
             binding.exitbt -> {
                 saveThenExit();
             }
@@ -385,7 +409,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         }
 
         // update history table
-        moveHistoryAdapter.populateTable()
+        moveHistoryAdapter.update()
     }
 
     // create fun to handle onbackpressed

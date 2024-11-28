@@ -152,6 +152,14 @@
                 app:srcCompat="@drawable/quick" />
 
             <ImageButton
+                android:id="@+id/trendsbt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="6dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/history" />
+
+            <ImageButton
                 android:id="@+id/exitbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -227,6 +235,7 @@
                 android:orientation="vertical">
 
                 <ScrollView
+                    android:id="@+id/historyscroll"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/move_history_background">
@@ -235,10 +244,16 @@
                         android:id="@+id/historyTable"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
-
-
                     </TableLayout>
+
                 </ScrollView>
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/trendchart"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    />
 
             </LinearLayout>
 
