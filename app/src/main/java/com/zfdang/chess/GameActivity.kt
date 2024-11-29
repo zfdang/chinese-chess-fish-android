@@ -106,6 +106,8 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
             text = ""
         }
         val xAxis = chart.xAxis
+        xAxis.setGranularityEnabled(true)
+        xAxis.granularity = 1f
         val yAxis = chart.axisLeft
         yAxis.setDrawGridLines(false)
         yAxis.setDrawZeroLine(true);
