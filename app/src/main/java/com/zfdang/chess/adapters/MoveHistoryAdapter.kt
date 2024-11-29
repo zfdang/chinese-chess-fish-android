@@ -30,7 +30,9 @@ class MoveHistoryAdapter(private val context: Context, private val tableLayout: 
             val item = controller.game.history[i].move.board.score
             entries.add(Entry(i.toFloat(), item));
         }
-        entries.add(Entry(controller.game.history.size.toFloat(), controller.game.currentBoard.score));
+        if(controller.game.currentBoard.score != 0.toFloat()) {
+            entries.add(Entry(controller.game.history.size.toFloat(), controller.game.currentBoard.score));
+        }
 
         val dataSet = LineDataSet(entries, "局面评估"); // add entries to dataset
         dataSet.setColor(Color.BLUE);
