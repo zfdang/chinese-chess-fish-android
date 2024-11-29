@@ -106,10 +106,11 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
             text = ""
         }
         val xAxis = chart.xAxis
-        chart.getAxisRight().setEnabled(false)
         val yAxis = chart.axisLeft
         yAxis.setDrawGridLines(false)
         yAxis.setDrawZeroLine(true);
+        val rightAxis = chart.axisRight
+        rightAxis.setDrawGridLines(false)
 
         // init button status
         if(controller.isAutoPlay) {
