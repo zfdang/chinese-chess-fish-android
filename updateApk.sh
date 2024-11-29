@@ -4,7 +4,8 @@ echo "Build APK"
 
 echo "copy apk"
 rm docs/apk/*.apk
-cp app/build/outputs/apk/release/*.apk docs/apk/
+cp app/build/outputs/apk/armv8-/release/*.apk docs/apk/
+cp app/build/outputs/apk/armv8-dotprod-/release/*.apk docs/apk/
 
 ## find apk filename
 cd ./docs/apk/
@@ -13,14 +14,14 @@ git lfs track "*.apk"
 echo $APK
 
 ## grep file
-cd ../
-OLDAPK="$(grep -o -E -i 'ChessFish_\d{8}_\d{3}_release\.apk' release.html | head -1)"
-echo $OLDAPK
+# cd ../
+# OLDAPK="$(grep -o -E -i 'ChessFish_\d{8}_\d{3}_release\.apk' release.html | head -1)"
+# echo $OLDAPK
 
-echo "update release.html"
-sed -i -e "s/$OLDAPK/$APK/g" release.html
+# echo "update release.html"
+# sed -i -e "s/$OLDAPK/$APK/g" release.html
 
-echo "push"
-git add .
-git commit -a -m "update apk"
-git push
+# echo "push"
+# git add .
+# git commit -a -m "update apk"
+# git push
