@@ -312,7 +312,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
                 binding.trendsbt.setImageResource(imageResource)
 
                 if(controller.isShowTrends){
-                    setStatusText("显示走势图")
+                    setStatusText("显示评估趋势图")
                     binding.trendchart.visibility = View.VISIBLE
                     binding.historyscroll.visibility = View.GONE
                 } else {
@@ -405,6 +405,10 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
                 }
 
                 soundPlayer.ready()
+            }
+
+            GameStatus.UPDATEUI -> {
+                // do nothing here
             }
         }
 

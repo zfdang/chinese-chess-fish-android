@@ -27,9 +27,11 @@ class MoveHistoryAdapter(private val context: Context, private val tableLayout: 
     private fun updateChart() {
         val entries = ArrayList<Entry>();
         for(i in 0 until controller.game.history.size) {
-            val item = controller.game.history[i]
-            entries.add(Entry(i.toFloat(), random().toFloat()));
+            val item = controller.game.history[i].move.board.score
+            entries.add(Entry(i.toFloat(), item));
         }
+        entries.add(Entry(controller.game.history.size.toFloat(), controller.game.currentBoard.score));
+
         val dataSet = LineDataSet(entries, ""); // add entries to dataset
 //        dataSet.setColor(...);
 //        dataSet.setValueTextColor(...); // styling, ...

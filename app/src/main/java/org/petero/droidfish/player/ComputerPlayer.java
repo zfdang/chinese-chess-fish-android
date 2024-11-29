@@ -204,7 +204,7 @@ public class ComputerPlayer {
     }
 
     /**
-     * Start analyzing a board.
+     * Start to search.
      */
     public final synchronized void queueSearchRequest(SearchRequest sr) {
         killOldEngine(sr.engineName);
@@ -313,27 +313,26 @@ public class ComputerPlayer {
             return;
         }
 
-        // Check if only engine start was requested
-        boolean isSearch = sr.isSearch;
-        if (!isSearch) {
+        // only handle search or eval requests
+        if (!sr.isSearch & !sr.isEval) {
             searchRequest = null;
             return;
         }
 
         engineState.searchId = searchRequest.searchId;
 
-        // Set strength and MultiPV parameters
-        clearInfo();
-        if (maxPV > 1) {
-            int num = Math.min(maxPV, searchRequest.numPV);
-            uciEngine.setOption("MultiPV", num);
-        }
+        if (sr.isSearch){
+            // Set strength and MultiPV parameters
+            clearInfo();
+            if (maxPV > 1) {
+                int num = Math.min(maxPV, searchRequest.numPV);
+                uciEngine.setOption("MultiPV", num);
+            }
 
-        if (isSearch){
             StringBuilder posStr = new StringBuilder();
             posStr.append("position fen ");
             posStr.append(sr.prevBoard.toFENString());
-            Log.d("ComputerPlayer", "handleIdleState: " + sr.currBoard.toFENString());
+            Log.d("ComputerPlayer", "handleIdleState: search" + sr.currBoard.toFENString());
             int nMoves = sr.mList.size();
             if (nMoves > 0) {
                 posStr.append(" moves");
@@ -366,6 +365,16 @@ public class ComputerPlayer {
 
             uciEngine.writeLineToEngine(goCmd.toString());
             engineState.setState(EngineStateValue.SEARCH);
+        }else if(sr.isEval) {
+            StringBuilder posStr = new StringBuilder();
+            posStr.append("position fen ");
+            posStr.append(sr.currBoard.toFENString());
+
+            Log.d("ComputerPlayer", "handleIdleState: eval " + sr.currBoard.toFENString());
+            uciEngine.writeLineToEngine(posStr.toString());
+
+            uciEngine.writeLineToEngine("eval");
+            engineState.setState(EngineStateValue.EVAL);
         }
     }
 
@@ -498,6 +507,23 @@ public class ComputerPlayer {
 
                         uci.writeLineToEngine("isready");
                         engineState.setState(EngineStateValue.WAIT_READY);
+                    }
+                }
+                break;
+            }
+            case EVAL: {
+                String[] tokens = tokenize(s);
+                int nTok = tokens.length;
+                if (nTok > 2) {
+                    // Final evaluation       +0.23 (white side) [with scaled NNUE, ...]
+                    if (tokens[0].equals("Final") && tokens[1].equals("evaluation")) {
+                        String result = tokens[2];
+
+                        engineListener.notifyEvalResult(engineState.searchId, Float.parseFloat(result));
+
+                        engineState.setState(EngineStateValue.IDLE);
+                        searchRequest = null;
+                        handleIdleState();
                     }
                 }
                 break;

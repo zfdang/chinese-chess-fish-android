@@ -14,6 +14,7 @@ public class Board implements Serializable {
 
     public boolean bRedGo = true;
     public int rounds = 1;
+    public float score = 0;
     static public int BOARD_PIECE_WIDTH = 9;
     static public int BOARD_PIECE_HEIGHT = 10;
 
@@ -46,6 +47,7 @@ public class Board implements Serializable {
     public Board(Board b) {
         this.bRedGo = b.bRedGo;
         this.rounds = b.rounds;
+        this.score = b.score;
         for (int i = 0; i < this.piece.length; i++) {
             this.piece[i] = b.piece[i].clone();
         }

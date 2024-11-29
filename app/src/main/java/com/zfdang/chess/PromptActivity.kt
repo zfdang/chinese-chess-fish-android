@@ -62,6 +62,10 @@ class PromptActivity : AppCompatActivity(), EngineListener {
         Log.d(  "PromptActivity", "notifySearchResult: $searchId, $bestMove, $nextPonderMove")
     }
 
+    override fun notifyEvalResult(searchId: Int, eval: Float) {
+        TODO("Not yet implemented")
+    }
+
     override fun notifyEngineInitialized() {
         Log.d(  "PromptActivity", "notifyEngineInitialized")
     }
