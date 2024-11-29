@@ -170,27 +170,6 @@ public class ComputerPlayer {
     }
 
     /**
-     * Sends "ponderhit" command to engine.
-     */
-    public final synchronized void ponderHit(int id) {
-        if ((searchRequest == null) ||
-                (searchRequest.ponderMove == null) ||
-                (searchRequest.searchId != id))
-            return;
-
-        searchRequest.ponderHit();
-        if (engineState.state != EngineStateValue.PONDER)
-            searchRequest.startTime = System.currentTimeMillis();
-
-        if (engineState.state == EngineStateValue.PONDER) {
-            uciEngine.writeLineToEngine("ponderhit");
-            engineState.setState(EngineStateValue.SEARCH);
-            pvModified = true;
-            notifyListener();
-        }
-    }
-
-    /**
      * Stop the engine process.
      */
     public final synchronized void shutdownEngine() {

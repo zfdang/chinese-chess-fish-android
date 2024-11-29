@@ -74,13 +74,4 @@ public class SearchRequest {
         return sr;
     }
 
-    /**
-     * Update data for ponder hit.
-     */
-    final void ponderHit() {
-        if (ponderMove == null) {
-            return;
-        }
-        ponderMove = null;
-    }
 }
