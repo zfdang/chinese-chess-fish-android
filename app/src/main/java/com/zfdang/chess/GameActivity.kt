@@ -413,8 +413,8 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
 
                 soundPlayer.ready()
             }
-
             GameStatus.UPDATEUI -> {
+                message?.let { setStatusText(message) }
                 // do nothing here
             }
         }

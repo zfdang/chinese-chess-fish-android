@@ -190,9 +190,9 @@ public class GameController implements EngineListener, SearchListener {
         }
 
         if (settings.getGo_infinite()) {
-            gui.onGameEvent(GameStatus.SELECT, "无限搜索着法中, 须闪电出着!");
+            gui.onGameEvent(GameStatus.UPDATEUI, "无限搜索着法中, 须闪电出着!");
         } else {
-            gui.onGameEvent(GameStatus.SELECT, "搜索着法中...");
+            gui.onGameEvent(GameStatus.UPDATEUI, "搜索着法中...");
         }
         state = ControllerState.WAITING_FOR_ENGINE_BESTMV;
 
@@ -246,9 +246,9 @@ public class GameController implements EngineListener, SearchListener {
 
         // 开始搜索中
         if (settings.getGo_infinite()) {
-            gui.onGameEvent(GameStatus.SELECT, "无限搜索变着中, 须闪电出着!");
+            gui.onGameEvent(GameStatus.UPDATEUI, "无限搜索变着中, 须闪电出着!");
         } else {
-            gui.onGameEvent(GameStatus.SELECT, "搜索变着中...");
+            gui.onGameEvent(GameStatus.UPDATEUI, "搜索变着中...");
         }
         state = ControllerState.WAITING_FOR_ENGINE_MULTIPV;
         multiPVs.clear();
@@ -288,9 +288,9 @@ public class GameController implements EngineListener, SearchListener {
 
         // 开始搜索中
         if (settings.getGo_infinite()) {
-            gui.onGameEvent(GameStatus.SELECT, "无限寻求帮助中, 须闪电出着!");
+            gui.onGameEvent(GameStatus.UPDATEUI, "无限寻求帮助中, 须闪电出着!");
         } else {
-            gui.onGameEvent(GameStatus.SELECT, "寻求帮助中...");
+            gui.onGameEvent(GameStatus.UPDATEUI, "寻求帮助中...");
         }
         state = ControllerState.WAITING_FOR_USER_MULTIPV;
         multiPVs.clear();
