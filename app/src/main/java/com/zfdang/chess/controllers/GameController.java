@@ -624,7 +624,7 @@ public class GameController implements EngineListener, SearchListener {
         game.currentBoard.score = eval;
 
         gui.runOnUIThread(() -> {
-                gui.onGameEvent(GameStatus.UPDATEUI, "局面评估：" + eval);
+                gui.onGameEvent(GameStatus.UPDATEUI);
         });
 
         // restore state
