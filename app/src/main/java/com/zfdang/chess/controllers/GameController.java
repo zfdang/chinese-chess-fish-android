@@ -178,7 +178,7 @@ public class GameController implements EngineListener, SearchListener {
             return;
         }
 
-        gui.onGameEvent(GameStatus.SELECT, "检索开局库...");
+        gui.onGameEvent(GameStatus.UPDATEUI, "检索开局库...");
         // search openbook first
         long vkey = game.currentBoard.getZobrist(isRedTurn());
         List<BookData> bookData = bhBook.query(vkey, isRedTurn(), OpenBook.SortRule.BEST_SCORE);
