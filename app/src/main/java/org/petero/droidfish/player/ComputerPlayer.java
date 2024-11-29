@@ -516,10 +516,14 @@ public class ComputerPlayer {
                 int nTok = tokens.length;
                 if (nTok > 2) {
                     // Final evaluation       +0.23 (white side) [with scaled NNUE, ...]
-                    if (tokens[0].equals("Final") && tokens[1].equals("evaluation")) {
-                        String result = tokens[2];
-
-                        engineListener.notifyEvalResult(engineState.searchId, Float.parseFloat(result));
+                    if (tokens[0].equals("Final")) {
+                        float score = 0;
+                        try {
+                            score = Float.parseFloat(tokens[2]);
+                        } catch (NumberFormatException e) {
+                            Log.d("ComputerPlayer", "processEngineOutput: " + e);
+                        }
+                        engineListener.notifyEvalResult(engineState.searchId, score);
 
                         engineState.setState(EngineStateValue.IDLE);
                         searchRequest = null;

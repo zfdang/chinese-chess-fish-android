@@ -100,9 +100,16 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         val chart = binding.trendchart
         moveHistoryAdapter = MoveHistoryAdapter(this, historyTable, chart, controller)
         moveHistoryAdapter.update()
+
+        // customize chart
         chart.description = Description().apply {
-            text = "局势评估图"
+            text = ""
         }
+        val xAxis = chart.xAxis
+        chart.getAxisRight().setEnabled(false)
+        val yAxis = chart.axisLeft
+        yAxis.setDrawGridLines(false)
+        yAxis.setDrawZeroLine(true);
 
         // init button status
         if(controller.isAutoPlay) {
