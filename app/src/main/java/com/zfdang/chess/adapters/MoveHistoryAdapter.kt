@@ -12,7 +12,6 @@ import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import com.zfdang.chess.R
 import com.zfdang.chess.controllers.GameController
-import java.lang.StrictMath.random
 
 class MoveHistoryAdapter(private val context: Context, private val tableLayout: TableLayout, private val chart: LineChart, private val controller: GameController) {
 
@@ -34,9 +33,12 @@ class MoveHistoryAdapter(private val context: Context, private val tableLayout: 
             entries.add(Entry(controller.game.history.size.toFloat(), controller.game.currentBoard.score));
         }
 
-        val dataSet = LineDataSet(entries, "局面评估"); // add entries to dataset
-        dataSet.setColor(Color.BLUE);
+        val dataSet = LineDataSet(entries, "红方局势评估"); // add entries to dataset
+        dataSet.setColor(Color.RED);
         dataSet.setCircleColors(Color.RED);
+        dataSet.setDrawFilled(true);
+        dataSet.fillColor = Color.RED;
+        dataSet.fillAlpha = 20;
 
         val lineData = LineData(dataSet);
         chart.setData(lineData);

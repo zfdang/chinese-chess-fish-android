@@ -107,6 +107,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         }
         val xAxis = chart.xAxis
         xAxis.setGranularityEnabled(true)
+        xAxis.position = com.github.mikephil.charting.components.XAxis.XAxisPosition.BOTTOM
         xAxis.granularity = 1f
         val yAxis = chart.axisLeft
         yAxis.setDrawGridLines(false)
