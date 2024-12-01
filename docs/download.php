@@ -2,6 +2,7 @@
 // Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+ini_set('memory_limit', '-1');
 
 // Function to safely output messages
 function showMessage($message, $type = 'error') {
@@ -26,12 +27,12 @@ function showMessage($message, $type = 'error') {
 </head>
 <body>
     <h2>Download and Unzip File</h2>
-    
+
     <?php
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $url = filter_input(INPUT_POST, 'url', FILTER_SANITIZE_URL);
-        $extract_path = "/var/www/fish/docs/apk"
-        
+        $extract_path = "/var/www/fish/docs/apk";
+
         // Validate inputs
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
             showMessage('Invalid URL format!');
@@ -40,7 +41,7 @@ function showMessage($message, $type = 'error') {
         } else {
             // Create temporary file
             $temp_file = tempnam(sys_get_temp_dir(), 'zip_');
-            
+
             // Download the file
             try {
                 $context = stream_context_create([
@@ -48,35 +49,35 @@ function showMessage($message, $type = 'error') {
                         'timeout' => 30
                     ]
                 ]);
-                
+
                 $file_content = file_get_contents($url, false, $context);
                 if ($file_content === false) {
                     throw new Exception("Failed to download the file");
                 }
-                
+
                 if (file_put_contents($temp_file, $file_content) === false) {
                     throw new Exception("Failed to save temporary file");
                 }
-                
+
                 // Create extract directory if it doesn't exist
                 if (!file_exists($extract_path) && !mkdir($extract_path, 0777, true)) {
                     throw new Exception("Failed to create extraction directory");
                 }
-                
+
                 // Extract the zip file
                 $zip = new ZipArchive();
                 if ($zip->open($temp_file) !== true) {
                     throw new Exception("Failed to open zip file");
                 }
-                
+
                 if (!$zip->extractTo($extract_path)) {
                     $zip->close();
                     throw new Exception("Failed to extract zip contents");
                 }
-                
+
                 $zip->close();
                 showMessage("File successfully downloaded and extracted to: " . htmlspecialchars($extract_path), 'success');
-                
+
             } catch (Exception $e) {
                 showMessage("Error: " . htmlspecialchars($e->getMessage()));
             } finally {
@@ -88,15 +89,15 @@ function showMessage($message, $type = 'error') {
         }
     }
     ?>
-    
+
     <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
         <div class="form-group">
             <label for="url">URL to ZIP file:</label>
-            <input type="text" id="url" name="url" required 
-                   value="<?php echo isset($_POST['url']) ? htmlspecialchars($_POST['url']) : ''; ?>"
-                   placeholder="https://github.com/zfdang/chinese-chess-fish-android/releases">
+            <input type="text" id="url" name="url" required
+                   value="<?php echo isset($_POST['url']) ? htmlspecialchars($_POST['url']) : 'https://github.com/zfdang/chinese-chess-fish-android/releases'; ?>">
         </div>
-                
+
+
         <div class="form-group">
             <input type="submit" value="Download and Extract">
         </div>
