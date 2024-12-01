@@ -87,6 +87,17 @@ class XQFBuffDecoder(object):
         bytes = self.read_bytes(4)
         return bytes[0] + (bytes[1] << 8) + (bytes[2] << 16) + (bytes[3] << 24)
 
+    def __str__(self):
+        result = ""
+        counter = 0
+        for x in self.buffer:
+            result += hex(x) + " "
+            counter += 1
+            if counter == 16:
+                result += "\n"
+                counter = 0
+        return result
+
 
 #-------------------------------------------------
 def __init_decrypt_key(buff_str):
@@ -137,6 +148,7 @@ def __init_decrypt_key(buff_str):
     bKey = HEAD_KeyXYf
     keys.KeyXYf = (((((
         (bKey * bKey) * 3 + 9) * 3 + 8) * 2 + 1) * 3 + 8) * keys.KeyXY) & 0xFF
+
 
     #棋谱加密因子(终点)
     #pascal code
@@ -200,6 +212,7 @@ def __decode_buff(keys, buff):
     for i in range(len(buff)):
         KeyByte = keys.F32Keys[(nPos + i) % 32]
         de_buff[i] = (de_buff[i] - KeyByte) & 0xFF
+        print(hex(KeyByte) + " -> " + hex(de_buff[i]))
 
     return bytes(de_buff)
 
@@ -372,6 +385,11 @@ def read_from_xqf(full_file_name, read_annotation=True):
         chess_mans = __init_chess_board(ucBoard, version, keys)
         step_base_buff = XQFBuffDecoder(__decode_buff(keys, contents[0x400:]))
 
+    str_b = "chess_mans:\n"
+    for b in chess_mans:
+        str_b += hex(b & 0xFF) + " "
+    print(str_b),
+
     board = ChessBoard()
 
     chessman_kinds = \
@@ -389,6 +407,9 @@ def read_from_xqf(full_file_name, read_annotation=True):
             pos = _decode_pos(man_pos)
             fen_ch = chr(ord(chessman_kinds[man_index]) + side * 32)
             board.put_fench(fen_ch, pos)
+
+    print("step_base_buff:")
+    print(step_base_buff)
 
     game_annotation = __read_init_info(step_base_buff, version, keys)
 

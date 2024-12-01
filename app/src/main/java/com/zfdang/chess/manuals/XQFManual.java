@@ -4,19 +4,17 @@ import android.util.Log;
 
 import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.Move;
-import com.zfdang.chess.gamelogic.Piece;
-import com.zfdang.chess.gamelogic.Position;
 
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
 
 // XQF format
 // https://github.com/zfdang/chinese-chess-fish-android/blob/master/%E6%A3%8B%E8%B0%B1/XQF%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E8%AF%B4%E6%98%8E.TXT
 public class XQFManual {
     private String format;
     private int version;
+
+    private String annotation;
 
     public Board board;
 
@@ -36,12 +34,31 @@ public class XQFManual {
     private String annotator;
     private String author;
 
-    public List<Move> moves;
+    public MoveNode getHeadMove() {
+        return headMove;
+    }
+
+    // create public class MoveNode
+    public static class MoveNode {
+        public Move move;
+        public ArrayList<MoveNode> nextMoves;
+
+        public MoveNode(Move move) {
+            this.move = move;
+            nextMoves = new ArrayList<>();
+        }
+
+        public void addNextMove(MoveNode moveNode) {
+            nextMoves.add(moveNode);
+        }
+    }
+
+    private MoveNode headMove;
 
     private static final Charset GB18030 = Charset.forName("GB18030");
 
     public XQFManual() {
-        moves = new ArrayList<>();
+        headMove = new MoveNode(null);
         board = new Board();
     }
 
@@ -134,16 +151,6 @@ public class XQFManual {
         this.version = version;
     }
 
-    public List<Move> getMoves() {
-        return moves;
-    }
-
-    public void setMoves(List<Move> moves) {
-        this.moves = moves;
-    }
-
-
-
     public String getAnnotator() {
         return annotator;
     }
@@ -160,10 +167,29 @@ public class XQFManual {
         this.author = author;
     }
 
-    public boolean validateMoves() {
-        Board board = new Board(this.board);
-        for (Move move : moves) {
-            if (!board.doMove(move)) {
+    public boolean validateAllMoves(){
+        return validateMove(this.board, this.headMove);
+    }
+
+    private boolean validateMove(Board _board, MoveNode node) {
+        if(node == null){
+            return true;
+        }
+
+        Board b = new Board(_board);
+
+        // 验证move自己是否正确
+        if(node.move != null) {
+            if(!b.doMove(node.move)) {
+                Log.e("XQFManual", "Invalid move: " + node.move);
+                return false;
+            }
+        }
+
+        // 验证后续moves时候正确
+        for(MoveNode nextNode : node.nextMoves) {
+            boolean result = validateMove(b, nextNode);
+            if(!result) {
                 return false;
             }
         }
@@ -188,7 +214,7 @@ public class XQFManual {
                 ", blackDuration='" + blackDuration + '\'' +
                 ", annotator='" + annotator + '\'' +
                 ", author='" + author + '\'' +
-                ", moves counts=" + moves.size() +
+                ", moves counts=" +
                 '}';
     }
 
@@ -200,4 +226,11 @@ public class XQFManual {
         this.site = site;
     }
 
+    public String getAnnotation() {
+        return annotation;
+    }
+
+    public void setAnnotation(String annotation) {
+        this.annotation = annotation;
+    }
 }

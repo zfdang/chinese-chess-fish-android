@@ -36,8 +36,8 @@ class MainActivity : AppCompatActivity() {
 
         buttonLearn.setOnClickListener {
             // show toast
-             Toast.makeText(this, "待实现", Toast.LENGTH_SHORT).show()
-//            processAssetPath("XQF/eleeye")
+//            Toast.makeText(this, "待实现", Toast.LENGTH_SHORT).show()
+            processAssetPath("XQF/eleeye")
         }
 
         buttonHelp.setOnClickListener {
@@ -89,12 +89,12 @@ class MainActivity : AppCompatActivity() {
                 return
             }
 
-            val result = xqfManual.validateMoves()
+            val result = xqfManual.validateAllMoves()
             if (!result) {
                 Log.e("MainActivity", "Failed to validate moves")
             }
 
-            Log.d("MainActivity", "Parsed XQF game: " + xqfManual.title + ", result: " + xqfManual.result + ", total moves: " + xqfManual.moves.size)
+            Log.d("MainActivity", "Parsed XQF game: " + xqfManual.title + ", result: " + xqfManual.result + ", total moves: ")
         } else {
             Log.d("MainActivity", "Not a XQF file: $xqfFile")
         }
