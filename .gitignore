@@ -30,3 +30,10 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# python pyc
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
