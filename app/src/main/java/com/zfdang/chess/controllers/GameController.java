@@ -119,6 +119,10 @@ public class GameController implements EngineListener, SearchListener {
         } else {
             state = ControllerState.WAITING_FOR_ENGINE;
         }
+        game.history.clear();
+        game.startPos = null;
+        game.endPos = null;
+        gui.onGameEvent(GameStatus.UPDATEUI, "从FEN开局");
         player.stopSearch();
         player.uciNewGame();
     }
