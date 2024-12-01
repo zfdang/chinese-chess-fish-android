@@ -36,7 +36,11 @@ public class XQFBufferDecoder {
 
     public int readInt() {
         byte[] bytes = readBytes(4);
-        return bytes[0] + (bytes[1] << 8) + (bytes[2] << 16) + (bytes[3] << 24);
+        int b1 = bytes[0] & 0xFF;
+        int b2 = bytes[1] & 0xFF;
+        int b3 = bytes[2] & 0xFF;
+        int b4 = bytes[3] & 0xFF;
+        return b1 + (b2 << 8) + (b3 << 16) + (b4 << 24);
     }
 
     // toString method, show buffer as hex string

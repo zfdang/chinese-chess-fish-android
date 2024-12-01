@@ -20,6 +20,9 @@ public class Move implements Serializable {
     }
 
     public void setComment(String comment) {
+        if(comment != null) {
+            comment = comment.strip();
+        }
         this.comment = comment;
     }
 
@@ -266,8 +269,8 @@ public class Move implements Serializable {
     @Override
     public String toString() {
         return "Move{" +
-                "fromPosition=" + fromPosition +
-                ", toPosition=" + toPosition +
+                 fromPosition +
+                " => " + toPosition +
                 ", piece=" + piece +
                 ", comment='" + comment + '\'' +
                 '}';

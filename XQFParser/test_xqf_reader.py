@@ -26,14 +26,14 @@ def print_game_info(game):
 
     print("\nMoves:")
     print("-----------------")
-    move = game.first_move
-    move_count = 1
-    while move:
-        print(f"Move {move_count}: {move}")
-        if move.annote:
-            print(f"  Annotation: {move.annote}")
-        move = move.next_move if move.next_move else None
-        move_count += 1
+    moves = game.dump_iccs_moves
+    print(moves)
+    # for move in moves:
+    #     print(f"Move {move_count}: {move}")
+    #     if move.annote:
+    #         print(f"  Annotation: {move.annote}")
+    #     # move = move.next_move if move.next_move else None
+    #     move_count += 1
 
     return True
 

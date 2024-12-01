@@ -14,37 +14,15 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 public class XQFParser {
-
-    private static final String cszEncStreamMask = "[(C) Copyright Mr. Dong Shiwei.]";
-
-    private static int square54Plus221(int x) {
-        return x * x * 54 + 221;
-    }
-
-    static int nPieceOff; // // 局面初始位置的加密偏移值
-    static int nSrcOff; // 着法起点的加密偏移值
-    static int nDstOff; // 着法终点的加密偏移值
-    static int nCommentOff; // 注释的加密偏移值
-    static int[] nEncStream = new int[32]; // 密钥流
-    static int nEncIndex; // 密钥流索引号
-    static long dwEccoIndex;
-    static long[] dwFileMove = new long[20];
-
-//    private static void readAndDecrypt(InputStream inputStream, byte[] buffer, int nLen, int[] nEncStream, int[] nEncIndex) throws IOException {
-//        inputStream.read(buffer, 0, nLen);
-//        for (int i = 0; i < nLen; i++) {
-//            buffer[i] -= nEncStream[nEncIndex[0]];
-//            nEncIndex[0] = (nEncIndex[0] + 1) % 32;
-//        }
-//    }
-
     private static final Charset GB18030 = Charset.forName("GB18030");
+
     private static String readString(byte[] buffer) {
         int length = buffer[0];
         if(length < 0) {
             Log.e("XQFGame", "Invalid string length: " + length);
             return "";
         }
+        length = Math.min(length, buffer.length - 1);
         return new String(buffer, 1, length, GB18030).trim();
     }
 
@@ -141,7 +119,7 @@ public class XQFParser {
                     Piece.BPAO, Piece.BPAO, Piece.BZU, Piece.BZU, Piece.BZU, Piece.BZU, Piece.BZU
             };
 
-            // 还原棋盘
+            // 读取原棋盘
             manual.board.clear();
             for (int i = 0; i < 32; i++) {
                 int value = piecePos[i] & 0xFF;
@@ -153,26 +131,37 @@ public class XQFParser {
             }
             Log.d("XQFParser", "Board: " + manual.board.toFENString());
 
-            // Read moves
+//        B. 棋谱记录 (0400 - 文件尾部)
+//        从0x0400开始存放棋谱记录，每步记录的存放格式为: 8个棋谱记录字节 + 0个或
+//        多个字节的棋谱注解文本。其中，8个棋谱记录字节的格式为:
+//
+//        第 1 字节:  本步棋的开始位置坐标的字节值(X*10+Y) + 24 (十进制)。
+//        第 2 字节:  本步棋的到达位置坐标的字节值(X*10+Y) + 32 (十进制)。
+//        第 3 字节:  如果不是最后一步棋，为0xF0；如果是最后一步棋，为0x00。
+//        第 4 字节:  保留: 必须为0x00。
+//        第5-8字节:  为一个32位整数(x86格式,高字节在后)，表明本步注解的大小，
+//        如果没有注解，则为0x00000000。
+//        如果本步没有评注，即5-8字节全部为0x00，则本步结束，否则，随后存放本
+//        步评注文本，文本不以'\0'结束(由于前面已经有大小, 该文本的长度必须等
+//                于5-8字节处的整数值)。如此反复，可将所有棋步存入。(暂时不支持变着的
+//        保存)。从上面可以看出如果没有注解，一步棋的记录共占8个字节。
+//        0x0400 - 0x0407: 第一步棋的记录；没有着法，但是注解是整个棋局的注解，需要读取出来
+            // 先解密
             XQFBufferDecoder stepBaseBuff;
             if (manual.getVersion() <= 0x0A) {
                 stepBaseBuff = new XQFBufferDecoder(Arrays.copyOfRange(buffer, 0x400, buffer.length));
             } else {
                 stepBaseBuff = new XQFBufferDecoder(decodeBuff(keys, Arrays.copyOfRange(buffer, 0x400, buffer.length)));
             }
-            Log.d("XQFParser", "StepBaseBuff: " + stepBaseBuff);
+//            Log.d("XQFParser", "StepBaseBuff: " + stepBaseBuff);
 
+            // 0x0400 - 0x0407: 第一步棋的记录；没有着法，但是注解是整个棋局的注解，需要读取出来
             String gameAnnotation = readAnnotationInfo(stepBaseBuff, manual.getVersion(), keys);
             manual.setAnnotation(gameAnnotation);
+            Log.d("XQFParser", "Game Annotation: " + manual.getAnnotation());
 
+            // 开始读取剩下的着法和注解
             readSteps(stepBaseBuff, keys, manual, manual.getHeadMove());
-
-//            Game game = new Game(board, gameAnnotation);
-//            game.getInfo().putAll(gameInfo);
-//
-//            readSteps(stepBaseBuff, version, keys, game, null, board);
-
-
         } catch (IOException e) {
             Log.e("XQFParser", "Error parsing header", e);
         }
@@ -287,38 +276,15 @@ public class XQFParser {
 
     private static void readSteps(XQFBufferDecoder buffDecoder, XQFKey keys,
                                   XQFManual manual, XQFManual.MoveNode node) {
-//        B. 棋谱记录 (0400 - 文件尾部)
-//                --------------------------------------------------------------------------
-//        从0x0400开始存放棋谱记录，每步记录的存放格式为: 8个棋谱记录字节 + 0个或
-//        多个字节的棋谱注解文本。其中，8个棋谱记录字节的格式为:
-//
-//        第 1 字节:  本步棋的开始位置坐标的字节值(X*10+Y) + 24 (十进制)。
-//        第 2 字节:  本步棋的到达位置坐标的字节值(X*10+Y) + 32 (十进制)。
-//        第 3 字节:  如果不是最后一步棋，为0xF0；如果是最后一步棋，为0x00。
-//        第 4 字节:  保留: 必须为0x00。
-//        第5-8字节:  为一个32位整数(x86格式,高字节在后)，表明本步注解的大小，
-//        如果没有注解，则为0x00000000。
-//        如果本步没有评注，即5-8字节全部为0x00，则本步结束，否则，随后存放本
-//        步评注文本，文本不以'\0'结束(由于前面已经有大小, 该文本的长度必须等
-//                于5-8字节处的整数值)。如此反复，可将所有棋步存入。(暂时不支持变着的
-//        保存)。从上面可以看出如果没有注解，一步棋的记录共占8个字节。
-//
-//        需要说明的是，在真正的对局记录开始前，必须有一步空的着法，称为第0步，该
-//        步的第1 - 8字节必须是 0x18, 0x20, 0xF0, 0xFF, 0x00, 0x00, 0x00, 0x00。由于
-//        这些字节是固定的，所以真正的棋谱记录是从0x0408处开始的。如果您的棋局只有初
-//        始局面而没有任何着法记录(即只有一个残局局势),则文件中棋谱记录只有第0步的记
-//        录，并且该记录的8个字节为:0x18,0x20,0x00,0xFF,0x00,0x00,0x00,0x00。 详细的
-//        格式请参见本文后面的文件例子。
         byte[] stepInfo = buffDecoder.readBytes(4);
         if (stepInfo.length == 0) return;
 
         // print stepInfo in hex format
-        StringBuilder sb = new StringBuilder();
-        for (byte b : stepInfo) {
-            sb.append(Integer.toHexString(b & 0xFF)).append(" ");
-        }
-        Log.d("XQFParser", "StepInfo: " + sb.toString());
-
+//        StringBuilder sb = new StringBuilder();
+//        for (byte b : stepInfo) {
+//            sb.append(Integer.toHexString(b & 0xFF)).append(" ");
+//        }
+//        Log.d("XQFParser", "StepInfo: " + sb.toString());
 
         int annoteLen = 0;
         boolean hasNextStep = false;
@@ -331,8 +297,9 @@ public class XQFParser {
             if ((stepInfo[2] & 0x0F) != 0) hasVarStep = true;
             annoteLen = buffDecoder.readInt();
 
-            moveFrom = stepInfo[0] & 0xFF - 0x18;
-            moveTo = stepInfo[1] & 0xFF - 0x20;
+            // moveFrom = stepInfo[0] & 0xFF - 0x18; // this does not work !!!!!!, we need the parentheses
+            moveFrom =  ((stepInfo[0] & 0xFF) - 0x18) & 0xFF;
+            moveTo =  ((stepInfo[1] & 0xFF) - 0x20) & 0xFF;
         } else {
             // 高版本通过flag来标记有没有注释，有则紧跟着注释长度和注释字段
             stepInfo[2] &= 0xE0;
@@ -346,14 +313,15 @@ public class XQFParser {
             moveTo = ((((stepInfo[1] & 0xFF) - 0x20) & 0xFF ) - keys.getKeyXYt()) & 0xFF;
         }
 
-        Log.d("XQFParser", "Move: " + moveFrom + " -> " + moveTo);
-        Log.d("XQFParser", "HasNextStep: " + hasNextStep + ", HasVarStep: " + hasVarStep + ", AnnoteLen: " + annoteLen);
+//        Log.d("XQFParser", "Move: " + moveFrom + " -> " + moveTo);
+//        Log.d("XQFParser", "HasNextStep: " + hasNextStep + ", HasVarStep: " + hasVarStep + ", AnnoteLen: " + annoteLen);
 
         Position from = getPosFromValue(moveFrom);
         Position to = getPosFromValue(moveTo);
-        Move move = new Move(from, to, manual.board);
+        Move move = new Move(from, to);
         String annote = annoteLen > 0 ? buffDecoder.readString(annoteLen, GB18030) : null;
         move.setComment(annote);
+//        Log.d("XQFParser", "Move: " + move);
 
         // add movenode
         XQFManual.MoveNode nextNode = new XQFManual.MoveNode(move);

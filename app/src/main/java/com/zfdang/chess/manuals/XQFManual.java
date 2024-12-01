@@ -196,9 +196,49 @@ public class XQFManual {
         return true;
     }
 
+    private String printAllMoveNodes() {
+        return iterateMoveNode(headMove, 0);
+    }
+
+    private String iterateMoveNode(MoveNode node, int depth) {
+        StringBuilder sb = new StringBuilder();
+        if(node.move == null) {
+            if(node.nextMoves.size() > 1) {
+                sb.append(" root{");
+            } else {
+                sb.append(" root ");
+            }
+        } else {
+            if(node.nextMoves.size() > 1) {
+                // 有分叉
+                sb.append(" " + node.move.getUCCIString() + "{" );
+            } else {
+                sb.append(" " + node.move.getUCCIString() + " ");
+            }
+        }
+
+        for(int i = 0; i < node.nextMoves.size(); i++) {
+            MoveNode nextNode = node.nextMoves.get(i);
+            if(i == 0){
+                sb.append(iterateMoveNode(nextNode, depth + 1));
+            } else {
+                sb.append("\n");
+                for(int j = 0; j <= depth; j++) {
+                    sb.append("      ");
+                }
+                sb.append(iterateMoveNode(nextNode, depth + 1));
+            }
+        }
+
+        return sb.toString();
+    }
+
     // toString method
     @Override
     public String toString() {
+        // iterate all MoveNode, and generate a string
+        String moves = printAllMoveNodes();
+
         return "XQFGame{" +
                 "format='" + format + '\'' +
                 ", version=" + version +
@@ -214,8 +254,10 @@ public class XQFManual {
                 ", blackDuration='" + blackDuration + '\'' +
                 ", annotator='" + annotator + '\'' +
                 ", author='" + author + '\'' +
-                ", moves counts=" +
+                ", moves=\n" + moves + "\n" +
                 '}';
+
+
     }
 
     public String getSite() {
@@ -231,6 +273,7 @@ public class XQFManual {
     }
 
     public void setAnnotation(String annotation) {
+        if(annotation != null) { annotation = annotation.strip(); }
         this.annotation = annotation;
     }
 }

@@ -219,8 +219,10 @@ def __decode_buff(keys, buff):
 
 #-----------------------------------------------------#
 def __read_init_info(buff_decoder, version, keys):
-
+    print("__read_init_info: ")
     step_info = buff_decoder.read_bytes(4)
+    for b in step_info:
+        print(hex(b))
 
     annote_len = 0
     if version <= 0x0A:
@@ -230,8 +232,10 @@ def __read_init_info(buff_decoder, version, keys):
         #高版本通过flag来标记有没有注释，有则紧跟着注释长度和注释字段
         step_info[2] &= 0xE0
         if (step_info[2] & 0x20):  #有注释
-            annote_len = buff_decoder.read_int() - keys.KeyRMKSize
+            slen = buff_decoder.read_int()
+            annote_len = slen - keys.KeyRMKSize
 
+    print(annote_len)
     return buff_decoder.read_str(annote_len) if (annote_len > 0) else None
 
 
@@ -239,6 +243,9 @@ def __read_init_info(buff_decoder, version, keys):
 def __read_steps(buff_decoder, version, keys, game, parent_move, board):
 
     step_info = buff_decoder.read_bytes(4)
+    print("__read_steps:")
+    for b in step_info:
+        print(hex(b))
 
     if len(step_info) == 0:
         return
@@ -269,11 +276,22 @@ def __read_steps(buff_decoder, version, keys, game, parent_move, board):
         if (step_info[2] & 0x20):  #有注释
             annote_len = buff_decoder.read_int() - keys.KeyRMKSize
 
+        print("  decoded:")
+        print(hex(step_info[0]))
+        print(hex(keys.KeyXYf))
+        print(hex(step_info[0] - 0x18 - keys.KeyXYf))
+        print(hex((step_info[0] - 0x18 - keys.KeyXYf) & 0xFF))
+
         step_info[0] = (step_info[0] - 0x18 - keys.KeyXYf) & 0xFF
         step_info[1] = (step_info[1] - 0x20 - keys.KeyXYt) & 0xFF
 
     move_from, move_to = _decode_pos2(step_info)
     annote = buff_decoder.read_str(annote_len) if annote_len > 0 else None
+
+    print("  move infos:")
+    print(move_from)
+    print(move_to)
+    print(annote)
 
     fench = board.get_fench(move_from)
 

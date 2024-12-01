@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         buttonLearn.setOnClickListener {
             // show toast
 //            Toast.makeText(this, "待实现", Toast.LENGTH_SHORT).show()
-            processAssetPath("XQF/eleeye")
+            processAssetPath("XQF")
         }
 
         buttonHelp.setOnClickListener {
@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity() {
                 Log.e("MainActivity", "Failed to validate moves")
             }
 
-            Log.d("MainActivity", "Parsed XQF game: " + xqfManual.title + ", result: " + xqfManual.result + ", total moves: ")
+            Log.d("MainActivity", "Parsed XQF game: " + xqfManual)
         } else {
             Log.d("MainActivity", "Not a XQF file: $xqfFile")
         }
