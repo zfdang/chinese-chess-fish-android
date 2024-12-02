@@ -212,17 +212,20 @@ class FilePickerActivity : AppCompatActivity(), View.OnClickListener,
     }
 
     private fun isPermissionGrated(): Boolean {
-        val permissionArray = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_VIDEO, READ_MEDIA_AUDIO)
-        } else {
-            arrayOf(READ_EXTERNAL_STORAGE)
-        }
-        return permissionArray.any {
-            ContextCompat.checkSelfPermission(
-                this@FilePickerActivity,
-                it
-            ) == PackageManager.PERMISSION_GRANTED
-        }
+        // we don't need external storage permission on Android 11
+        return true;
+
+//        val permissionArray = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_VIDEO, READ_MEDIA_AUDIO)
+//        } else {
+//            arrayOf(READ_EXTERNAL_STORAGE)
+//        }
+//        return permissionArray.any {
+//            ContextCompat.checkSelfPermission(
+//                this@FilePickerActivity,
+//                it
+//            ) == PackageManager.PERMISSION_GRANTED
+//        }
     }
 
     /**
