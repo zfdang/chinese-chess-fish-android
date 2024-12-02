@@ -1,6 +1,7 @@
 package com.zfdang.chess.assetsUtils;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -68,6 +69,7 @@ public class CopyAssetsUtil {
             fos.flush();
             is.close();
             fos.close();
+            Log.d("CopyAssetsUtil", "copyAssets: " + folderName + " copy is success");
         }
     }
 

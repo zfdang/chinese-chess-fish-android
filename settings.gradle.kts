@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "ChineseChess"
 include(":app")
+include(":filepicker")

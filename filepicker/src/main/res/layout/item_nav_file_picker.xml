@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_nav_file_picker"
+    android:layout_width="wrap_content"
+    android:layout_height="48dp"
+    android:layout_gravity="center"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center">
+
+    <TextView
+        android:id="@+id/tv_btn_nav_file_picker"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:drawableEnd="@drawable/ic_arrow_right_file_picker"
+        android:drawableRight="@drawable/ic_arrow_right_file_picker"
+        android:ellipsize="middle"
+        android:gravity="center"
+        android:maxEms="10"
+        android:paddingStart="2dp"
+        android:paddingLeft="2dp"
+        android:singleLine="true"
+        android:textAllCaps="false"
+        android:textColor="@color/shrine_text_color"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="棋谱" />
+
+    <!--<android.support.v7.widget.AppCompatImageView-->
+    <!--android:id="@+id/iv_nav_file_picker"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="center"-->
+    <!--android:background="@drawable/ic_arrow_right_file_picker"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintStart_toEndOf="@+id/tv_btn_nav_file_picker"-->
+    <!--app:layout_constraintTop_toTopOf="parent" />-->
+
+</LinearLayout>

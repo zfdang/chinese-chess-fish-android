@@ -1,6 +1,10 @@
 package com.zfdang.chess
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.SharedPreferences
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,19 +12,29 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.zfdang.chess.adapters.HistoryAndTrendAdapter
+import com.zfdang.chess.assetsUtils.CopyAssetsUtil
+import com.zfdang.chess.assetsUtils.PathUtil
 import com.zfdang.chess.controllers.GameControllerListener
 import com.zfdang.chess.controllers.ManualController
 import com.zfdang.chess.databinding.ActivityManualBinding
 import com.zfdang.chess.gamelogic.GameStatus
 import com.zfdang.chess.manuals.XQFParser
 import com.zfdang.chess.views.ChessView
+import me.rosuh.filepicker.config.FilePickerManager
+import me.rosuh.filepicker.filetype.FileType
+import me.rosuh.filepicker.filetype.XQFFileType
 
 
 class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControllerListener,
     View.OnClickListener, SettingDialogFragment.SettingDialogListener {
+
+    private val PREFS_NAME = "com.zfdang.chess.manual.preferences"
+    private val LAST_LAUNCH_VERSION = "last_launch_version"
+    private lateinit var waitingDialog: AlertDialog
 
     // 防止重复点击
     private val MIN_CLICK_DELAY_TIME: Int = 100
@@ -88,7 +102,63 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControll
             setStatusText("等待黑方走棋")
         }
 
-        loadManualFromFile("", "")
+        // run initManual() after delaying 500ms
+        Handler(Looper.getMainLooper()).postDelayed({
+            initManual()
+        }, 500)
+    }
+
+    private fun initManual() {
+        val pm: PackageManager = getPackageManager()
+        var currentVersion = 0
+        try {
+            val pi: PackageInfo = pm.getPackageInfo(getPackageName(), 0)
+            currentVersion = pi.versionCode
+        } catch (e: PackageManager.NameNotFoundException) {
+            Log.e("Setting", "isFirstRun: " + Log.getStackTraceString(e))
+        }
+
+        if(isFirstRun(currentVersion)) {
+            Log.d("Setting", "isFirstRun: true")
+
+            // create a waiting dialog
+            val builder = AlertDialog.Builder(this)
+            builder.setCancelable(false)
+            builder.setTitle("初始化中")
+            builder.setMessage("正在初始化棋谱，请稍候...")
+            waitingDialog = builder.create()
+            waitingDialog.show()
+
+            // copy XQF manuals
+            Thread {
+                // copy all XQF files from assets to external storage, when it's the first run of this version
+                CopyAssetsUtil.copyAssets(this, "XQF", PathUtil.getInternalAppFilesDir(this,"XQF"))
+                runOnUiThread {
+                    setFirstRunVersion(currentVersion)
+                    waitingDialog.dismiss()
+                    Toast.makeText(this, "初始化完成", Toast.LENGTH_SHORT).show()
+                }
+            }.start()
+        }
+    }
+
+    private fun isFirstRun(currentVersion:Int): Boolean {
+        val sharedPreferences: SharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val last_version = sharedPreferences.getInt(LAST_LAUNCH_VERSION, 0)
+        Log.d("Setting", "isFirstRun: last_version = $last_version, currentVersion = $currentVersion")
+
+        if(currentVersion == last_version) {
+            return false
+        } else {
+            return true
+        }
+    }
+
+    private fun setFirstRunVersion(currentVersion:Int) {
+        val sharedPreferences: SharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putInt(LAST_LAUNCH_VERSION, currentVersion)
+        editor.apply()
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
@@ -129,43 +199,6 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControll
         binding.textViewNote.text = controller.manual.annotation
     }
 
-    fun showNewGameConfirmDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("确定开始新游戏?")
-        builder.setMessage("你是否要放弃当前的游戏，开始新游戏呢?")
-
-        builder.setPositiveButton("开始新游戏") { dialog, which ->
-            // User clicked Yes button
-            controller.startNewGame()
-            historyAndTrendAdapter.update()
-            if(controller.settings.red_go_first) {
-                setStatusText("新游戏，红方先行")
-            } else {
-                setStatusText("新游戏，黑方先行")
-            }
-            // hide choice buttons
-            if(binding.choice1bt.visibility == View.VISIBLE){
-                binding.choice1bt.visibility = View.GONE;
-                binding.choice2bt.visibility = View.GONE;
-                binding.choice3bt.visibility = View.GONE;
-            }
-
-            Handler(Looper.getMainLooper()).postDelayed({
-                if(controller.isComputerPlaying && controller.isAutoPlay && !controller.settings.red_go_first){
-                    controller.computerForward()
-                }
-            }, 1000)
-        }
-
-        builder.setNegativeButton("继续当前游戏") { dialog, which ->
-            // User clicked No button
-            dialog.dismiss()
-        }
-
-        builder.setCancelable(true)
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
-    }
 
     fun saveThenExit() {
         // in case there is any ongoing searching task
@@ -235,23 +268,19 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControll
                 controller.selectMultiPV(2)
             }
         }
-
     }
+
 
     private fun showOpenManualDialog() {
-        readXQFFile("XQF/古谱篇/竹香斋象戏谱 张乔栋/三集", "野马操田.XQF")
-    }
 
-    private fun processAssetPath(path: String) {
-        val files = assets.list(path)
-        for (file in files!!) {
-            // check the file extension, ignoring the case
-            if(file.endsWith(".xqf", ignoreCase = true)) {
-                readXQFFile(path, file)
-            } else {
-                processAssetPath(path + "/" + file)
-            }
-        }
+        val types = arrayListOf<FileType>(XQFFileType())
+        FilePickerManager
+            .from(this)
+            .setCustomRootPath(PathUtil.getInternalAppFilesDir(this,"XQF"))
+            .maxSelectable(1)
+            .registerFileType(types)
+            .skipDirWhenSelect(true)
+            .forResult(FilePickerManager.REQUEST_CODE)
     }
 
     private fun readXQFFile(path: String, file: String) {
