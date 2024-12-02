@@ -1,27 +1,21 @@
 package com.zfdang.chess
 
 import android.annotation.SuppressLint
-import android.content.ClipboardManager
-import android.content.DialogInterface
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.github.mikephil.charting.components.Description
-import com.zfdang.chess.adapters.MoveHistoryAdapter
-import com.zfdang.chess.controllers.GameController
+import com.zfdang.chess.adapters.HistoryAndTrendAdapter
 import com.zfdang.chess.controllers.GameControllerListener
-import com.zfdang.chess.databinding.ActivityGameBinding
+import com.zfdang.chess.controllers.ManualController
 import com.zfdang.chess.databinding.ActivityManualBinding
 import com.zfdang.chess.gamelogic.GameStatus
-import com.zfdang.chess.openbook.BHOpenBook
-import com.zfdang.chess.openbook.OpenBookManager
+import com.zfdang.chess.manuals.XQFParser
 import com.zfdang.chess.views.ChessView
 
 
@@ -38,16 +32,13 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControll
 
     // 棋盘
     private lateinit var chessView: ChessView
-    private lateinit var moveHistoryAdapter: MoveHistoryAdapter
+    private lateinit var historyAndTrendAdapter: HistoryAndTrendAdapter
 
     // controller, player, game
-    private lateinit var controller: GameController
+    private lateinit var controller: ManualController
 
     // mediaplayer
     private lateinit var soundPlayer: SoundPlayer
-
-    private lateinit var bookManager: OpenBookManager
-    private lateinit var bhBook: BHOpenBook
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,8 +48,7 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControll
         setContentView(binding.root)
 
         // new game
-        controller = GameController(this)
-        controller.loadGameStatus()
+        controller = ManualController(this)
 
         // 初始化棋盘
         chessLayout = binding.chesslayout
@@ -66,14 +56,13 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControll
         chessLayout.addView(chessView)
         chessView.setOnTouchListener(this)
 
-        bhBook = BHOpenBook(this)
-
         // Bind all imagebuttons here, and set their onClickListener
         val imageButtons = listOf(
             binding.openbt,
             binding.firstbt,
             binding.backbt,
             binding.forwardbt,
+            binding.notebt,
             binding.exitbt,
             binding.choice1bt,
             binding.choice2bt,
@@ -88,7 +77,9 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControll
 
         // Bind historyTable and initialize it with dummy data
         val historyTable = binding.historyTable
-        val gamenote = binding.gamenote
+        val gamenote = binding.textViewNote
+        historyAndTrendAdapter = HistoryAndTrendAdapter(this, historyTable, null, controller)
+        historyAndTrendAdapter.update()
 
         // init status text
         if(controller.isRedTurn){
@@ -96,33 +87,46 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControll
         } else if(controller.isBlackTurn) {
             setStatusText("等待黑方走棋")
         }
+
+        loadManualFromFile("", "")
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         // 防止重复点击
-        lastClickTime = System.currentTimeMillis()
-        if (lastClickTime - curClickTime < MIN_CLICK_DELAY_TIME) {
-            return false
-        }
-        curClickTime = lastClickTime
-
-        if (event!!.action === MotionEvent.ACTION_DOWN) {
-            val x = event!!.x
-            val y = event!!.y
-            val pos = chessView.getPosByCoord(x, y)
-            if(pos == null) {
-                // pos is not valid
-                return false
-            }
-            controller.touchPosition(pos);
-            Log.d("PlayActivity", "onTouch: x = $x, y = $y, pos = " + pos.toString())
-        }
+//        lastClickTime = System.currentTimeMillis()
+//        if (lastClickTime - curClickTime < MIN_CLICK_DELAY_TIME) {
+//            return false
+//        }
+//        curClickTime = lastClickTime
+//
+//        if (event!!.action === MotionEvent.ACTION_DOWN) {
+//            val x = event!!.x
+//            val y = event!!.y
+//            val pos = chessView.getPosByCoord(x, y)
+//            if(pos == null) {
+//                // pos is not valid
+//                return false
+//            }
+//            controller.touchPosition(pos);
+//            Log.d("PlayActivity", "onTouch: x = $x, y = $y, pos = " + pos.toString())
+//        }
         return false
     }
 
     // create function to set status text
     fun setStatusText(text: String) {
         binding.statustv.text = text
+    }
+
+    fun loadManualFromFile(path: String, file: String) {
+        controller.loadManualFromFile("XQF/古谱篇/竹香斋象戏谱 张乔栋/三集/野马操田.XQF")
+
+        // update ui
+        binding.textViewTitle.text = controller.manual.title
+        binding.textViewRed.text = controller.manual.red
+        binding.textViewBlack.text = controller.manual.black
+        binding.textViewResult.text = controller.manual.result
+        binding.textViewNote.text = controller.manual.annotation
     }
 
     fun showNewGameConfirmDialog() {
@@ -133,7 +137,7 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControll
         builder.setPositiveButton("开始新游戏") { dialog, which ->
             // User clicked Yes button
             controller.startNewGame()
-            moveHistoryAdapter.update()
+            historyAndTrendAdapter.update()
             if(controller.settings.red_go_first) {
                 setStatusText("新游戏，红方先行")
             } else {
@@ -172,42 +176,22 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControll
         finish()
     }
 
-    fun showInputFENDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("从FEN串开始新游戏")
-        builder.setMessage("请输入棋局的FEN串：")
-
-        // Set up the input
-        val input = EditText(this)
-
-        // get content from clipboard
-        val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = clipboard.primaryClip
-        if (clip != null && clip.itemCount > 0) {
-            val text = clip.getItemAt(0).text
-            input.setText(text)
-        }
-        input.setSelection(input.text.length)
-        input.setSelectAllOnFocus(true)
-
-        builder.setView(input)
-
-        // Set up the buttons
-        builder.setPositiveButton("确定", DialogInterface.OnClickListener { dialog, which ->
-            val userInput = input.text.toString()
-            controller.startFENGame(userInput)
-            // Handle the input string here
-        })
-        builder.setNegativeButton("取消", DialogInterface.OnClickListener { dialog, which ->
-            dialog.cancel()
-        })
-
-        builder.show()
-    }
 
     override fun onClick(v: View?) {
         // handle events for all imagebuttons in activity_player.xml
         when(v) {
+            binding.openbt -> {
+                showOpenManualDialog()
+            }
+            binding.forwardbt -> {
+                controller.manualForward()
+            }
+            binding.backbt -> {
+                controller.manualBack()
+            }
+            binding.firstbt -> {
+                controller.manualFirst()
+            }
             binding.notebt -> {
                 // get image resource of trends button
                 controller.toggleShowTrends()
@@ -216,15 +200,15 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControll
 
                 if(controller.isShowTrends){
                     setStatusText("显示评估趋势图")
-                    binding.gamenote.visibility = View.VISIBLE
+                    binding.notescroll.visibility = View.VISIBLE
                     binding.historyscroll.visibility = View.GONE
                 } else {
                     setStatusText("显示走法历史")
-                    binding.gamenote.visibility = View.GONE
+                    binding.notescroll.visibility = View.GONE
                     binding.historyscroll.visibility = View.VISIBLE
                 }
 
-                moveHistoryAdapter.update()
+                historyAndTrendAdapter.update()
             }
             binding.exitbt -> {
                 saveThenExit();
@@ -252,6 +236,57 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControll
             }
         }
 
+    }
+
+    private fun showOpenManualDialog() {
+        readXQFFile("XQF/古谱篇/竹香斋象戏谱 张乔栋/三集", "野马操田.XQF")
+    }
+
+    private fun processAssetPath(path: String) {
+        val files = assets.list(path)
+        for (file in files!!) {
+            // check the file extension, ignoring the case
+            if(file.endsWith(".xqf", ignoreCase = true)) {
+                readXQFFile(path, file)
+            } else {
+                processAssetPath(path + "/" + file)
+            }
+        }
+    }
+
+    private fun readXQFFile(path: String, file: String) {
+        val xqfFile = path + "/" + file
+        if(xqfFile.endsWith(".xqf", ignoreCase = true)) {
+            Log.d("MainActivity", "Found XQF file: $xqfFile")
+
+            // load content from file assets/xqf/, and store it into char buffer
+            val inputStream = assets.open(xqfFile)
+            val buffer = inputStream.readBytes()
+            inputStream.close()
+
+            Log.d("MainActivity", "Read ${buffer.size} bytes from ${xqfFile}")
+
+            // use XQFGame to parse the buffer
+            val xqfManual = XQFParser.parse(buffer)
+            if(xqfManual == null) {
+                Log.e("MainActivity", "Failed to parse XQF game: " + xqfFile)
+                return
+            }
+
+            val result = xqfManual.validateAllMoves()
+            if (!result) {
+                Log.e("MainActivity", "Failed to validate moves: "  + xqfFile)
+            }
+
+            Log.d("MainActivity", "Parsed XQF game: " + xqfManual)
+
+//            if(xqfManual.hasEmptyMove()) {
+//                Log.e("MainActivity", "Found empty move, file = " + xqfFile)
+//            }
+
+        } else {
+            Log.d("MainActivity", "Not a XQF file: $xqfFile")
+        }
     }
 
     override fun onGameEvent(status: GameStatus?, message: String?) {
@@ -316,7 +351,7 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControll
         }
 
         // update history table
-        moveHistoryAdapter.update()
+        historyAndTrendAdapter.update()
     }
 
     // create fun to handle onbackpressed

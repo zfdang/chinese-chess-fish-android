@@ -14,7 +14,7 @@ import android.widget.FrameLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.github.mikephil.charting.components.Description
-import com.zfdang.chess.adapters.MoveHistoryAdapter
+import com.zfdang.chess.adapters.HistoryAndTrendAdapter
 import com.zfdang.chess.controllers.GameController
 import com.zfdang.chess.controllers.GameControllerListener
 import com.zfdang.chess.databinding.ActivityGameBinding
@@ -37,7 +37,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
 
     // 棋盘
     private lateinit var chessView: ChessView
-    private lateinit var moveHistoryAdapter: MoveHistoryAdapter
+    private lateinit var historyAndTrendAdapter: HistoryAndTrendAdapter
 
     // controller, player, game
     private lateinit var controller: GameController
@@ -98,8 +98,8 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         // Bind historyTable and initialize it with dummy data
         val historyTable = binding.historyTable
         val chart = binding.trendchart
-        moveHistoryAdapter = MoveHistoryAdapter(this, historyTable, chart, controller)
-        moveHistoryAdapter.update()
+        historyAndTrendAdapter = HistoryAndTrendAdapter(this, historyTable, chart, controller)
+        historyAndTrendAdapter.update()
 
         // customize chart
         chart.description = Description().apply {
@@ -170,7 +170,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         builder.setPositiveButton("开始新游戏") { dialog, which ->
             // User clicked Yes button
             controller.startNewGame()
-            moveHistoryAdapter.update()
+            historyAndTrendAdapter.update()
             if(controller.settings.red_go_first) {
                 setStatusText("新游戏，红方先行")
             } else {
@@ -332,7 +332,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
                     binding.historyscroll.visibility = View.VISIBLE
                 }
 
-                moveHistoryAdapter.update()
+                historyAndTrendAdapter.update()
             }
             binding.exitbt -> {
                 saveThenExit();
@@ -424,7 +424,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameController
         }
 
         // update history table
-        moveHistoryAdapter.update()
+        historyAndTrendAdapter.update()
     }
 
     // create fun to handle onbackpressed

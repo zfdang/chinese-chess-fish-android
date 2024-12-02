@@ -17,7 +17,7 @@ public class XQFParser {
     private static final Charset GB18030 = Charset.forName("GB18030");
 
     private static String readString(byte[] buffer) {
-        int length = buffer[0];
+        int length = buffer[0] & 0xFF;
         if(length < 0) {
             Log.e("XQFGame", "Invalid string length: " + length);
             return "";

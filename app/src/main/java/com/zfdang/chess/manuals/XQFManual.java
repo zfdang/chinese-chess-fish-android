@@ -167,6 +167,12 @@ public class XQFManual {
         this.author = author;
     }
 
+    public boolean hasEmptyMove(){
+        if(headMove.move == null && headMove.nextMoves.size() == 0)
+            return true;
+        return false;
+    }
+
     public boolean validateAllMoves(){
         return validateMove(this.board, this.headMove);
     }

@@ -216,12 +216,12 @@
                     android:layout_height="match_parent"
                     android:background="@color/move_history_background">
 
-                    <TableLayout
-                        android:id="@+id/gamenote"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-                    </TableLayout>
 
+                    <TextView
+                        android:id="@+id/textViewNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="TextView" />
                 </ScrollView>
             </LinearLayout>
 
