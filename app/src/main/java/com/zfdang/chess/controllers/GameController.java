@@ -46,7 +46,7 @@ public class GameController implements EngineListener, SearchListener {
 
     public boolean isShowTrends = false;
 
-    private GameControllerListener gui = null;
+    private ControllerListener gui = null;
     ArrayList<PvInfo> multiPVs = new ArrayList<>();
 
     OpenBookManager bookManager = null;
@@ -72,7 +72,7 @@ public class GameController implements EngineListener, SearchListener {
         WAITING_FOR_EVAL // 等待eval的结果
     }
 
-    public GameController(GameControllerListener cListener) {
+    public GameController(ControllerListener cListener) {
         gui = cListener;
 
         isComputerPlaying = true;

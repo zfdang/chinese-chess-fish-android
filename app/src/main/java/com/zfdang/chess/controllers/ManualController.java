@@ -9,7 +9,6 @@ import com.zfdang.chess.manuals.XQFParser;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -19,7 +18,7 @@ public class ManualController extends GameController{
 
     private Context context = null;
 
-    public ManualController(GameControllerListener listener) {
+    public ManualController(ControllerListener listener) {
         super(listener);
 
         this.context = ChessApp.getContext();

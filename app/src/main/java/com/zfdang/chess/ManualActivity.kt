@@ -20,7 +20,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.zfdang.chess.adapters.HistoryAndTrendAdapter
 import com.zfdang.chess.assetsUtils.CopyAssetsUtil
 import com.zfdang.chess.assetsUtils.PathUtil
-import com.zfdang.chess.controllers.GameControllerListener
+import com.zfdang.chess.controllers.ControllerListener
 import com.zfdang.chess.controllers.ManualController
 import com.zfdang.chess.databinding.ActivityManualBinding
 import com.zfdang.chess.gamelogic.GameStatus
@@ -31,7 +31,7 @@ import me.rosuh.filepicker.filetype.FileType
 import me.rosuh.filepicker.filetype.XQFFileType
 
 
-class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControllerListener,
+class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerListener,
     View.OnClickListener, SettingDialogFragment.SettingDialogListener {
 
     private val PREFS_NAME = "com.zfdang.chess.manual.preferences"

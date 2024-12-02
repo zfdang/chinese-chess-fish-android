@@ -2,7 +2,7 @@ package com.zfdang.chess.controllers;
 
 import com.zfdang.chess.gamelogic.GameStatus;
 
-public interface GameControllerListener {
+public interface ControllerListener {
 
     // create fun to send game over event
     public void onGameEvent(GameStatus event, String message);

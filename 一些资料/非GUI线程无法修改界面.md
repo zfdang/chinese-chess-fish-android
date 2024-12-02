@@ -29,7 +29,7 @@ runOnUiThread(new Runnable() {
 
 对应的android文档：
 
-[runOnUiThread](https://developer.android.com/reference/android/app/Activity.html#runOnUiThread(java.lang.Runnable))
+[runOnUiThread](https://developer.android.com/reference/android/app/GameActivity.html#runOnUiThread(java.lang.Runnable))
 
 ## 代码示例
 

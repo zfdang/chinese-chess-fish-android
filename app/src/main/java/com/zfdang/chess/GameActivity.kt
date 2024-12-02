@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.github.mikephil.charting.components.Description
 import com.zfdang.chess.adapters.HistoryAndTrendAdapter
 import com.zfdang.chess.controllers.GameController
-import com.zfdang.chess.controllers.GameControllerListener
+import com.zfdang.chess.controllers.ControllerListener
 import com.zfdang.chess.databinding.ActivityGameBinding
 import com.zfdang.chess.gamelogic.GameStatus
 import com.zfdang.chess.openbook.BHOpenBook
@@ -24,7 +24,7 @@ import com.zfdang.chess.openbook.OpenBookManager
 import com.zfdang.chess.views.ChessView
 
 
-class GameActivity() : AppCompatActivity(), View.OnTouchListener, GameControllerListener,
+class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerListener,
     View.OnClickListener, SettingDialogFragment.SettingDialogListener {
 
     // 防止重复点击

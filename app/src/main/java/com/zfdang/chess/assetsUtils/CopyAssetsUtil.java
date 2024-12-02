@@ -69,7 +69,7 @@ public class CopyAssetsUtil {
             fos.flush();
             is.close();
             fos.close();
-            Log.d("CopyAssetsUtil", "copyAssets: " + folderName + " copy is success");
+//            Log.d("CopyAssetsUtil", "copyAssets: " + folderName + " copy is success");
         }
     }
 
