@@ -69,9 +69,13 @@ public class GameController implements EngineListener, SearchListener {
         WAITING_FOR_ENGINE, // 黑方出子
         WAITING_FOR_ENGINE_BESTMV, // 黑方寻找最佳着法
         WAITING_FOR_ENGINE_MULTIPV, // 黑方变着，等待多PV结果
-        WAITING_FOR_EVAL // 等待eval的结果
+        WAITING_FOR_EVAL, // 等待eval的结果
+        MANUAL_MODE, // 打谱模式
     }
 
+    public boolean isNonGameMode() {
+        return state == ControllerState.MANUAL_MODE;
+    }
     public GameController(ControllerListener cListener) {
         gui = cListener;
 

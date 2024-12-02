@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
@@ -31,8 +30,8 @@ import me.rosuh.filepicker.filetype.FileType
 import me.rosuh.filepicker.filetype.XQFFileType
 
 
-class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerListener,
-    View.OnClickListener, SettingDialogFragment.SettingDialogListener {
+class ManualActivity() : AppCompatActivity(), ControllerListener,
+    View.OnClickListener {
 
     private val PREFS_NAME = "com.zfdang.chess.manual.preferences"
     private val LAST_LAUNCH_VERSION = "last_launch_version"
@@ -70,7 +69,6 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerLi
         chessLayout = binding.chesslayout
         chessView = ChessView(this, controller)
         chessLayout.addView(chessView)
-        chessView.setOnTouchListener(this)
 
         // Bind all imagebuttons here, and set their onClickListener
         val imageButtons = listOf(
@@ -81,7 +79,9 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerLi
             binding.exitbt,
             binding.choice1bt,
             binding.choice2bt,
-            binding.choice3bt
+            binding.choice3bt,
+            binding.choice4bt,
+            binding.choice5bt,
         )
         for (button in imageButtons) {
             button.setOnClickListener(this)
@@ -155,39 +155,12 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerLi
         editor.apply()
     }
 
-    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        // 防止重复点击
-//        lastClickTime = System.currentTimeMillis()
-//        if (lastClickTime - curClickTime < MIN_CLICK_DELAY_TIME) {
-//            return false
-//        }
-//        curClickTime = lastClickTime
-//
-//        if (event!!.action === MotionEvent.ACTION_DOWN) {
-//            val x = event!!.x
-//            val y = event!!.y
-//            val pos = chessView.getPosByCoord(x, y)
-//            if(pos == null) {
-//                // pos is not valid
-//                return false
-//            }
-//            controller.touchPosition(pos);
-//            Log.d("PlayActivity", "onTouch: x = $x, y = $y, pos = " + pos.toString())
-//        }
-        return false
-    }
-
     // create function to set status text
     fun setStatusText(text: String) {
         binding.statustv.text = text
     }
 
     fun saveThenExit() {
-        // in case there is any ongoing searching task
-//        controller.player.stopSearch()
-        // delay 300 ms to save game status
-//        Thread.sleep(100)
-//        controller.saveGameStatus();
         finish()
     }
 
@@ -211,32 +184,43 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerLi
                 saveThenExit();
             }
             binding.choice1bt -> {
-                setStatusText("选择着数1")
-                binding.choice1bt.visibility = View.GONE;
-                binding.choice2bt.visibility = View.GONE;
-                binding.choice3bt.visibility = View.GONE;
+                setStatusText("选择分支1")
+                hideAllChoiceBts()
                 controller.selectBranch(0)
             }
             binding.choice2bt -> {
-                setStatusText("选择着数2")
-                binding.choice1bt.visibility = View.GONE;
-                binding.choice2bt.visibility = View.GONE;
-                binding.choice3bt.visibility = View.GONE;
+                setStatusText("选择分支2")
+                hideAllChoiceBts()
                 controller.selectBranch(1)
             }
             binding.choice3bt -> {
-                setStatusText("选择着数3")
-                binding.choice1bt.visibility = View.GONE;
-                binding.choice2bt.visibility = View.GONE;
-                binding.choice3bt.visibility = View.GONE;
+                setStatusText("选择分支3")
+                hideAllChoiceBts()
                 controller.selectBranch(2)
+            }
+            binding.choice4bt -> {
+                setStatusText("选择分支4")
+                hideAllChoiceBts()
+                controller.selectBranch(3)
+            }
+            binding.choice5bt -> {
+                setStatusText("选择分支5")
+                hideAllChoiceBts()
+                controller.selectBranch(4)
             }
         }
     }
 
+    private fun hideAllChoiceBts() {
+        binding.choice1bt.visibility = View.GONE;
+        binding.choice2bt.visibility = View.GONE;
+        binding.choice3bt.visibility = View.GONE;
+        binding.choice4bt.visibility = View.GONE;
+        binding.choice5bt.visibility = View.GONE;
+    }
+
 
     private fun showOpenManualDialog() {
-
         val types = arrayListOf<FileType>(XQFFileType())
         FilePickerManager
             .from(this)
@@ -253,7 +237,7 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerLi
             FilePickerManager.REQUEST_CODE -> {
                 if (resultCode == Activity.RESULT_OK) {
                     val list = FilePickerManager.obtainData()
-                    Log.d("MainActivity", "onActivityResult: $list")
+                    Log.d("ManualActivity", "onActivityResult: $list")
                     loadManualFromFile(list[0])
                     // do your work
                 } else {
@@ -269,8 +253,20 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerLi
         if(result) {
             // update ui
             binding.textViewTitle.text = controller.manual.title
-            binding.textViewRed.text = "红方:" + controller.manual.red
-            binding.textViewBlack.text = controller.manual.black + ":黑方"
+
+            // if controller.manual.red is empty, then hide textViewRed
+            if(controller.manual.red.isEmpty()) {
+                binding.textViewRed.visibility = View.INVISIBLE
+            } else {
+                binding.textViewRed.visibility = View.VISIBLE
+                binding.textViewRed.text = controller.manual.red
+            }
+            if(controller.manual.black.isEmpty()) {
+                binding.textViewBlack.visibility = View.INVISIBLE
+            } else {
+                binding.textViewBlack.visibility = View.VISIBLE
+                binding.textViewBlack.text = controller.manual.black
+            }
             binding.textViewResult.text = controller.manual.result
             binding.textViewNote.text = controller.manual.annotation
 
@@ -278,43 +274,9 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerLi
         }
     }
 
-    private fun readXQFFile(path: String, file: String) {
-        val xqfFile = path + "/" + file
-        if(xqfFile.endsWith(".xqf", ignoreCase = true)) {
-            Log.d("MainActivity", "Found XQF file: $xqfFile")
-
-            // load content from file assets/xqf/, and store it into char buffer
-            val inputStream = assets.open(xqfFile)
-            val buffer = inputStream.readBytes()
-            inputStream.close()
-
-            Log.d("MainActivity", "Read ${buffer.size} bytes from ${xqfFile}")
-
-            // use XQFGame to parse the buffer
-            val xqfManual = XQFParser.parse(buffer)
-            if(xqfManual == null) {
-                Log.e("MainActivity", "Failed to parse XQF game: " + xqfFile)
-                return
-            }
-
-            val result = xqfManual.validateAllMoves()
-            if (!result) {
-                Log.e("MainActivity", "Failed to validate moves: "  + xqfFile)
-            }
-
-            Log.d("MainActivity", "Parsed XQF game: " + xqfManual)
-
-//            if(xqfManual.hasEmptyMove()) {
-//                Log.e("MainActivity", "Found empty move, file = " + xqfFile)
-//            }
-
-        } else {
-            Log.d("MainActivity", "Not a XQF file: $xqfFile")
-        }
-    }
 
     override fun onGameEvent(status: GameStatus?, message: String?) {
-        Log.d(  "PlayActivity", "onGameEvent: $status, $message")
+        Log.d(  "ManualActivity", "onGameEvent: $status, $message")
         when(status) {
             GameStatus.ILLEGAL -> {
                 message?.let { setStatusText(it) }
@@ -364,6 +326,12 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerLi
                     if(controller.getMultiPVSize() >= 3){
                         binding.choice3bt.visibility = View.VISIBLE;
                     }
+                    if(controller.getMultiPVSize() >= 4){
+                        binding.choice4bt.visibility = View.VISIBLE;
+                    }
+                    if(controller.getMultiPVSize() >= 5){
+                        binding.choice5bt.visibility = View.VISIBLE;
+                    }
                 }
 
                 soundPlayer.ready()
@@ -374,8 +342,14 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerLi
             }
         }
 
-        // update history table
-        historyAndTrendAdapter.update()
+        // update move comments
+        if(controller.moveNode.move == null) {
+            // headMove, show manual annotation
+            binding.textViewNote.text = controller.manual.annotation
+        } else if(controller.moveNode.move.comment != null) {
+            // show move comment
+            binding.textViewNote.text = controller.moveNode.move.comment
+        }
     }
 
     // create fun to handle onbackpressed
@@ -392,14 +366,4 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerLi
     override fun runOnUIThread(runnable: Runnable?) {
             runOnUiThread(runnable);
         }
-
-    override fun onDialogPositiveClick() {
-        // save setting values to variables in settings
-        Log.d("GameActivity", "onDialogPositiveClick" + controller.settings.toString())
-    }
-
-    override fun onDialogNegativeClick() {
-        // do nothing
-    }
-
 }

@@ -42,8 +42,10 @@
                 android:id="@+id/textViewRed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingStart="8dp"
-                android:text="红方: 文天祥"
+                android:background="@drawable/red_border"
+                android:visibility="invisible"
+                android:padding="8dp"
+                android:text="文天祥"
                 android:textSize="14dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -64,8 +66,10 @@
                 android:id="@+id/textViewBlack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingEnd="8dp"
-                android:text="黑方: 朱晋桢"
+                android:background="@drawable/black_border"
+                android:padding="8dp"
+                android:visibility="invisible"
+                android:text="朱晋桢"
                 android:textSize="14dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -182,6 +186,24 @@
                     android:background="?android:attr/selectableItemBackground"
                     android:visibility="gone"
                     app:srcCompat="@drawable/looks_3" />
+
+                <ImageButton
+                    android:id="@+id/choice4bt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="2dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/looks_4" />
+
+                <ImageButton
+                    android:id="@+id/choice5bt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="2dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/looks_5" />
 
             </LinearLayout>
 

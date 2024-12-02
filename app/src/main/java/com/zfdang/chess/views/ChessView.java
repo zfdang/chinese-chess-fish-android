@@ -182,6 +182,10 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     private void showControllerState(Canvas canvas) {
+        if(controller.isNonGameMode()) {
+            // 非下棋模式，在打谱模式下
+            return;
+        }
         int targetSize = Scale(30);
         int xOffset = Scale(BOARD_GRID_INTERVAL * 4 + 45);
         Rect tempDesRect = new Rect(destBoardRect.centerX() - targetSize + xOffset, destBoardRect.centerY() - targetSize,

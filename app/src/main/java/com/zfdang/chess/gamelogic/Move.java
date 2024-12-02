@@ -22,6 +22,7 @@ public class Move implements Serializable {
     public void setComment(String comment) {
         if(comment != null) {
             comment = comment.strip();
+            comment = comment.replace("&nbsp;", " ");
         }
         this.comment = comment;
     }
