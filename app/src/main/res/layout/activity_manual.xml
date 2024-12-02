@@ -221,6 +221,7 @@
                         android:id="@+id/textViewNote"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:textSize="16dp"
                         android:text="TextView" />
                 </ScrollView>
             </LinearLayout>

@@ -7,6 +7,9 @@ import com.zfdang.chess.ChessApp;
 import com.zfdang.chess.manuals.XQFManual;
 import com.zfdang.chess.manuals.XQFParser;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -24,10 +27,9 @@ public class ManualController extends GameController{
 
     public boolean loadManualFromFile(String filename) {
         if(filename.toLowerCase().endsWith(".xqf")) {
-            // load content from file assets/xqf/, and store it into char buffer
             InputStream inputStream = null;
             try {
-                inputStream = this.context.getAssets().open(filename);
+                inputStream = new FileInputStream(new File(filename));
                 byte[] buffer = new byte[inputStream.available()];
                 inputStream.read(buffer);
                 inputStream.close();
@@ -47,6 +49,7 @@ public class ManualController extends GameController{
                 return true;
             } catch (IOException e) {
                 Log.e("ManualController", "Failed to load manual from file: " + filename);
+                Log.e("ManualController", e.getMessage());
             }
 
             return false;

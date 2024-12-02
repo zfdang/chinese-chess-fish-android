@@ -279,7 +279,10 @@ public class XQFManual {
     }
 
     public void setAnnotation(String annotation) {
-        if(annotation != null) { annotation = annotation.strip(); }
+        if(annotation != null) {
+            annotation = annotation.strip();
+            annotation = annotation.replace("&nbsp;", " ");
+        }
         this.annotation = annotation;
     }
 }

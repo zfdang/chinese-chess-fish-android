@@ -1,7 +1,9 @@
 package com.zfdang.chess
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
@@ -188,18 +190,6 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControll
         binding.statustv.text = text
     }
 
-    fun loadManualFromFile(path: String, file: String) {
-        controller.loadManualFromFile("XQF/古谱篇/竹香斋象戏谱 张乔栋/三集/野马操田.XQF")
-
-        // update ui
-        binding.textViewTitle.text = controller.manual.title
-        binding.textViewRed.text = controller.manual.red
-        binding.textViewBlack.text = controller.manual.black
-        binding.textViewResult.text = controller.manual.result
-        binding.textViewNote.text = controller.manual.annotation
-    }
-
-
     fun saveThenExit() {
         // in case there is any ongoing searching task
         controller.player.stopSearch()
@@ -281,6 +271,37 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, GameControll
             .registerFileType(types)
             .skipDirWhenSelect(true)
             .forResult(FilePickerManager.REQUEST_CODE)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            FilePickerManager.REQUEST_CODE -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    val list = FilePickerManager.obtainData()
+                    Log.d("MainActivity", "onActivityResult: $list")
+                    loadManualFromFile(list[0])
+                    // do your work
+                } else {
+                    Toast.makeText(this, "You didn't choose anything~", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    fun loadManualFromFile(file: String) {
+        val result = controller.loadManualFromFile(file)
+
+        if(result) {
+            // update ui
+            binding.textViewTitle.text = controller.manual.title
+            binding.textViewRed.text = "红方:" + controller.manual.red
+            binding.textViewBlack.text = controller.manual.black + ":黑方"
+            binding.textViewResult.text = controller.manual.result
+            binding.textViewNote.text = controller.manual.annotation
+
+            binding.statustv.text = "棋谱加载成功"
+        }
     }
 
     private fun readXQFFile(path: String, file: String) {
