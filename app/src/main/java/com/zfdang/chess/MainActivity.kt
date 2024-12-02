@@ -11,6 +11,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.zfdang.chess.manuals.XQFManual
 import com.zfdang.chess.manuals.XQFParser
 import com.zfdang.chess.views.WebviewActivity
+import me.rosuh.filepicker.config.FilePickerManager
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,10 +36,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         buttonLearn.setOnClickListener {
-            // show toast
-//            Toast.makeText(this, "待实现", Toast.LENGTH_SHORT).show()
-            processAssetPath("XQF")
+            // launch manual activity
+            val intent = Intent(this, ManualActivity::class.java)
+            startActivity(intent)
         }
+
 
         buttonHelp.setOnClickListener {
             // Handle button setting click
@@ -55,48 +57,6 @@ class MainActivity : AppCompatActivity() {
                 putExtra("url", "https://fish.zfdang.com/")
             }
             startActivity(intent)
-        }
-    }
-
-    private fun processAssetPath(path: String) {
-        val files = assets.list(path)
-        for (file in files!!) {
-            // check the file extension, ignoring the case
-            if(file.endsWith(".xqf", ignoreCase = true)) {
-                readXQFFile(path, file)
-            } else {
-                processAssetPath(path + "/" + file)
-            }
-        }
-    }
-
-    private fun readXQFFile(path: String, file: String) {
-        val xqfFile = path + "/" + file
-        if(xqfFile.endsWith(".xqf", ignoreCase = true)) {
-            Log.d("MainActivity", "Found XQF file: $xqfFile")
-
-            // load content from file assets/xqf/, and store it into char buffer
-            val inputStream = assets.open(xqfFile)
-            val buffer = inputStream.readBytes()
-            inputStream.close()
-
-            Log.d("MainActivity", "Read ${buffer.size} bytes from ${xqfFile}")
-
-            // use XQFGame to parse the buffer
-            val xqfManual = XQFParser.parse(buffer)
-            if(xqfManual == null) {
-                Log.e("MainActivity", "Failed to parse XQF game")
-                return
-            }
-
-            val result = xqfManual.validateAllMoves()
-            if (!result) {
-                Log.e("MainActivity", "Failed to validate moves")
-            }
-
-            Log.d("MainActivity", "Parsed XQF game: " + xqfManual)
-        } else {
-            Log.d("MainActivity", "Not a XQF file: $xqfFile")
         }
     }
 }

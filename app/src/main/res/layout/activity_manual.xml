@@ -1,0 +1,231 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintlayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/boardbg_repeat"
+    android:theme="@style/ThemeOverlay.ChineseChess.FullscreenContainer"
+    tools:context=".GameActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/textViewTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="棋谱标题"
+                android:textAlignment="center" />
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/textViewRed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="红方：胡荣华"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/textViewResult"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="红方胜"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/textViewBlack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="黑方：李天一"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <FrameLayout
+            android:id="@+id/chesslayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:minHeight="200dp">
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:paddingTop="8dp"
+            android:paddingBottom="4dp">
+
+            <ImageButton
+                android:id="@+id/openbt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="4dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/manual" />
+
+            <ImageButton
+                android:id="@+id/firstbt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="4dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/arrow_first" />
+
+
+            <ImageButton
+                android:id="@+id/backbt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="4dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/arrow_back" />
+
+            <ImageButton
+                android:id="@+id/forwardbt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="4dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/arrow_forward" />
+
+
+            <ImageButton
+                android:id="@+id/notebt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="4dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/note" />
+
+            <ImageButton
+                android:id="@+id/exitbt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="4dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/logout" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:background="@color/game_hint_background"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/statustv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="TextView"
+                    android:textSize="16sp" />
+
+                <ImageButton
+                    android:id="@+id/choice1bt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="2dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/looks_1" />
+
+                <ImageButton
+                    android:id="@+id/choice2bt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="2dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/looks_2" />
+
+                <ImageButton
+                    android:id="@+id/choice3bt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="2dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:visibility="gone"
+                    app:srcCompat="@drawable/looks_3" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:baselineAligned="false"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ScrollView
+                    android:id="@+id/historyscroll"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    android:background="@color/move_history_background">
+
+                    <TableLayout
+                        android:id="@+id/historyTable"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    </TableLayout>
+
+                </ScrollView>
+
+                <ScrollView
+                    android:id="@+id/notescroll"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/move_history_background">
+
+                    <TableLayout
+                        android:id="@+id/gamenote"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                    </TableLayout>
+
+                </ScrollView>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
