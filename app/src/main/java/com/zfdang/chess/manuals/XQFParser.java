@@ -325,6 +325,7 @@ public class XQFParser {
 
         // add movenode
         XQFManual.MoveNode nextNode = new XQFManual.MoveNode(move);
+        nextNode.setParent(node);
         node.addNextMove(nextNode);
 
         if (hasNextStep) {

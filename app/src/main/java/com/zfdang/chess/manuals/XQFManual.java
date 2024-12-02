@@ -42,6 +42,7 @@ public class XQFManual {
     public static class MoveNode {
         public Move move;
         public ArrayList<MoveNode> nextMoves;
+        public MoveNode parent;
 
         public MoveNode(Move move) {
             this.move = move;
@@ -50,6 +51,10 @@ public class XQFManual {
 
         public void addNextMove(MoveNode moveNode) {
             nextMoves.add(moveNode);
+        }
+
+        public void setParent(MoveNode parent) {
+            this.parent = parent;
         }
     }
 
