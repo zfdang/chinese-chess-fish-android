@@ -97,7 +97,7 @@
                 android:id="@+id/openbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="12dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/manual" />
 
@@ -106,7 +106,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="12dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/arrow_first" />
 
@@ -116,7 +116,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="12dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/arrow_back" />
 
@@ -125,7 +125,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="12dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/arrow_forward" />
 
@@ -134,7 +134,7 @@
                 android:id="@+id/exitbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="8dp"
+                android:layout_marginHorizontal="12dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/logout" />
 
@@ -233,6 +233,7 @@
                         android:id="@+id/textViewNote"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
+                        android:padding="8dp"
                         android:textSize="16dp"
                         android:text="" />
                 </ScrollView>

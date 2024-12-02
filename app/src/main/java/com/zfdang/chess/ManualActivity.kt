@@ -119,7 +119,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
             val builder = AlertDialog.Builder(this)
             builder.setCancelable(false)
             builder.setTitle("初始化中")
-            builder.setMessage("正在初始化棋谱，请稍候...")
+            builder.setMessage("正在初始化棋谱，时间较长，请耐心等待...")
             waitingDialog = builder.create()
             waitingDialog.show()
 
@@ -241,7 +241,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
                     loadManualFromFile(list[0])
                     // do your work
                 } else {
-                    Toast.makeText(this, "You didn't choose anything~", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "您未选取任何文件", Toast.LENGTH_SHORT).show()
                 }
             }
         }
