@@ -27,11 +27,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:padding="6dp"
+                android:textSize="16dp"
                 android:text="棋谱标题"
                 android:textAlignment="center" />
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:padding="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -39,8 +42,12 @@
                 android:id="@+id/textViewRed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="红方：胡荣华"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:paddingStart="8dp"
+                android:text="红方: 文天祥"
+                android:textSize="14dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/textViewResult"
@@ -48,14 +55,21 @@
                 android:layout_height="wrap_content"
                 android:text="红方胜"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:textSize="16dp"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
                 android:id="@+id/textViewBlack"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="黑方：李天一"
-                app:layout_constraintEnd_toEndOf="parent" />
+                android:paddingEnd="8dp"
+                android:text="黑方: 朱晋桢"
+                android:textSize="14dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <FrameLayout
@@ -79,7 +93,7 @@
                 android:id="@+id/openbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="4dp"
+                android:layout_marginHorizontal="8dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/manual" />
 
@@ -88,7 +102,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="4dp"
+                android:layout_marginHorizontal="8dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/arrow_first" />
 
@@ -98,7 +112,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="4dp"
+                android:layout_marginHorizontal="8dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/arrow_back" />
 
@@ -107,24 +121,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="4dp"
+                android:layout_marginHorizontal="8dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/arrow_forward" />
 
 
             <ImageButton
-                android:id="@+id/notebt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="4dp"
-                android:background="?android:attr/selectableItemBackground"
-                app:srcCompat="@drawable/note" />
-
-            <ImageButton
                 android:id="@+id/exitbt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="4dp"
+                android:layout_marginHorizontal="8dp"
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/logout" />
 
@@ -196,33 +202,17 @@
                 android:orientation="vertical">
 
                 <ScrollView
-                    android:id="@+id/historyscroll"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone"
-                    android:background="@color/move_history_background">
-
-                    <TableLayout
-                        android:id="@+id/historyTable"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-                    </TableLayout>
-
-                </ScrollView>
-
-                <ScrollView
                     android:id="@+id/notescroll"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/move_history_background">
-
 
                     <TextView
                         android:id="@+id/textViewNote"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:textSize="16dp"
-                        android:text="TextView" />
+                        android:text="" />
                 </ScrollView>
             </LinearLayout>
 

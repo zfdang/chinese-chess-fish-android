@@ -78,7 +78,6 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerLi
             binding.firstbt,
             binding.backbt,
             binding.forwardbt,
-            binding.notebt,
             binding.exitbt,
             binding.choice1bt,
             binding.choice2bt,
@@ -92,17 +91,10 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerLi
         soundPlayer = SoundPlayer(this, controller)
 
         // Bind historyTable and initialize it with dummy data
-        val historyTable = binding.historyTable
         val gamenote = binding.textViewNote
-        historyAndTrendAdapter = HistoryAndTrendAdapter(this, historyTable, null, controller)
-        historyAndTrendAdapter.update()
 
         // init status text
-        if(controller.isRedTurn){
-            setStatusText("等待红方走棋")
-        } else if(controller.isBlackTurn) {
-            setStatusText("等待黑方走棋")
-        }
+        setStatusText("未加载棋谱")
 
         // run initManual() after delaying 500ms
         Handler(Looper.getMainLooper()).postDelayed({
@@ -192,10 +184,10 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerLi
 
     fun saveThenExit() {
         // in case there is any ongoing searching task
-        controller.player.stopSearch()
+//        controller.player.stopSearch()
         // delay 300 ms to save game status
-        Thread.sleep(100)
-        controller.saveGameStatus();
+//        Thread.sleep(100)
+//        controller.saveGameStatus();
         finish()
     }
 
@@ -215,24 +207,6 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerLi
             binding.firstbt -> {
                 controller.manualFirst()
             }
-            binding.notebt -> {
-                // get image resource of trends button
-                controller.toggleShowTrends()
-                val imageResource = if(controller.isShowTrends) R.drawable.note else R.drawable.history
-                binding.notebt.setImageResource(imageResource)
-
-                if(controller.isShowTrends){
-                    setStatusText("显示评估趋势图")
-                    binding.notescroll.visibility = View.VISIBLE
-                    binding.historyscroll.visibility = View.GONE
-                } else {
-                    setStatusText("显示走法历史")
-                    binding.notescroll.visibility = View.GONE
-                    binding.historyscroll.visibility = View.VISIBLE
-                }
-
-                historyAndTrendAdapter.update()
-            }
             binding.exitbt -> {
                 saveThenExit();
             }
@@ -241,21 +215,21 @@ class ManualActivity() : AppCompatActivity(), View.OnTouchListener, ControllerLi
                 binding.choice1bt.visibility = View.GONE;
                 binding.choice2bt.visibility = View.GONE;
                 binding.choice3bt.visibility = View.GONE;
-                controller.selectMultiPV(0)
+                controller.selectBranch(0)
             }
             binding.choice2bt -> {
                 setStatusText("选择着数2")
                 binding.choice1bt.visibility = View.GONE;
                 binding.choice2bt.visibility = View.GONE;
                 binding.choice3bt.visibility = View.GONE;
-                controller.selectMultiPV(1)
+                controller.selectBranch(1)
             }
             binding.choice3bt -> {
                 setStatusText("选择着数3")
                 binding.choice1bt.visibility = View.GONE;
                 binding.choice2bt.visibility = View.GONE;
                 binding.choice3bt.visibility = View.GONE;
-                controller.selectMultiPV(2)
+                controller.selectBranch(2)
             }
         }
     }

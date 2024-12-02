@@ -68,4 +68,8 @@ public class ManualController extends GameController{
     public void manualFirst() {
 
     }
+
+    public void selectBranch(int i) {
+
+    }
 }
