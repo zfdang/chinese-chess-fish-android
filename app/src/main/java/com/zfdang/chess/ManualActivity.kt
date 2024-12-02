@@ -270,6 +270,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
             binding.textViewResult.text = controller.manual.result
             binding.textViewNote.text = controller.manual.annotation
 
+            hideAllChoiceBts()
             binding.statustv.text = "棋谱加载成功"
         }
     }
@@ -287,9 +288,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
                 soundPlayer.move();
 
                 if(binding.choice1bt.visibility == View.VISIBLE){
-                    binding.choice1bt.visibility = View.GONE;
-                    binding.choice2bt.visibility = View.GONE;
-                    binding.choice3bt.visibility = View.GONE;
+                    hideAllChoiceBts()
                 }
             }
             GameStatus.CAPTURE -> {
