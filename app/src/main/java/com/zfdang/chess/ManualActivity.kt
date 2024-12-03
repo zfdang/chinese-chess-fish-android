@@ -33,7 +33,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
     View.OnClickListener {
 
     private val PREFS_NAME = "com.zfdang.chess.manual.preferences"
-    private val LAST_LAUNCH_VERSION = "last_launch_version"
+    private val LAST_LAUNCH_VERSION_NAME = "last_launch_version_name"
     private lateinit var waitingDialog: AlertDialog
 
     // 防止重复点击
@@ -103,10 +103,10 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
 
     private fun initManual() {
         val pm: PackageManager = getPackageManager()
-        var currentVersion = 0
+        var currentVersion = ""
         try {
             val pi: PackageInfo = pm.getPackageInfo(getPackageName(), 0)
-            currentVersion = pi.versionCode
+            currentVersion = pi.versionName
         } catch (e: PackageManager.NameNotFoundException) {
             Log.e("Setting", "isFirstRun: " + Log.getStackTraceString(e))
         }
@@ -135,22 +135,22 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
         }
     }
 
-    private fun isFirstRun(currentVersion:Int): Boolean {
+    private fun isFirstRun(currentVersion:String): Boolean {
         val sharedPreferences: SharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val last_version = sharedPreferences.getInt(LAST_LAUNCH_VERSION, 0)
+        val last_version = sharedPreferences.getString(LAST_LAUNCH_VERSION_NAME, "unknown")
         Log.d("Setting", "isFirstRun: last_version = $last_version, currentVersion = $currentVersion")
 
-        if(currentVersion == last_version) {
+        if(last_version.equals(currentVersion)) {
             return false
         } else {
             return true
         }
     }
 
-    private fun setFirstRunVersion(currentVersion:Int) {
+    private fun setFirstRunVersion(currentVersion:String) {
         val sharedPreferences: SharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
-        editor.putInt(LAST_LAUNCH_VERSION, currentVersion)
+        editor.putString(LAST_LAUNCH_VERSION_NAME, currentVersion)
         editor.apply()
     }
 
