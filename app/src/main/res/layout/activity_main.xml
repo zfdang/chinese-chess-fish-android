@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
+    android:background="@drawable/chessbg"
     tools:context=".MainActivity">
 
 
@@ -23,6 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
             android:text="对弈"
+            android:textSize="20dp"
             app:layout_constraintBottom_toTopOf="@+id/button_learn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -35,6 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
             android:text="打谱"
+            android:textSize="20dp"
             app:layout_constraintBottom_toTopOf="@+id/button_help"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -46,6 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
             android:text="帮助"
+            android:textSize="20dp"
             app:layout_constraintBottom_toTopOf="@+id/button_about"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -57,6 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_marginVertical="10dp"
             android:text="关于"
+            android:textSize="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
