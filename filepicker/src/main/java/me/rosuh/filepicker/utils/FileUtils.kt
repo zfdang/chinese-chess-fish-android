@@ -2,14 +2,13 @@ package me.rosuh.filepicker.utils
 
 import android.content.Context
 import android.os.Environment
+import com.github.promeg.pinyinhelper.Pinyin
 import me.rosuh.filepicker.bean.FileItemBeanImpl
 import me.rosuh.filepicker.bean.FileNavBeanImpl
 import me.rosuh.filepicker.config.FilePickerConfig.Companion.STORAGE_CUSTOM_ROOT_PATH
 import me.rosuh.filepicker.config.FilePickerConfig.Companion.STORAGE_EXTERNAL_STORAGE
 import me.rosuh.filepicker.config.FilePickerManager.config
 import java.io.File
-import java.util.*
-import kotlin.collections.ArrayList
 
 /**
  *
@@ -63,9 +62,11 @@ class FileUtils {
                 return config.selfFilter?.doFilter(listData) ?: listData
             }
             val listFiles = rootFile.listFiles()
+
             if (listFiles.isNullOrEmpty()) {
                 return listData
             }
+
             for (file in listFiles) {
                 //以符号 . 开头的视为隐藏文件或隐藏文件夹，后面进行过滤
                 val isHiddenFile = file.name.startsWith(".")
@@ -113,7 +114,7 @@ class FileUtils {
             listData.sortWith(
                 compareBy(
                     { !it.isDir },
-                    { it.fileName.uppercase(Locale.getDefault()) })
+                    { Pinyin.toPinyin(it.fileName, "") })
             )
             // 将当前列表数据暴露，以供调用者自己处理数据
             // expose data list  to outside caller
