@@ -23,10 +23,13 @@ import com.zfdang.chess.controllers.ControllerListener
 import com.zfdang.chess.controllers.ManualController
 import com.zfdang.chess.databinding.ActivityManualBinding
 import com.zfdang.chess.gamelogic.GameStatus
+import com.zfdang.chess.manuals.XQFParser
 import com.zfdang.chess.views.ChessView
 import me.rosuh.filepicker.config.FilePickerManager
 import me.rosuh.filepicker.filetype.FileType
 import me.rosuh.filepicker.filetype.XQFFileType
+import java.io.File
+import java.io.FileInputStream
 
 
 class ManualActivity() : AppCompatActivity(), ControllerListener,
@@ -177,6 +180,10 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
                 controller.manualBack()
             }
             binding.firstbt -> {
+                // pro-process all manuals in external_storage/xqf
+                // for debug purpose only
+//                processPath(PathUtil.getInternalAppFilesDir(this,"XQF"))
+                
                 controller.manualFirst()
             }
             binding.exitbt -> {
@@ -355,6 +362,50 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
                 binding.textViewNote.text = controller.moveNode.move.comment
             }
         }
+    }
+
+    // to pre-process all manuals in external_storage/xqf
+    private fun processPath(path: String) {
+        Log.d("ManualActivity", "process path = $path")
+
+        // list all files in the path
+        val files = File(path).list()
+        for (file in files!!) {
+            // check the file extension, ignoring the case
+            val filepath = path + "/" + file
+            if(File(filepath).isDirectory()) {
+                Log.d("ManualActivity", "process path = $filepath")
+                processPath(filepath)
+            } else if(file.endsWith(".xqf", ignoreCase = true)) {
+                Log.d("ManualActivity", "process file = $filepath")
+                readXQFFile(filepath)
+            }
+        }
+    }
+
+    private fun readXQFFile(xqfFile: String) {
+        Log.d("ManualActivity", "Found XQF file: $xqfFile")
+
+        // load content from file assets/xqf/, and store it into char buffer
+        val inputStream = FileInputStream(xqfFile)
+        val buffer = inputStream.readBytes()
+        inputStream.close()
+
+        Log.d("ManualActivity", "Read ${buffer.size} bytes")
+
+        // use XQFGame to parse the buffer
+        val xqfManual = XQFParser.parse(buffer)
+        if(xqfManual == null) {
+            Log.e("ManualActivity", "Failed to parse XQF game from file: $xqfFile")
+            return
+        }
+
+        val result = xqfManual.validateAllMoves()
+        if (!result) {
+            Log.e("ManualActivity", "Failed to validate moves from file: $xqfFile")
+        }
+
+        Log.d("ManualActivity", "Parsed XQF game: " + xqfManual)
     }
 
     // create fun to handle onbackpressed
