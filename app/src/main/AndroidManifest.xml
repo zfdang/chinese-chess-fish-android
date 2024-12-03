@@ -20,18 +20,23 @@
         tools:targetApi="28">
         <activity
             android:name=".views.WebviewActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".PromptActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
         <activity
             android:name=".GameActivity"
+            android:screenOrientation="portrait"
             android:exported="false"/>
         <activity
             android:name=".ManualActivity"
+            android:screenOrientation="portrait"
             android:exported="false"/>
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
