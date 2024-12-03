@@ -128,7 +128,21 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
             // copy XQF manuals
             Thread {
                 // copy all XQF files from assets to external storage, when it's the first run of this version
-                CopyAssetsUtil.copyAssets(this, "XQF", PathUtil.getInternalAppFilesDir(this,"XQF"))
+
+                val destPath = PathUtil.getInternalAppFilesDir(this,"XQF")
+
+                // remove path if exists
+                val file = File(destPath)
+                if(file.exists()) {
+                    if(file.isFile){
+                        file.delete()
+                    } else {
+                        file.deleteRecursively()
+                    }
+                }
+
+                // copy assets to destPath
+                CopyAssetsUtil.copyAssets(this, "XQF", destPath)
                 runOnUiThread {
                     setFirstRunVersion(currentVersion)
                     waitingDialog.dismiss()
