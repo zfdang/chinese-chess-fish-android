@@ -58,7 +58,7 @@ class Settings(private val context: Context) {
                 properties.load(fis)
             }
         } catch (e: IOException) {
-            Log.e("SettingsManager", "Failed to load settings" + e.message)
+            Log.e("SettingsManager", "Failed to load settings: " + e.message)
         }
     }
 
