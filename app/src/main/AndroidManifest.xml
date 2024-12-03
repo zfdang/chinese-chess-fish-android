@@ -23,10 +23,6 @@
             android:screenOrientation="portrait"
             android:exported="false" />
         <activity
-            android:name=".PromptActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
-        <activity
             android:name=".GameActivity"
             android:screenOrientation="portrait"
             android:exported="false"/>
