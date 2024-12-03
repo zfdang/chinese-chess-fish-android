@@ -181,11 +181,11 @@ public class ManualController extends GameController{
                     game.movePiece();
 
                     game.suggestedMoves.clear();
-                    gui.onGameEvent(GameStatus.MOVE, "分支" + i + ": " + game.getLastMoveDesc());
+                    gui.onGameEvent(GameStatus.MOVE, "分支" + (i+1) + ": " + game.getLastMoveDesc());
                 }
             }
         } else {
-            gui.onGameEvent(GameStatus.ILLEGAL, "错误的分支: " + i);
+            gui.onGameEvent(GameStatus.ILLEGAL, "错误的分支: " + (i+1));
         }
     }
 }
