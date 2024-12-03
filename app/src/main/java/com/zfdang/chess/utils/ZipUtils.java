@@ -1,4 +1,4 @@
-package com.zfdang.chess.assetsUtils;
+package com.zfdang.chess.utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

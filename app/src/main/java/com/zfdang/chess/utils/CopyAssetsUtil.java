@@ -1,7 +1,6 @@
-package com.zfdang.chess.assetsUtils;
+package com.zfdang.chess.utils;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;

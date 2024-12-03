@@ -1,4 +1,4 @@
-package com.zfdang.chess.assetsUtils;
+package com.zfdang.chess.utils;
 
 import android.content.Context;
 import android.os.Environment;
@@ -136,5 +136,20 @@ public class PathUtil {
      */
     public static String getExternalStorageAppCacheDir(Context context) {
         return context.getExternalCacheDir().toString();
+    }
+
+    /*
+    * 从完整路径中获取文件名, 不需要保留文件的后缀名
+     */
+    public static String getFileName(String path) {
+        if (path == null || path.length() == 0) {
+            return "";
+        }
+        int start = path.lastIndexOf("/");
+        int end = path.lastIndexOf(".");
+        if (start != -1 && end != -1) {
+            return path.substring(start + 1, end);
+        }
+        return "";
     }
 }

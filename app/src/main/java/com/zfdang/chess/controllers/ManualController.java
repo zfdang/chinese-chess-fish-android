@@ -10,6 +10,7 @@ import com.zfdang.chess.gamelogic.Move;
 import com.zfdang.chess.gamelogic.PvInfo;
 import com.zfdang.chess.manuals.XQFManual;
 import com.zfdang.chess.manuals.XQFParser;
+import com.zfdang.chess.utils.PathUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,6 +49,8 @@ public class ManualController extends GameController{
                     return false;
                 }
 
+                manual.setFilename(PathUtil.getFileName(filename));
+
                 boolean result = manual.validateAllMoves();
                 if (!result) {
                     Log.e("ManualActivity", "Failed to validate moves: "  + filename);
@@ -77,42 +80,57 @@ public class ManualController extends GameController{
 
     public void manualForward() {
         if(manual == null) {
-            gui.onGameEvent(GameStatus.ILLEGAL, "No manual loaded");
+            gui.onGameEvent(GameStatus.ILLEGAL, "未打开棋谱...");
             return;
         }
-        if(moveNode != null) {
-            ArrayList<XQFManual.MoveNode> children = moveNode.nextMoves;
-            if(children.size() == 1){
-                // only one child, move to it
-                moveNode = children.get(0);
-                if(moveNode != null) {
-                    Move m = moveNode.move;
-                    if(m != null) {
-                        game.startPos = m.fromPosition;
-                        game.endPos = m.toPosition;
-                        game.movePiece();
 
-                        gui.onGameEvent(GameStatus.MOVE, game.getLastMoveDesc());
-                    }
-                }
-            } else if(children.size() > 1){
-                // multiple children, show a dialog to let user choose
-                multiPVs.clear();
-                for(XQFManual.MoveNode child : children){
-                    PvInfo pvInfo = new PvInfo(0, 0, 0, 0, 0, 0, 0, 0, false, false, false, new ArrayList<>());
-                    pvInfo.pv.add(child.move);
-                    multiPVs.add(pvInfo);
-                }
-                game.generateSuggestedMoves(multiPVs);
-                gui.onGameEvent(GameStatus.MULTIPV, "请选择分支: ");
-                Log.d("ManualController", "multiPVs: " + multiPVs.size());
-            } else{
-                gui.onGameEvent(GameStatus.ILLEGAL, "没有下一步了");
-            }
+        if(moveNode == null) {
+            gui.onGameEvent(GameStatus.ILLEGAL, "状态异常");
+            return;
         }
+
+        ArrayList<XQFManual.MoveNode> children = moveNode.nextMoves;
+        if(children.size() == 1){
+            // only one child, move to it
+            moveNode = children.get(0);
+            if(moveNode != null) {
+                Move m = moveNode.move;
+                if(m != null) {
+                    game.startPos = m.fromPosition;
+                    game.endPos = m.toPosition;
+                    game.movePiece();
+
+                    gui.onGameEvent(GameStatus.MOVE, game.getLastMoveDesc());
+                }
+            }
+        } else if(children.size() > 1){
+            // multiple children, show a dialog to let user choose
+            multiPVs.clear();
+            for(XQFManual.MoveNode child : children){
+                PvInfo pvInfo = new PvInfo(0, 0, 0, 0, 0, 0, 0, 0, false, false, false, new ArrayList<>());
+                pvInfo.pv.add(child.move);
+                multiPVs.add(pvInfo);
+            }
+            game.generateSuggestedMoves(multiPVs);
+            gui.onGameEvent(GameStatus.MULTIPV, "请选择分支: ");
+            Log.d("ManualController", "multiPVs: " + multiPVs.size());
+        } else{
+            gui.onGameEvent(GameStatus.ILLEGAL, "没有下一步了");
+        }
+
     }
 
     public void manualBack() {
+        if(manual == null) {
+            gui.onGameEvent(GameStatus.ILLEGAL, "未打开棋谱...");
+            return;
+        }
+
+        if(moveNode == null) {
+            gui.onGameEvent(GameStatus.ILLEGAL, "状态异常");
+            return;
+        }
+
         if(moveNode.parent == null) {
             gui.onGameEvent(GameStatus.ILLEGAL, "已经到达开局");
             return;
@@ -124,6 +142,11 @@ public class ManualController extends GameController{
     }
 
     public void manualFirst() {
+        if(manual == null) {
+            gui.onGameEvent(GameStatus.ILLEGAL, "未打开棋谱...");
+            return;
+        }
+
         moveNode = manual.getHeadMove();
 
         // reset game
@@ -138,30 +161,31 @@ public class ManualController extends GameController{
 
     public void selectBranch(int i) {
         if(manual == null) {
-            gui.onGameEvent(GameStatus.ILLEGAL, "No manual loaded");
+            gui.onGameEvent(GameStatus.ILLEGAL, "未打开棋谱...");
             return;
         }
-        if(moveNode != null) {
-            ArrayList<XQFManual.MoveNode> children = moveNode.nextMoves;
-            if(i < children.size()) {
-                moveNode = children.get(i);
-                if(moveNode != null) {
-                    Move m = moveNode.move;
-                    if(m != null) {
-                        game.startPos = m.fromPosition;
-                        game.endPos = m.toPosition;
-                        game.movePiece();
 
-                        game.suggestedMoves.clear();
-                        gui.onGameEvent(GameStatus.MOVE, game.getLastMoveDesc());
-                    }
-                }
-
-            } else {
-                gui.onGameEvent(GameStatus.ILLEGAL, "错误的分支:" + i);
-            }
+        if(moveNode == null) {
+            gui.onGameEvent(GameStatus.ILLEGAL, "状态异常");
+            return;
         }
 
+        ArrayList<XQFManual.MoveNode> children = moveNode.nextMoves;
+        if(i < children.size()) {
+            moveNode = children.get(i);
+            if(moveNode != null) {
+                Move m = moveNode.move;
+                if(m != null) {
+                    game.startPos = m.fromPosition;
+                    game.endPos = m.toPosition;
+                    game.movePiece();
 
+                    game.suggestedMoves.clear();
+                    gui.onGameEvent(GameStatus.MOVE, "分支" + i + ":" + game.getLastMoveDesc());
+                }
+            }
+        } else {
+            gui.onGameEvent(GameStatus.ILLEGAL, "错误的分支:" + i);
+        }
     }
 }

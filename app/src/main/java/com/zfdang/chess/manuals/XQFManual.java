@@ -11,6 +11,7 @@ import java.util.ArrayList;
 // XQF format
 // https://github.com/zfdang/chinese-chess-fish-android/blob/master/%E6%A3%8B%E8%B0%B1/XQF%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F%E8%AF%B4%E6%98%8E.TXT
 public class XQFManual {
+    private String filename;
     private String format;
     private int version;
 
@@ -36,6 +37,14 @@ public class XQFManual {
 
     public MoveNode getHeadMove() {
         return headMove;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public void setFilename(String filename) {
+        this.filename = filename;
     }
 
     // create public class MoveNode
@@ -197,7 +206,7 @@ public class XQFManual {
             }
         }
 
-        // 验证后续moves时候正确
+        // 验证后续moves是否正确
         for(MoveNode nextNode : node.nextMoves) {
             boolean result = validateMove(b, nextNode);
             if(!result) {

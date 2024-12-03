@@ -17,13 +17,12 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.zfdang.chess.adapters.HistoryAndTrendAdapter
-import com.zfdang.chess.assetsUtils.CopyAssetsUtil
-import com.zfdang.chess.assetsUtils.PathUtil
+import com.zfdang.chess.utils.CopyAssetsUtil
+import com.zfdang.chess.utils.PathUtil
 import com.zfdang.chess.controllers.ControllerListener
 import com.zfdang.chess.controllers.ManualController
 import com.zfdang.chess.databinding.ActivityManualBinding
 import com.zfdang.chess.gamelogic.GameStatus
-import com.zfdang.chess.manuals.XQFParser
 import com.zfdang.chess.views.ChessView
 import me.rosuh.filepicker.config.FilePickerManager
 import me.rosuh.filepicker.filetype.FileType
@@ -119,7 +118,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
             val builder = AlertDialog.Builder(this)
             builder.setCancelable(false)
             builder.setTitle("初始化中")
-            builder.setMessage("正在初始化棋谱，时间较长，请耐心等待...")
+            builder.setMessage("初次运行，正在初始化棋谱，时间较长(>30s)，请耐心等待...")
             waitingDialog = builder.create()
             waitingDialog.show()
 
@@ -251,8 +250,11 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
         val result = controller.loadManualFromFile(file)
 
         if(result) {
-            // update ui
-            binding.textViewTitle.text = controller.manual.title
+            if(controller.manual.title == null || controller.manual.title.isEmpty()) {
+                binding.textViewTitle.text = controller.manual.filename
+            } else {
+                binding.textViewTitle.text = controller.manual.title
+            }
 
             // if controller.manual.red is empty, then hide textViewRed
             if(controller.manual.red.isEmpty()) {
@@ -272,6 +274,8 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
 
             hideAllChoiceBts()
             binding.statustv.text = "棋谱加载成功"
+        } else {
+            binding.statustv.text = "棋谱加载失败"
         }
     }
 
@@ -341,13 +345,15 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
             }
         }
 
-        // update move comments
-        if(controller.moveNode.move == null) {
-            // headMove, show manual annotation
-            binding.textViewNote.text = controller.manual.annotation
-        } else if(controller.moveNode.move.comment != null) {
-            // show move comment
-            binding.textViewNote.text = controller.moveNode.move.comment
+        if(controller.manual != null && controller.moveNode != null) {
+            // update textViewNote
+            if(controller.moveNode.move == null) {
+                // headMove, show manual annotation
+                binding.textViewNote.text = controller.manual.annotation
+            } else {
+                // show move comment
+                binding.textViewNote.text = controller.moveNode.move.comment
+            }
         }
     }
 
