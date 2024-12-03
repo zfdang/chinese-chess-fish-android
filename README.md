@@ -45,7 +45,8 @@ https://github.com/kongxiangchx/ChineseChess
 #### DroidFish Android Chess App
 https://github.com/peterosterlund2/droidfish
 
-
+#### cchess是一个Python版的中国象棋库
+https://github.com/walker8088/cchess
 
 
 
