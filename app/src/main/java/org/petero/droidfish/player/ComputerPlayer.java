@@ -431,7 +431,7 @@ public class ComputerPlayer {
      * Process one line of data from the engine.
      */
     private synchronized void processEngineOutput(UCIEngine uci, String s) {
-        Log.d("ComputerPlayer", "processEngineOutput: " + " state: " + engineState.state + " s: " + s);
+//        Log.d("ComputerPlayer", "processEngineOutput: " + " state: " + engineState.state + " s: " + s);
         if (Thread.currentThread().isInterrupted())
             return;
 

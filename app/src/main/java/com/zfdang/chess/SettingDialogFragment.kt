@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import com.zfdang.chess.controllers.GameController
+import com.zfdang.chess.openbook.BHDatabase
 
 class SettingDialogFragment : DialogFragment() {
     interface SettingDialogListener {
@@ -45,6 +46,10 @@ class SettingDialogFragment : DialogFragment() {
             engineInfoTV.text = "引擎: " + engineInfo
         }
 
+        val booleanOpenbook = view.findViewById<CheckBox>(R.id.boolean_openbook)
+        val textviewOpenbook = view.findViewById<TextView>(R.id.textViewOpenBook)
+        textviewOpenbook.text = "(" + BHDatabase.OPENBOOK_NAME + ")"
+
         val booleanSound = view.findViewById<CheckBox>(R.id.boolean_sound)
 
         val historyInput = view.findViewById<SeekBar>(R.id.seekbar_history)
@@ -69,6 +74,7 @@ class SettingDialogFragment : DialogFragment() {
 
         // set the initial values
         if (this.settings != null) {
+            booleanOpenbook.isChecked = this.settings.openbook
             booleanSound.isChecked = this.settings.sound_effect
             historyInput.progress = this.settings.history_moves
             historyText.text = this.settings.history_moves.toString()
@@ -147,6 +153,7 @@ class SettingDialogFragment : DialogFragment() {
         builder.setView(view)
             .setTitle("游戏设置")
             .setPositiveButton("确定") { dialog, id ->
+                settings.openbook = booleanOpenbook.isChecked
                 settings.sound_effect = booleanSound.isChecked
                 settings.history_moves = historyInput.progress
                 settings.go_depth = radioDepth.isChecked

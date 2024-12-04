@@ -17,7 +17,6 @@ import com.zfdang.chess.gamelogic.Rule;
 import com.zfdang.chess.openbook.BHOpenBook;
 import com.zfdang.chess.openbook.BookData;
 import com.zfdang.chess.openbook.OpenBook;
-import com.zfdang.chess.openbook.OpenBookManager;
 
 import org.jetbrains.annotations.NotNull;
 import org.petero.droidfish.player.ComputerPlayer;
@@ -36,6 +35,9 @@ public class GameController implements EngineListener, SearchListener {
     private String engineName = "pikafish";
     public String engineInfo; // returned by engine
 
+    // 如果电脑开机了随机着法，那么前N步会随机选择一个着法。这个数值不易过大，否则电脑棋力下降太多
+    private final int random_before_max_rounds = 12;
+
     public Game game = null;
     private int searchId;
     private long searchStartTime;
@@ -49,7 +51,6 @@ public class GameController implements EngineListener, SearchListener {
     private ControllerListener gui = null;
     ArrayList<PvInfo> multiPVs = new ArrayList<>();
 
-    OpenBookManager bookManager = null;
     BHOpenBook bhBook = null;
 
     public ControllerState state;
@@ -186,15 +187,22 @@ public class GameController implements EngineListener, SearchListener {
             return;
         }
 
-        gui.onGameEvent(GameStatus.UPDATEUI, "检索开局库...");
-        // search openbook first
-        long vkey = game.currentBoard.getZobrist(isRedTurn());
-        List<BookData> bookData = bhBook.query(vkey, isRedTurn(), OpenBook.SortRule.BEST_SCORE);
-        if (bookData != null && bookData.size() > 0) {
-            int idx = settings.getRandom_move() ? (int) (Math.random() * bookData.size()) : 0;
-            Log.d("GameController", "Openbook hit: bestmove = " + bookData.get(0).getMove() + " currentMove = " + bookData.get(idx).getMove());
-            computerMovePiece(bookData.get(idx).getMove());
-            return;
+        if(settings.getOpenbook()) {
+            // search openbook first
+            gui.onGameEvent(GameStatus.UPDATEUI, "检索开局库...");
+
+            long vkey = game.currentBoard.getZobrist(isRedTurn());
+            List<BookData> bookData = bhBook.query(vkey, isRedTurn(), OpenBook.SortRule.BEST_SCORE);
+            if (bookData != null && bookData.size() > 0) {
+                int idx = 0;
+                if(game.currentBoard.rounds <= random_before_max_rounds && settings.getRandom_move()) {
+                    // 如果在前12步，那么可以随机选择一个着法
+                    idx =  (int) (Math.random() * bookData.size());
+                }
+                Log.d("GameController", "Openbook hit: size = " + bookData.size() + "; bestmove = " + bookData.get(0).getMove() + "; currentMove = " + bookData.get(idx).getMove());
+                computerMovePiece(bookData.get(idx).getMove());
+                return;
+            }
         }
 
         if (settings.getGo_infinite()) {
@@ -614,7 +622,7 @@ public class GameController implements EngineListener, SearchListener {
             // 电脑发起的请求，走下一步棋子
             state = ControllerState.WAITING_FOR_ENGINE;
             // 如果设置了引擎的随机性，则从multiPV中随机选择一个着法。这个只针对前12步有效，后期不让电脑随机选择，否则棋力降低太多
-            if (settings.getRandom_move() && multiPVs.size() > 0 && game.currentBoard.rounds <= 12) {
+            if (settings.getRandom_move() && multiPVs.size() > 0 && game.currentBoard.rounds <= random_before_max_rounds) {
                 int idx = (int) (Math.random() * multiPVs.size());
                 String randomMove = multiPVs.get(idx).pv.get(0).getUCCIString();
                 gui.runOnUIThread(() -> computerMovePiece(randomMove));

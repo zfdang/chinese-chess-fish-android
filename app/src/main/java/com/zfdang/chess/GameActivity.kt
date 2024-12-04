@@ -20,7 +20,6 @@ import com.zfdang.chess.controllers.ControllerListener
 import com.zfdang.chess.databinding.ActivityGameBinding
 import com.zfdang.chess.gamelogic.GameStatus
 import com.zfdang.chess.openbook.BHOpenBook
-import com.zfdang.chess.openbook.OpenBookManager
 import com.zfdang.chess.views.ChessView
 
 
@@ -45,7 +44,6 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
     // mediaplayer
     private lateinit var soundPlayer: SoundPlayer
 
-    private lateinit var bookManager: OpenBookManager
     private lateinit var bhBook: BHOpenBook
 
     @SuppressLint("ClickableViewAccessibility")

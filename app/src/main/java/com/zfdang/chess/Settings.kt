@@ -12,6 +12,9 @@ class Settings(private val context: Context) {
         private const val FILE_NAME = "settings.ini"
     }
 
+    private val openbook_key: String = "openbook"
+    var openbook = true
+
     private val sound_effect_key: String = "sound_effect"
     var sound_effect = false
     private val history_moves_key: String = "history_moves"
@@ -40,6 +43,7 @@ class Settings(private val context: Context) {
         loadSettings()
 
         // create variables for settings
+        openbook = getBoolean(openbook_key, true)
         sound_effect = getBoolean(sound_effect_key, true)
         history_moves = getInt(history_moves_key, 2)
         go_depth = getBoolean(go_depth_key, true)
@@ -65,6 +69,7 @@ class Settings(private val context: Context) {
 
     fun saveSettings() {
         // save variables for settings
+        setBoolean(openbook_key, openbook)
         setBoolean(sound_effect_key, sound_effect)
         setInt(history_moves_key, history_moves)
         setBoolean(go_depth_key, go_depth)

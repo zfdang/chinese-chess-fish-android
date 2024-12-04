@@ -23,6 +23,35 @@
     </LinearLayout>
 
     <View
+        android:id="@+id/divider12"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/boolean_openbook"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="使用开局库"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textViewOpenBook"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingLeft="6dp"
+            android:text="(当前开局库)"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <View
         android:id="@+id/divider1"
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -40,8 +69,8 @@
             android:layout_height="wrap_content"
             android:text="播放音效"
             android:textSize="16sp" />
-
     </LinearLayout>
+
 
     <View
         android:id="@+id/divider2"
@@ -61,7 +90,6 @@
             android:layout_height="wrap_content"
             android:text="红方先行 (新建游戏有效)"
             android:textSize="16sp" />
-
     </LinearLayout>
 
     <View
@@ -82,7 +110,6 @@
             android:layout_height="wrap_content"
             android:text="增加电脑走棋的随机性"
             android:textSize="16sp" />
-
     </LinearLayout>
 
     <View
@@ -123,7 +150,6 @@
             android:layout_weight="2"
             android:text="1"
             android:textAlignment="center" />
-
     </LinearLayout>
 
     <View

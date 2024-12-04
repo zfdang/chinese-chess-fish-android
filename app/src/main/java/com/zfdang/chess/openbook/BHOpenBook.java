@@ -18,15 +18,15 @@ public class BHOpenBook extends OpenBookBase {
     private Connection connection;
 
     private String name;
-    private HSKDDatabase HSKDDatabase = null;
+    private BHDatabase bhDB = null;
     SQLiteDatabase db = null;
 
     public BHOpenBook(Context context){
         // database asset file is managed by BHDatabase class
-        HSKDDatabase = new HSKDDatabase(context);
-        db = HSKDDatabase.getReadableDatabase();
+        bhDB = new BHDatabase(context);
+        db = bhDB.getReadableDatabase();
 
-        name = "桔库09.09.2023精修库";
+        name = bhDB.OPENBOOK_NAME;
     }
 
 
@@ -67,6 +67,6 @@ public class BHOpenBook extends OpenBookBase {
 
     @Override
     public void close() {
-        HSKDDatabase.close();
+        bhDB.close();
     }
 }
