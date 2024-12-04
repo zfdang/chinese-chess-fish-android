@@ -35,7 +35,7 @@ public class GameController implements EngineListener, SearchListener {
     private String engineName = "pikafish";
     public String engineInfo; // returned by engine
 
-    // 如果电脑开机了随机着法，那么前N步会随机选择一个着法。这个数值不易过大，否则电脑棋力下降太多
+    // 如果开启了电脑的着法随机选项，那么前N步会随机选择一个着法。这个数值不易过大，否则电脑棋力下降太多
     private final int random_before_max_rounds = 12;
 
     public Game game = null;

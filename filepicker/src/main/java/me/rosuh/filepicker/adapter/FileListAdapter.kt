@@ -152,7 +152,21 @@ class FileListAdapter(
         }
 
         override fun bind(itemImpl: FileItemBeanImpl, position: Int) {
-            tvFileName.text = itemImpl.fileName
+
+            // 对于普通文件，隐藏后缀名
+            if(!itemImpl.isDir){
+                val fileName = itemImpl.fileName
+                // 隐藏文件名的扩展名
+                val index = fileName.lastIndexOf('.')
+                if (index != -1) {
+                    tvFileName.text = fileName.substring(0, index)
+                } else {
+                    tvFileName.text = fileName
+                }
+            } else {
+                tvFileName.text = itemImpl.fileName
+            }
+
             checkBox.apply {
                 tag = itemImpl
                 visibility = when {
