@@ -24,3 +24,4 @@ rootProject.name = "ChineseChess"
 include(":app")
 include(":filepicker")
 include(":tinypinyin")
+include(":opencv")

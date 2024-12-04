@@ -11,6 +11,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
 import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.github.mikephil.charting.components.Description
@@ -21,10 +22,13 @@ import com.zfdang.chess.databinding.ActivityGameBinding
 import com.zfdang.chess.gamelogic.GameStatus
 import com.zfdang.chess.openbook.BHOpenBook
 import com.zfdang.chess.views.ChessView
+import org.opencv.android.OpenCVLoader
 
 
 class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerListener,
     View.OnClickListener, SettingDialogFragment.SettingDialogListener {
+
+    private val TAG = "GameActivity"
 
     // 防止重复点击
     private val MIN_CLICK_DELAY_TIME: Int = 100
@@ -299,13 +303,16 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
                 showInputFENDialog()
             }
             binding.exportbt -> {
-                val fenString = controller.game.currentBoard.toFENString()
-                // copy to clipboard
-                val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                val clip = android.content.ClipData.newPlainText("FEN", fenString)
-                clipboard.setPrimaryClip(clip)
-                setStatusText("FEN串已复制到剪贴板")
-                Log.d("GameActivity", "fenString: $fenString")
+//                val fenString = controller.game.currentBoard.toFENString()
+//                // copy to clipboard
+//                val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+//                val clip = android.content.ClipData.newPlainText("FEN", fenString)
+//                clipboard.setPrimaryClip(clip)
+//                setStatusText("FEN串已复制到剪贴板")
+//                Log.d("GameActivity", "fenString: $fenString")
+                // start OpenCV activity
+                val intent = android.content.Intent(this, OpenCVActivity::class.java)
+                startActivity(intent)
             }
             binding.helpbt -> {
                 setStatusText("正在搜索建议着法...")

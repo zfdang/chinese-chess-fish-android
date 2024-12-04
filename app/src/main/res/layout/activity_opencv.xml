@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:opencv="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OpenCVActivity">
+
+
+        <org.opencv.android.JavaCameraView
+            android:id="@+id/tutorial1_activity_java_surface_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            opencv:camera_id="any"
+            opencv:show_fps="true" />
+
+</FrameLayout>

@@ -121,6 +121,7 @@ dependencies {
     // https://github.com/PhilJay/MPAndroidChart
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation(project(":filepicker"))
+    implementation(project(":opencv"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
