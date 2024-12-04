@@ -294,7 +294,8 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
             binding.textViewNote.text = controller.manual.annotation
 
             hideAllChoiceBts()
-            binding.statustv.text = "棋谱加载成功"
+            var hint = "棋谱加载成功" + "," + controller.getFirstMoveColor()
+            binding.statustv.text = hint
         } else {
             binding.statustv.text = "棋谱加载失败"
         }

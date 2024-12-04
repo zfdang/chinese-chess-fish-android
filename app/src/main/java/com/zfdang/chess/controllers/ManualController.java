@@ -7,6 +7,8 @@ import com.zfdang.chess.ChessApp;
 import com.zfdang.chess.gamelogic.Board;
 import com.zfdang.chess.gamelogic.GameStatus;
 import com.zfdang.chess.gamelogic.Move;
+import com.zfdang.chess.gamelogic.Piece;
+import com.zfdang.chess.gamelogic.Position;
 import com.zfdang.chess.gamelogic.PvInfo;
 import com.zfdang.chess.manuals.XQFManual;
 import com.zfdang.chess.manuals.XQFParser;
@@ -60,6 +62,14 @@ public class ManualController extends GameController{
 
                 // 根据XQFManual的getHeadMove()方法获取第一个MoveNode
                 moveNode = manual.getHeadMove();
+
+                // 根据第一个move的颜色，来确定那方先走
+                if(moveNode.nextMoves.size() > 0) {
+                    Move m = moveNode.nextMoves.get(0).move;
+                    Position p = m.fromPosition;
+                    int piece = manual.board.getPieceByPosition(p);
+                    manual.board.bRedGo = Piece.isRed(piece);
+                }
 
                 // reset game
                 game.currentBoard = new Board(manual.board);
@@ -132,13 +142,27 @@ public class ManualController extends GameController{
         }
 
         if(moveNode.parent == null) {
-            gui.onGameEvent(GameStatus.ILLEGAL, "已经到达开局");
+            String hint = "已经到达开局" + "," + getFirstMoveColor();
+            game.suggestedMoves.clear();
+            gui.onGameEvent(GameStatus.MOVE, hint);
             return;
         }
 
         moveNode = moveNode.parent;
         game.undoMove();
         gui.onGameEvent(GameStatus.MOVE, "回到上一步");
+    }
+
+    public String getFirstMoveColor(){
+        if(manual == null) {
+            return "未打开棋谱...";
+        }
+
+        if(manual.board.bRedGo) {
+            return "红方先行";
+        } else {
+            return "黑方先行";
+        }
     }
 
     public void manualFirst() {
@@ -156,7 +180,8 @@ public class ManualController extends GameController{
         game.startPos = null;
         game.endPos = null;
 
-        gui.onGameEvent(GameStatus.MOVE, "回到开局");
+        String hint = "回到开局" + "," + getFirstMoveColor();
+        gui.onGameEvent(GameStatus.MOVE, hint);
     }
 
     public void selectBranch(int i) {
