@@ -29,7 +29,6 @@ public class ManualController extends GameController{
 
     public ManualController(ControllerListener listener) {
         super(listener);
-        this.state = ControllerState.MANUAL_MODE;
         this.gui = listener;
         this.context = ChessApp.getContext();
     }
@@ -69,6 +68,7 @@ public class ManualController extends GameController{
                     Position p = m.fromPosition;
                     int piece = manual.board.getPieceByPosition(p);
                     manual.board.bRedGo = Piece.isRed(piece);
+                    setSatate(manual.board.bRedGo);
                 }
 
                 // reset game
@@ -109,6 +109,7 @@ public class ManualController extends GameController{
                     game.startPos = m.fromPosition;
                     game.endPos = m.toPosition;
                     game.movePiece();
+                    toggleTurn();
 
                     gui.onGameEvent(GameStatus.MOVE, game.getLastMoveDesc());
                 }
@@ -150,6 +151,7 @@ public class ManualController extends GameController{
 
         moveNode = moveNode.parent;
         game.undoMove();
+        toggleTurn();
         gui.onGameEvent(GameStatus.MOVE, "回到上一步");
     }
 
@@ -180,6 +182,8 @@ public class ManualController extends GameController{
         game.startPos = null;
         game.endPos = null;
 
+        setSatate(manual.board.bRedGo);
+
         String hint = "回到开局" + "," + getFirstMoveColor();
         gui.onGameEvent(GameStatus.MOVE, hint);
     }
@@ -204,6 +208,7 @@ public class ManualController extends GameController{
                     game.startPos = m.fromPosition;
                     game.endPos = m.toPosition;
                     game.movePiece();
+                    toggleTurn();
 
                     game.suggestedMoves.clear();
                     gui.onGameEvent(GameStatus.MOVE, "分支" + (i+1) + ": " + game.getLastMoveDesc());

@@ -550,7 +550,7 @@ public class GameController implements EngineListener, SearchListener {
         evalCurrentBoard();
     }
 
-    private void toggleTurn() {
+    protected void toggleTurn() {
         if (state == ControllerState.WAITING_FOR_USER) {
             state = ControllerState.WAITING_FOR_ENGINE;
         } else if (state == ControllerState.WAITING_FOR_ENGINE) {
