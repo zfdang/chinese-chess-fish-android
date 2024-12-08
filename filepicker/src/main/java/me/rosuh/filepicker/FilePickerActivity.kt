@@ -1,10 +1,5 @@
 package me.rosuh.filepicker
 
-import android.Manifest
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.Manifest.permission.READ_MEDIA_AUDIO
-import android.Manifest.permission.READ_MEDIA_IMAGES
-import android.Manifest.permission.READ_MEDIA_VIDEO
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
@@ -12,8 +7,6 @@ import android.content.pm.PackageManager
 import android.os.*
 import android.os.Environment.MEDIA_MOUNTED
 import android.util.Log
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.collection.ArrayMap
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.appcompat.app.AppCompatActivity
@@ -66,28 +59,27 @@ class FilePickerActivity : AppCompatActivity(), View.OnClickListener,
 
     private val loadFileRunnable: Runnable by lazy {
         Runnable {
-            val customRootPathFile = pickerConfig.customRootPathFile
+            val startPathFile = pickerConfig.startPathFile
             val rootFile = when {
-                customRootPathFile?.exists() == true -> {
+                startPathFile?.exists() == true -> {
                     // move to custom root dir
                     navDataSource.clear()
-                    val root = FileUtils.getRootFile()
-                    var curPath = customRootPathFile.absolutePath
-                    Log.d(TAG, "loadFileRunnable: root = ${root}")
-                    Log.d(TAG, "loadFileRunnable: customRootPathFile = $curPath")
-                    while (curPath != root.parent && !curPath.isNullOrBlank()) {
+                    val root = pickerConfig.rootPathFile
+                    var curPath = startPathFile.absolutePath
+                    Log.d(TAG, "loadFileRunnable: rootPathFile = ${root}")
+                    Log.d(TAG, "loadFileRunnable: startPathFile = $curPath")
+                    while (curPath != root?.parent && !curPath.isNullOrBlank()) {
                         pickerConfig.logger.i("loadFileRunnable", "curPath = $curPath")
                         val f = File(curPath)
                         val fileNavBeanImpl = FileNavBeanImpl(
                             FileUtils.getDirAlias(f),
                             f.absolutePath
                         )
-                        // 不添加父目录到导航栏里
-                        // navDataSource.add(0, fileNavBeanImpl)
+                         navDataSource.add(0, fileNavBeanImpl)
                         curPath = f.parent
                     }
                     pickerConfig.resetCustomFile()
-                    customRootPathFile
+                    startPathFile
                 }
 
                 navDataSource.isEmpty() && pickerConfig.isSkipDir -> {

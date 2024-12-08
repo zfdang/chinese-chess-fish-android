@@ -39,6 +39,8 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
     private val LAST_LAUNCH_VERSION_NAME = "last_launch_version_name"
     private lateinit var waitingDialog: AlertDialog
 
+    private var last_selected_path = ""
+
     // 防止重复点击
     private val MIN_CLICK_DELAY_TIME: Int = 100
     private var curClickTime: Long = 0
@@ -102,6 +104,8 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
         Handler(Looper.getMainLooper()).postDelayed({
             initManual()
         }, 500)
+
+        last_selected_path = PathUtil.getInternalAppFilesDir(this,"XQF")
     }
 
     private fun initManual() {
@@ -244,7 +248,8 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
         val types = arrayListOf<FileType>(XQFFileType())
         FilePickerManager
             .from(this)
-            .setCustomRootPath(PathUtil.getInternalAppFilesDir(this,"XQF"))
+            .setRootPath(PathUtil.getInternalAppFilesDir(this,"XQF"))
+            .setStartPath(last_selected_path)
             .maxSelectable(1)
             .registerFileType(types)
             .skipDirWhenSelect(true)
@@ -258,8 +263,12 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
                 if (resultCode == Activity.RESULT_OK) {
                     val list = FilePickerManager.obtainData()
                     Log.d("ManualActivity", "onActivityResult: $list")
-                    loadManualFromFile(list[0])
-                    // do your work
+                    // extract the path part from filename list[0]
+                    list[0]?.let {
+                        // extract the path part from filename list[0]
+                        last_selected_path = it.substring(0, it.lastIndexOf("/") + 1)
+                        loadManualFromFile(it)
+                    }
                 } else {
                     Toast.makeText(this, "您未选取任何文件", Toast.LENGTH_SHORT).show()
                 }

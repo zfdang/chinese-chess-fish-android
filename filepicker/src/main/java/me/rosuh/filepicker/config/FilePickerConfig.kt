@@ -1,7 +1,6 @@
 package me.rosuh.filepicker.config
 
 import android.content.Intent
-import android.util.Log
 import androidx.annotation.NonNull
 import androidx.annotation.StringRes
 import me.rosuh.filepicker.FilePickerActivity
@@ -76,12 +75,22 @@ class FilePickerConfig(private val pickerManager: FilePickerManager) {
         private set
 
     /**
-     * 自定义根目录路径，需要先设置 [mediaStorageType] 为 [STORAGE_CUSTOM_ROOT_PATH]
+     * 自定义根目录
      */
-    var customRootPath: String = ""
+    var rootPath: String = ""
         private set
 
-    internal var customRootPathFile: File? = null
+    internal var rootPathFile: File? = null
+        private set
+
+
+    /**
+     * 自定义起始目录, 这个目录是根目录，包含在根目录内
+     */
+    var startPath: String = ""
+        private set
+
+    internal var startPathFile: File? = null
         private set
 
     /**
@@ -198,8 +207,8 @@ class FilePickerConfig(private val pickerManager: FilePickerManager) {
         return this
     }
 
-    fun setCustomRootPath(path: String): FilePickerConfig {
-        customRootPath = path
+    fun setRootPath(path: String): FilePickerConfig {
+        rootPath = path
         path.takeIf {
             it.isNotBlank()
         }?.let {
@@ -207,7 +216,22 @@ class FilePickerConfig(private val pickerManager: FilePickerManager) {
         }?.takeIf {
             it.exists()
         }?.let {
-            customRootPathFile = it
+            rootPathFile = it
+        }
+        return this
+    }
+
+
+    fun setStartPath(path: String): FilePickerConfig {
+        startPath = path
+        path.takeIf {
+            it.isNotBlank()
+        }?.let {
+            File(it)
+        }?.takeIf {
+            it.exists()
+        }?.let {
+            startPathFile = it
         }
         return this
     }
@@ -375,7 +399,7 @@ class FilePickerConfig(private val pickerManager: FilePickerManager) {
     }
 
     fun resetCustomFile() {
-        this.customRootPathFile = null
+        this.startPathFile = null
     }
 
     fun clear() {

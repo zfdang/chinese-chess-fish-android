@@ -178,7 +178,7 @@ class FileUtils {
 
         fun getDirAlias(file: File): String {
             val isCustomRoot = config.mediaStorageType == STORAGE_CUSTOM_ROOT_PATH
-                    && file.absolutePath == config.customRootPath
+                    && file.absolutePath == config.startPath
             val isPreSetStorageRoot = config.mediaStorageType == STORAGE_EXTERNAL_STORAGE
                     && file.absolutePath == getRootFile().absolutePath
             val isDefaultRoot = file.absolutePath == getRootFile().absolutePath
