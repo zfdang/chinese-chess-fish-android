@@ -143,6 +143,8 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
         if(fenString != null){
             controller.startFENGame(fenString)
             isFromManual = true
+            controller.toggleComputerAutoPlay()
+            binding.autoplaybt.setImageResource(R.drawable.pause_circle)
         }
     }
 
