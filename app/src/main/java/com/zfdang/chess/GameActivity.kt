@@ -442,9 +442,9 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
     }
 
     // create fun to handle onbackpressed
-    @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         // save game to file
+        super.onBackPressed()
         saveThenExit()
     }
 
