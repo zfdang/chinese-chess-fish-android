@@ -47,6 +47,8 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
 
     private lateinit var bhBook: BHOpenBook
 
+    private var isFromManual = false
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -135,6 +137,13 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
         } else if(controller.isBlackTurn) {
             setStatusText("等待黑方走棋")
         }
+
+        // receive parameters from intent
+        val fenString = intent.getStringExtra("FENString")
+        if(fenString != null){
+            controller.startFENGame(fenString)
+            isFromManual = true
+        }
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
@@ -207,7 +216,10 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
         controller.player.stopSearch()
         // delay 300 ms to save game status
         Thread.sleep(100)
-        controller.saveGameStatus();
+        if(!isFromManual){
+            // 如果从打谱界面进入，不保存游戏状态
+            controller.saveGameStatus();
+        }
         finish()
     }
 

@@ -84,6 +84,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
             binding.firstbt,
             binding.backbt,
             binding.forwardbt,
+            binding.gamebt,
             binding.exitbt,
             binding.choice1bt,
             binding.choice2bt,
@@ -207,6 +208,12 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
 //                processPath(PathUtil.getInternalAppFilesDir(this,"XQF"))
                 
                 controller.manualFirst()
+            }
+            binding.gamebt -> {
+                // start game activity here
+                val intent = Intent(this, GameActivity::class.java)
+                intent.putExtra("FENString", controller.game.currentBoard.toFENString())
+                startActivity(intent)
             }
             binding.exitbt -> {
                 saveThenExit();

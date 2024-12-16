@@ -127,6 +127,15 @@
                 android:background="?android:attr/selectableItemBackground"
                 app:srcCompat="@drawable/arrow_forward" />
 
+            <ImageButton
+                android:id="@+id/gamebt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="12dp"
+                android:background="?android:attr/selectableItemBackground"
+                app:srcCompat="@drawable/game" />
+
 
             <ImageButton
                 android:id="@+id/exitbt"
