@@ -35,6 +35,7 @@ android {
     defaultConfig {
         applicationId = "com.zfdang.chess"
         minSdk = 26
+        // https://stackoverflow.com/questions/60370424/permission-is-denied-using-android-q-ffmpeg-error-13-permission-denied
         //noinspection ExpiredTargetSdkVersion
         targetSdk = 28
         versionCode = gitVersion()
