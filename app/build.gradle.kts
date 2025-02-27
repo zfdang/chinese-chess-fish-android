@@ -36,6 +36,7 @@ android {
         applicationId = "com.zfdang.chess"
         minSdk = 26
         // https://stackoverflow.com/questions/60370424/permission-is-denied-using-android-q-ffmpeg-error-13-permission-denied
+        // https://withme.skullzbones.com/blog/programming/execute-native-binaries-android-q-no-root/
         //noinspection ExpiredTargetSdkVersion
         targetSdk = 28
         versionCode = gitVersion()

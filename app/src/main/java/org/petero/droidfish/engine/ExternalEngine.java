@@ -98,6 +98,9 @@ public class ExternalEngine extends UCIEngineBase {
                 Log.d("ExternalEngine", "Engine workDir does not exist, using exeDir: " + engineWorkDir.getAbsolutePath());
             }
 
+            // https://stackoverflow.com/questions/60370424/permission-is-denied-using-android-q-ffmpeg-error-13-permission-denied
+            // https://withme.skullzbones.com/blog/programming/execute-native-binaries-android-q-no-root/
+            // now the temp solution is to change targetSDK to 28, but we should address this issue sooner or later
             ProcessBuilder pb = new ProcessBuilder(exePath);
             if (engineWorkDir.canRead() && engineWorkDir.isDirectory())
                 pb.directory(engineWorkDir);
