@@ -116,7 +116,25 @@ android {
     }
 }
 
+// https://withme.skullzbones.com/blog/programming/execute-native-binaries-android-q-no-root/
+tasks.register<Jar>("nativeLibsToJar") {
+    description = "create a jar archive of the native libs"
+    destinationDirectory.set(layout.buildDirectory.dir("native-libs"))
+    archiveBaseName.set("native-libs")
+    from(fileTree("pikafish") {
+        include("**/*")
+    })
+    into("lib/")
+}
+
+tasks.withType<JavaCompile> {
+    dependsOn(tasks.named("nativeLibsToJar"))
+}
+
+
 dependencies {
+    // https://withme.skullzbones.com/blog/programming/execute-native-binaries-android-q-no-root/
+//    implementation(fileTree(mapOf("dir" to "native-libs", "include" to listOf("native-libs.jar"))))
     implementation("com.readystatesoftware.sqliteasset:sqliteassethelper:+")
     // https://mvnrepository.com/artifact/com.igormaznitsa/jbbp
     implementation("com.igormaznitsa:jbbp:3.0.0")
