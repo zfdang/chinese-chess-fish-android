@@ -79,7 +79,7 @@ public class ExternalEngine extends UCIEngineBase {
             // originally, this method will copy binary from assets/ to data folder
             // but now we will launch binary from data/lib directly
             String exePath = copyFile(null, null);
-//            Log.d("ExternalEngine", "Starting engine: " + exePath);
+            Log.d("ExternalEngine", "Starting engine: " + exePath);
 
             engineWorkDir = new File(exePath).getParentFile();
 

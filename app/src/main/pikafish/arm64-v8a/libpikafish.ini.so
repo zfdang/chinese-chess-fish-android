@@ -1,5 +1,5 @@
 #Sat Oct 29 10:36:27 GMT+08:00 2022
 Threads=4
 Hash=512
-EvalFile=pikafish.nnue
+EvalFile=libpikafish.nnue.so
 MultiPV=5

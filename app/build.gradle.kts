@@ -41,7 +41,7 @@ android {
         versionName = "2.3"
 
         ndk {
-            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+            abiFilters += listOf("arm64-v8a")
         }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -68,12 +68,12 @@ android {
         create("armv8-") {
             //flavor configurations here
             dimension = "pikafish"
-            buildConfigField("String", "PIKAFISH_ENGINE_FILE", "\"pikafish-armv8\"")
+            buildConfigField("String", "PIKAFISH_ENGINE_FILE", "\"libpikafish-armv8.so\"")
         }
         create("armv8-dotprod-") {
             //flavor configurations here
             dimension = "pikafish"
-            buildConfigField("String", "PIKAFISH_ENGINE_FILE", "\"pikafish-armv8-dotprod\"")
+            buildConfigField("String", "PIKAFISH_ENGINE_FILE", "\"libpikafish-armv8-dotprod.so\"")
         }
     }
 

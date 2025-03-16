@@ -39,9 +39,9 @@ import java.util.Locale;
  * so you will see lots of legacy codes here
  */
 public class PikafishExternalEngine extends ExternalEngine {
-    private static final String[] networkAsssetFiles = {"pikafish.nnue", "pikafish.ini", "version.txt"};
+    private static final String[] networkAsssetFiles = {"libpikafish.nnue.so", "libpikafish.ini.so"};
     private static final String[] networkOptions = {"evalfile"};
-    private final File[] networkFiles = {null, null, null}; // Full path of the copied network files
+    private final File[] networkFiles = {null, null}; // Full path of the copied network files
 
     // PikafishEngineFile: the name of the engine file in /data/lib directory, two flavors:
     // pikafish-armv8
@@ -56,7 +56,7 @@ public class PikafishExternalEngine extends ExternalEngine {
 
     @Override
     protected File getIniFile() {
-        return new File(nativeLibraryDir, "pikafish.ini");
+        return new File(nativeLibraryDir, networkAsssetFiles[1]);
     }
 
     /**
