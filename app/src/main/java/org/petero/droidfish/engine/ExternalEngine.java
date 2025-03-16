@@ -73,41 +73,18 @@ public class ExternalEngine extends UCIEngineBase {
     @Override
     protected void startProcess() {
         try {
-            File exeDir = new File(context.getFilesDir(), "engine");
-            if(exeDir.exists() && !exeDir.isDirectory()){
-                exeDir.delete();
-            }
-            if(!exeDir.exists() && !exeDir.mkdir()) {
-                Log.d("ExternalEngine", "Failed to create engine directory");
-                Log.d("ExternalEngine", exeDir.getAbsolutePath());
-            }
-
-            // exact engine might override this method
-            String exePath = copyFile(engineFileName, exeDir);
-
-            try {
-                chmod(exePath);
-            } catch (Exception e) {
-                Log.d("ExternalEngine", "Failed to chmod " + exePath);
-                throw new RuntimeException(e);
-            }
-
-            // change engineWorkDir if necessary
-            if(!engineWorkDir.exists()){
-                engineWorkDir = new File(exePath).getParentFile();
-                Log.d("ExternalEngine", "Engine workDir does not exist, using exeDir: " + engineWorkDir.getAbsolutePath());
-            }
-
             // https://stackoverflow.com/questions/60370424/permission-is-denied-using-android-q-ffmpeg-error-13-permission-denied
             // https://withme.skullzbones.com/blog/programming/execute-native-binaries-android-q-no-root/
-            // now the temp solution is to change targetSDK to 28, but we should address this issue sooner or later
-            String basedir = context.getApplicationInfo().nativeLibraryDir;
-            String command = String.format("basedir/pikafish", basedir);
-            Log.d("ExternalEngine", "Command: " + command);
+
+            // originally, this method will copy binary from assets/ to data folder
+            // but now we will launch binary from data/lib directly
+            String exePath = copyFile(null, null);
+//            Log.d("ExternalEngine", "Starting engine: " + exePath);
+
+            engineWorkDir = new File(exePath).getParentFile();
 
             ProcessBuilder pb = new ProcessBuilder(exePath);
-            if (engineWorkDir.canRead() && engineWorkDir.isDirectory())
-                pb.directory(engineWorkDir);
+            pb.directory(engineWorkDir);
             synchronized (EngineUtil.nativeLock) {
                 engineProc = pb.start();
             }
@@ -293,12 +270,5 @@ public class ExternalEngine extends UCIEngineBase {
             to.setLastModified(from.lastModified());
         }
         return to.getAbsolutePath();
-    }
-
-    void chmod(String exePath) throws Exception {
-        if (!EngineUtil.chmod(exePath)) {
-            Log.d("ExternalEngine", "Failed to chmod " + exePath);
-            throw new IOException("chmod failed");
-        }
     }
 }

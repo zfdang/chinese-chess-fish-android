@@ -2,5 +2,5 @@
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.kotlin.android) apply false
+    id("org.barfuin.gradle.taskinfo") version "2.2.0"
 }
-

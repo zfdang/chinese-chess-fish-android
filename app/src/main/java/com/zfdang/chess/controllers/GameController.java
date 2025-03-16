@@ -699,9 +699,9 @@ public class GameController implements EngineListener, SearchListener {
             }
             Log.d("GameController", "Game status loaded");
         } catch (IOException e) {
-            Log.e("GameController", "Failed to load game status" + e);
+            Log.e("GameController", "Failed to load game status: " + e);
         } catch (ClassNotFoundException e) {
-            Log.e("GameController", "Failed to load game status" + e);
+            Log.e("GameController", "Failed to load game status: " + e);
         }
     }
 }

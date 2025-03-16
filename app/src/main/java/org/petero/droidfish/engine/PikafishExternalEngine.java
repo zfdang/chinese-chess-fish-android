@@ -18,51 +18,45 @@
 
 package org.petero.droidfish.engine;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Locale;
-
 import android.util.Log;
 
 import com.zfdang.chess.BuildConfig;
+import com.zfdang.chess.ChessApp;
 
 import org.petero.droidfish.player.EngineListener;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Locale;
+
 /**
  * Stockfish engine running as process, started from assets resource.
+ * originally, this class will copy the engine file from assets to /data/data/org.petero.droidfish/files
+ * but not we will use the engine file in /data/lib directory directly
+ * this is because Android Q restricts access to the app's private directories
+ * see https://withme.skullzbones.com/blog/programming/execute-native-binaries-android-q-no-root/
+ * so you will see lots of legacy codes here
  */
 public class PikafishExternalEngine extends ExternalEngine {
     private static final String[] networkAsssetFiles = {"pikafish.nnue", "pikafish.ini", "version.txt"};
     private static final String[] networkOptions = {"evalfile"};
+    private final File[] networkFiles = {null, null, null}; // Full path of the copied network files
 
-    // PikafishEngineFile: the name of the engine file in the assets directory, two flavors:
-    // app/src/main/assets/pikafish-armv8
-    // app/src/main/assets/pikafish-armv8-dotprod
+    // PikafishEngineFile: the name of the engine file in /data/lib directory, two flavors:
+    // pikafish-armv8
+    // pikafish-armv8-dotprod
     private static final String PikafishEngineFile = BuildConfig.PIKAFISH_ENGINE_FILE;
 
-    private final File[] networkFiles = {null, null, null}; // Full path of the copied network files
+    private final String nativeLibraryDir = ChessApp.getContext().getApplicationInfo().nativeLibraryDir;
 
     public PikafishExternalEngine(String workDir, EngineListener listener) {
         super("pikafish", workDir, listener);
-
-        // uci_showwdl is not included in the uci response, so we need to add it manually
-        // pikafish does not support uci_showwdl :)
-//        registerOption("option name uci_showwdl type check default false".split("\\s+"));
     }
 
     @Override
     protected File getIniFile() {
-        File extDir = new File(context.getFilesDir(), "pikafish");
-        return new File(extDir, "pikafish.ini");
+        return new File(nativeLibraryDir, "pikafish.ini");
     }
 
     /**
@@ -101,120 +95,19 @@ public class PikafishExternalEngine extends ExternalEngine {
         return Arrays.asList(editable).contains(name);
     }
 
-    private long readCheckSum(File f) {
-        try (InputStream is = new FileInputStream(f);
-             DataInputStream dis = new DataInputStream(is)) {
-            return dis.readLong();
-        } catch (IOException e) {
-            return 0;
-        }
-    }
-
-    private void writeCheckSum(File f, long checkSum) {
-        try (OutputStream os = new FileOutputStream(f);
-             DataOutputStream dos = new DataOutputStream(os)) {
-            dos.writeLong(checkSum);
-        } catch (IOException ignore) {
-        }
-    }
-
-    private long computeAssetsCheckSum(String sfExe) {
-        try (InputStream is = context.getAssets().open(sfExe)) {
-            MessageDigest md = MessageDigest.getInstance("SHA-1");
-            byte[] buf = new byte[8192];
-            while (true) {
-                int len = is.read(buf);
-                if (len <= 0)
-                    break;
-                md.update(buf, 0, len);
-            }
-            byte[] digest = md.digest(new byte[]{0});
-            long ret = 0;
-            for (int i = 0; i < 8; i++) {
-                ret ^= ((long) digest[i]) << (i * 8);
-            }
-            return ret;
-        } catch (IOException e) {
-            return -1;
-        } catch (NoSuchAlgorithmException e) {
-            return -1;
-        }
-    }
 
     @Override
     protected String copyFile(File from, File exeDir) throws IOException {
-        // from is ignore, we always use the embedded engine: PikafishEngineFile
-        File pikaDir = new File(exeDir.getParentFile(), "pikafish");
-        if(pikaDir.exists() && !pikaDir.isDirectory()){
-            pikaDir.delete();
-            Log.d("ExternalPikafishEngine", "Deleted file " + pikaDir.getAbsolutePath());
-        }
+        // now this method does not copy file any longer,
+        // it just use files in data/lib/ folder
+        File to = new File(nativeLibraryDir, PikafishEngineFile);
 
-        if(!pikaDir.exists() && !pikaDir.mkdir()) {
-            Log.d("ExternalPikafishEngine", "Failed to create directory " + pikaDir.getAbsolutePath());
-        }
-
-        File to = new File(pikaDir, PikafishEngineFile);
-
-        // The checksum test is to avoid writing to /data unless necessary,
-        // on the assumption that it will reduce memory wear.
-        long oldCSum = readCheckSum(new File(getCheckSumFile(PikafishEngineFile)));
-        long newCSum = computeAssetsCheckSum(PikafishEngineFile);
-        if (!to.exists() || oldCSum != newCSum) {
-            copyAssetFile(PikafishEngineFile, to);
-            writeCheckSum(new File(getCheckSumFile(PikafishEngineFile)), newCSum);
-            Log.d("ExternalPikafishEngine", "Copied " + PikafishEngineFile + " to " + to.getAbsolutePath());
-        } else {
-            Log.d("ExternalPikafishEngine", "Engine file " + to.getAbsolutePath() + " already exists");
-        }
-
-        copyNetworkFiles(pikaDir);
-        return to.getAbsolutePath();
-    }
-
-    protected String getCheckSumFile(String filename) {
-        return String.format("%s/%s.checksum", context.getFilesDir().getAbsolutePath(), filename);
-    }
-
-    /**
-     * Copy the Stockfish default network files to "exeDir" if they are not already there.
-     */
-    private void copyNetworkFiles(File pikaDir) throws IOException {
+        // assign networkAsssetFiles to networkFiles
         for (int i = 0; i < networkAsssetFiles.length; i++) {
-            networkFiles[i] = new File(pikaDir, networkAsssetFiles[i]);
-
-            long oldCSum = readCheckSum(new File(getCheckSumFile(networkAsssetFiles[i])));
-            long newCSum = computeAssetsCheckSum(networkAsssetFiles[i]);
-
-            if (!networkFiles[i].exists() || oldCSum != newCSum) {
-                copyAssetFile(networkAsssetFiles[i], networkFiles[i]);
-                writeCheckSum(new File(getCheckSumFile(networkAsssetFiles[i])), newCSum);
-                Log.d("ExternalPikafishEngine", "Copied " + networkAsssetFiles[i] + " to " + networkFiles[i].getAbsolutePath());
-            } else {
-                Log.d("ExternalPikafishEngine", "Network file " + networkFiles[i].getAbsolutePath() + " already exists");
-            }
+            networkFiles[i] = new File(nativeLibraryDir, networkAsssetFiles[i]);
         }
-    }
 
-    /**
-     * Copy a file resource from the AssetManager to the file system,
-     * so it can be used by native code like the Stockfish engine.
-     */
-    private void copyAssetFile(String assetName, File targetFile) throws IOException {
-        try (InputStream is = context.getAssets().open(assetName);
-             OutputStream os = new FileOutputStream(targetFile)) {
-            byte[] buf = new byte[8192];
-            while (true) {
-                int len = is.read(buf);
-                if (len <= 0)
-                    break;
-                os.write(buf, 0, len);
-            }
-        } catch (IOException e) {
-            Log.d("ExternalPikafishEngine", "Failed to copy asset file " + assetName + " to " + targetFile.getAbsolutePath());
-            Log.d("ExternalPikafishEngine", "Exception: " + e);
-            throw e;
-        }
+        return to.getAbsolutePath();
     }
 
     @Override
