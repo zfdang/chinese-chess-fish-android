@@ -11,9 +11,31 @@
 
 但是Android Q之后，为了安全，程序就不允许运行data目录里的文件了。
 
+error=13, Permission denied
+
 From Android Q onwards, you cannot execute binaries in your app's private data directory
 
 https://stackoverflow.com/questions/60370424/permission-is-denied-using-android-q-ffmpeg-error-13-permission-denied
+
+```
+The change to block exec() on application data files for targetAPI >= Q is working-as-intended.
+Please see https://android-review.googlesource.com/c/platform/system/sepolicy/+/804149 for background on this change.
+ Calling exec() on writable application files is a W^X (https://en.wikipedia.org/wiki/W%5EX) violation
+ and represents an unsafe application practice.
+Executable code should always be loaded from the application APK.
+
+While exec() no longer works on files within the application home directory, it continues
+to be supported for files within the read-only /data/app directory. In particular, it
+should be possible to package the binaries into your application's native libs directory
+and enable android:extractNativeLibs=true, and then call exec() on the /data/app artifacts.
+ A similar approach is done with the wrap.sh functionality,
+documented at https://developer.android.com/ndk/guides/wrap-script#packaging_wrapsh .
+
+Additionally, please be aware that executables executed via exec() are not managed according
+ to the Android process lifecycle, and generally speaking, exec() is discouraged from Android
+applications. While not Android documentation, Using "exec()" with NDK covers this in some
+detail. Relying on exec() may be problematic in future Android versions.
+```
 
 
 ## Android Q之后的解决方法
