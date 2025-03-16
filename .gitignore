@@ -14,6 +14,8 @@ captures/
 .cxx/
 output.json
 
+tinypinyin/bin/
+
 # IntelliJ
 *.iml
 .idea/

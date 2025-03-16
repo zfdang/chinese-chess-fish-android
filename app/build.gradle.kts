@@ -21,6 +21,7 @@ fun gitVersion(): Int {
 android {
     namespace = "com.zfdang.chess"
     compileSdk = 34
+    ndkVersion = libs.versions.ndk.get()
 
     externalNativeBuild {
         ndkBuild {
@@ -42,6 +43,10 @@ android {
         versionCode = gitVersion()
         versionName = "2.3"
 
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+        }
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
@@ -56,6 +61,9 @@ android {
                 "META-INF/LICENSE.md",
                 "META-INF/LICENSE-notice.md")
         )
+        jniLibs {
+            useLegacyPackaging = true
+        }
     }
 
     flavorDimensions += "pikafish"
@@ -121,20 +129,19 @@ tasks.register<Jar>("nativeLibsToJar") {
     description = "create a jar archive of the native libs"
     destinationDirectory.set(layout.buildDirectory.dir("native-libs"))
     archiveBaseName.set("native-libs")
-    from(fileTree("pikafish") {
+    from(fileTree("src/main/pikafish/") {
         include("**/*")
     })
     into("lib/")
 }
 
-tasks.withType<JavaCompile> {
+tasks.named("preBuild") {
     dependsOn(tasks.named("nativeLibsToJar"))
 }
 
-
 dependencies {
     // https://withme.skullzbones.com/blog/programming/execute-native-binaries-android-q-no-root/
-//    implementation(fileTree(mapOf("dir" to "native-libs", "include" to listOf("native-libs.jar"))))
+    implementation(files("$buildDir/native-libs/native-libs.jar"))
     implementation("com.readystatesoftware.sqliteasset:sqliteassethelper:+")
     // https://mvnrepository.com/artifact/com.igormaznitsa/jbbp
     implementation("com.igormaznitsa:jbbp:3.0.0")

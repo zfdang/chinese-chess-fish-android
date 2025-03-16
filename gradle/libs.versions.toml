@@ -1,6 +1,7 @@
 [versions]
-agp = "8.8.1"
+agp = "8.8.2"
 kotlin = "1.9.24"
+ndk = "26.3.11579264"
 coreKtx = "1.13.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -21,6 +22,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "junitJupiter" }
+android-ndk = "com.android.ndk:ndk:26.3.11579264"
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
