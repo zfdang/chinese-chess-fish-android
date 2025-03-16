@@ -5,7 +5,7 @@
 
 ## pikafish引擎运行的问题
 
-象棋程序会在程序里启动pikafish进程，并通过uci命令和pifafish进程进行通讯。
+象棋程序会在程序里启动pikafish进程，并通过uci协议和pifafish进程进行通讯。
 
 在Android Q之前，安卓程序可以将pikafish从assets里复制到data目录，然后运行data目录里的二进制文件。
 
