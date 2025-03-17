@@ -1,0 +1,3 @@
+https://developer.android.com/ndk/guides/abis
+
+This ABI is for 32-bit ARM CPUs. It includes Thumb-2 and Neon.
