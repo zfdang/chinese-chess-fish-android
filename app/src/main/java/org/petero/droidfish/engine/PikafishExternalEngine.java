@@ -39,9 +39,10 @@ import java.util.Locale;
  * so you will see lots of legacy codes here
  */
 public class PikafishExternalEngine extends ExternalEngine {
-    private static final String[] networkAsssetFiles = {"libpikafish.nnue.so", "libpikafish.ini.so"};
-    private static final String[] networkOptions = {"evalfile"};
-    private final File[] networkFiles = {null, null}; // Full path of the copied network files
+    private static final String iniFileName = "libpikafish.ini.so";
+
+    private static final String[] optionNames = {"evalfile"};
+    private static final String[] optionValues = {"libpikafish.nnue.so"};
 
     // PikafishEngineFile: the name of the engine file in /data/lib directory, two flavors:
     // pikafish-armv8
@@ -56,7 +57,7 @@ public class PikafishExternalEngine extends ExternalEngine {
 
     @Override
     protected File getIniFile() {
-        return new File(nativeLibraryDir, networkAsssetFiles[1]);
+        return new File(nativeLibraryDir, iniFileName);
     }
 
     /**
@@ -101,12 +102,6 @@ public class PikafishExternalEngine extends ExternalEngine {
         // now this method does not copy file any longer,
         // it just use files in data/lib/ folder
         File to = new File(nativeLibraryDir, PikafishEngineFile);
-
-        // assign networkAsssetFiles to networkFiles
-        for (int i = 0; i < networkAsssetFiles.length; i++) {
-            networkFiles[i] = new File(nativeLibraryDir, networkAsssetFiles[i]);
-        }
-
         return to.getAbsolutePath();
     }
 
@@ -116,15 +111,14 @@ public class PikafishExternalEngine extends ExternalEngine {
     }
 
     /**
-     * Handles setting the EvalFile UCI option to a full path if needed,
-     * pointing to the network file embedded in DroidFish.
+     * Handles setting the EvalFile UCI option to a full path, otherwise run super.setOption
      */
     @Override
     public boolean setOption(String name, String value) {
-        for (int i = 0; i < networkOptions.length; i++) {
-            if (name.toLowerCase(Locale.US).equals(networkOptions[i]) && networkAsssetFiles[i].equals(value)) {
-                getUCIOptions().getOption(name).setFromString(value);
-                value = networkFiles[i].getAbsolutePath();
+        for (int i = 0; i < optionNames.length; i++) {
+            if (name.toLowerCase(Locale.US).equals(optionNames[i]) && optionValues[i].equals(value)) {
+                // update value to the absolute path of the option file
+                value = new File(nativeLibraryDir, value).getAbsolutePath();
                 writeLineToEngine(String.format(Locale.US, "setoption name %s value %s", name, value));
                 Log.d(  "ExternalPikafishEngine", "setOption: " + name + " " + value);
                 return true;

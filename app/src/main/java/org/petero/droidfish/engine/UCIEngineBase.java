@@ -36,7 +36,7 @@ import java.util.TreeMap;
 public abstract class UCIEngineBase implements UCIEngine {
 
     private boolean processAlive;
-    private UCIOptions options;
+    private UCIOptions AllOptions;
     protected boolean isConfigOk;
 
     public static UCIEngine getEngine(String engine,
@@ -52,7 +52,7 @@ public abstract class UCIEngineBase implements UCIEngine {
 
     protected UCIEngineBase() {
         processAlive = false;
-        options = new UCIOptions();
+        AllOptions = new UCIOptions();
         isConfigOk = false;
     }
 
@@ -129,7 +129,7 @@ public abstract class UCIEngineBase implements UCIEngine {
 
     @Override
     public final UCIOptions getUCIOptions() {
-        return options;
+        return AllOptions;
     }
 
     /**
@@ -153,7 +153,7 @@ public abstract class UCIEngineBase implements UCIEngine {
 
     @Override
     public final void clearOptions() {
-        options.clear();
+        AllOptions.clear();
     }
 
     @Override
@@ -247,7 +247,7 @@ public abstract class UCIEngineBase implements UCIEngine {
 
         if (option != null) {
             option.visible = editableOption(name);
-            options.addOption(option);
+            AllOptions.addOption(option);
         }
         return option;
     }
@@ -256,14 +256,14 @@ public abstract class UCIEngineBase implements UCIEngine {
      * Return true if engine has option optName.
      */
     protected final boolean hasOption(String optName) {
-        return options.contains(optName);
+        return AllOptions.contains(optName);
     }
 
     @Override
     public final void setEloStrength(int elo) {
         String lsName = "UCI_LimitStrength";
         boolean limit = elo != Integer.MAX_VALUE;
-        UCIOptions.OptionBase o = options.getOption(lsName);
+        UCIOptions.OptionBase o = AllOptions.getOption(lsName);
         if (o instanceof UCIOptions.CheckOption) {
             // Don't use setOption() since this value reflects current search parameters,
             // not user specified strength settings, so should not be saved in .ini file.
@@ -286,9 +286,9 @@ public abstract class UCIEngineBase implements UCIEngine {
 
     @Override
     public boolean setOption(String name, String value) {
-        if (!options.contains(name))
+        if (!AllOptions.contains(name))
             return false;
-        UCIOptions.OptionBase o = options.getOption(name);
+        UCIOptions.OptionBase o = AllOptions.getOption(name);
         if (o instanceof UCIOptions.ButtonOption) {
             writeLineToEngine(String.format(Locale.US, "setoption name %s", o.name));
         } else if (o.setFromString(value)) {
