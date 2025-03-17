@@ -195,6 +195,7 @@ public class ExternalEngine extends UCIEngineBase {
         return optionsInitialized;
     }
 
+    // this could be overrided by subclass
     @Override
     protected File getIniFile() {
         return new File(engineFileName.getAbsolutePath() + ".ini");
