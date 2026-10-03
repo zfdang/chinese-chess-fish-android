@@ -59,6 +59,8 @@ public class GameController implements EngineListener, SearchListener {
 
     public ControllerState state;
     public ControllerState preEvalState;
+    // 正在被评估的局面，评估结果写回到它上面
+    private volatile Board evalBoard = null;
 
     public Settings settings = null;
 
@@ -321,6 +323,7 @@ public class GameController implements EngineListener, SearchListener {
         // trigger searchrequest, engine will call notifySearchResult for bestmove
         searchStartTime = System.currentTimeMillis();
         Board board = game.currentBoard;
+        evalBoard = board;
         SearchRequest sr = SearchRequest.evalRequest(
                 searchId++,
                 board,
@@ -625,9 +628,12 @@ public class GameController implements EngineListener, SearchListener {
     @Override
     public void notifyEvalResult(int searchId, float eval) {
         Log.d("GameController", "Eval result: eval=" + eval);
-        game.currentBoard.score = eval;
-
+        // 写回被评估的那个局面(而不是此刻的currentBoard)，并在UI线程上写，与movePiece串行
+        Board evaluated = evalBoard;
         gui.runOnUIThread(() -> {
+                if (evaluated != null) {
+                    evaluated.score = eval;
+                }
                 gui.onGameEvent(GameStatus.UPDATEUI);
         });
 

@@ -84,9 +84,10 @@ public class Game implements Serializable {
 
         int piece = currentBoard.getPieceByPosition(startPos);
 
-        // save to history
-        Board b = new Board(currentBoard);
-        Move m = new Move(new Position(startPos.x, startPos.y), new Position(endPos.x, endPos.y), b);
+        // save to history: boards are never mutated after being published (copy-on-write),
+        // so the pre-move board can be shared with the history record without copying
+        Board before = currentBoard;
+        Move m = new Move(new Position(startPos.x, startPos.y), new Position(endPos.x, endPos.y), before);
         String chsString = m.getChsString();
         String ucciString = m.getUCCIString();
         HistoryRecord record = new HistoryRecord(m, ucciString, chsString, Piece.isRed(piece));
@@ -94,7 +95,7 @@ public class Game implements Serializable {
         newHistory.add(record);
 
         // move piece on a copy, then publish the new board and history
-        Board next = new Board(currentBoard);
+        Board next = new Board(before);
         currentMove = new Move(startPos, endPos, next);
         next.doMove(currentMove);
         currentBoard = next;

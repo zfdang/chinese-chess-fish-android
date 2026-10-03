@@ -98,9 +98,10 @@ public class Move implements Serializable {
 
     // h2e2
     public String getUCCIString(){
+        // 列: x=0..8 -> 'a'..'i'; 行: y=0(黑方底线)..9(红方底线) -> '9'..'0'
         return new String(new char[]{
-                (char) ('a' + fromPosition.x), (char) ('0' + 9 - fromPosition.y),
-                (char) ('a' + toPosition.x), (char) ('0' + 9 - toPosition.y)});
+                (char) ('a' + fromPosition.x), (char) ('0' + (9 - fromPosition.y)),
+                (char) ('a' + toPosition.x), (char) ('0' + (9 - toPosition.y))});
     }
 
     /*
