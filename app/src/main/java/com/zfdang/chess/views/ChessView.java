@@ -27,6 +27,8 @@ import com.zfdang.chess.utils.DrawableUtil;
 
 import android.graphics.Path;
 
+import java.util.List;
+
 
 public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     public ChessViewThread thread;
@@ -57,6 +59,14 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     static final int BOARD_GRID_INTERVAL = 136;  // (x2-x1)/8
 
     public Rect srcBoardRect, destBoardRect;
+
+    // 绘制时复用的对象，避免每帧分配内存
+    private final Rect tmpSrcRect = new Rect();
+    private final Rect tmpDestRect = new Rect();
+    private final Paint suggestionPaint = new Paint();
+    private final Paint historyPaint = new Paint();
+    private final Path arrowPath = new Path();
+    private final ArrowShape arrowShape = new ArrowShape();
     public int Board_width, Board_height;
     public float scaleRatio;
 
@@ -72,6 +82,12 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         this.controller = controller;
         getHolder().addCallback(this);
         initBitmaps();
+
+        suggestionPaint.setStyle(Paint.Style.FILL);
+        suggestionPaint.setAntiAlias(true);
+        suggestionPaint.setColor(Color.GREEN);
+        historyPaint.setStyle(Paint.Style.FILL);
+        historyPaint.setAntiAlias(true);
     }
 
     public void initBitmaps() {
@@ -110,9 +126,14 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         ThinkBitmap = DrawableUtil.drawableToBitmap(ChessApp.getContext().getDrawable(R.drawable.intelligence));
     }
 
+    private void drawBitmap(Canvas canvas, Bitmap bitmap, Rect dest) {
+        tmpSrcRect.set(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        canvas.drawBitmap(bitmap, tmpSrcRect, dest, null);
+    }
+
     public void Draw(Canvas canvas) {
         Game game = controller.game;
-        if(canvas == null) {
+        if(canvas == null || game == null) {
             return;
         }
         // draw chess board
@@ -124,136 +145,81 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         showControllerState(canvas);
 
         // draw piece
-        Rect tempSrcRect, tempDesRect;
         for (int x = 0; x < Board.BOARD_PIECE_WIDTH; x++) {
             for (int y = 0; y < Board.BOARD_PIECE_HEIGHT; y++) {
-                Position pos = new Position(x, y);
-                int piece = board.getPieceByPosition(pos);
+                int piece = board.getPieceByPosition(x, y);
                 if (Piece.isValid(piece)) {
                     // valid piece, draw the bitmap
-                    Bitmap bitmap = PieceBitmaps[piece-1];
-                    tempSrcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-                    tempDesRect = getDestRect(pos);
-                    canvas.drawBitmap(bitmap, tempSrcRect, tempDesRect, null);
+                    drawBitmap(canvas, PieceBitmaps[piece-1], getDestRect(x, y, tmpDestRect));
                 }
             }
         }
 
-        if(game.startPos != null) {
-            // highlight selected piece
-            HighlighSelectedPiece(canvas);
+        Position startPos = game.startPos;
+        if(startPos != null) {
+            int piece = board.getPieceByPosition(startPos);
+            if (Piece.isValid(piece)) {
+                // highlight selected piece
+                drawBitmap(canvas, Piece.isRed(piece) ? R_box : B_box, getDestRect(startPos.x, startPos.y, tmpDestRect));
 
-            // show all possible moves for selected piece
-            int piece = game.currentBoard.getPieceByPosition(game.startPos);
-            // draw all possible moves
-            if(Piece.isRed(piece)) {
-                tempSrcRect = new Rect(0, 0, R_pot.getWidth(), R_pot.getHeight());
+                // draw all possible moves for selected piece
+                Bitmap pot = Piece.isRed(piece) ? R_pot : B_pot;
                 for (Position pos : game.possibleToPositions) {
-                    tempDesRect = getDestRect(pos);
-                    canvas.drawBitmap(R_pot, tempSrcRect, tempDesRect, null);
-                }
-            } else if(Piece.isBlack(piece)){
-                tempSrcRect = new Rect(0, 0, B_pot.getWidth(), B_pot.getHeight());
-                for (Position pos : game.possibleToPositions) {
-                    tempDesRect = getDestRect(pos);
-                    canvas.drawBitmap(B_pot, tempSrcRect, tempDesRect, null);
+                    drawBitmap(canvas, pot, getDestRect(pos.x, pos.y, tmpDestRect));
                 }
             }
         }
 
         // draw arrows for last moves
         if(game.history.size() > 0) {
-            DrawMoveHistory(canvas);
+            DrawMoveHistory(canvas, game);
         }
 
         // if there are suggested moves, show them on the board
-        if(game.suggestedMoves.size() > 0) {
-            for(int i = 0; i < game.suggestedMoves.size() && i < MAX_SUGGESTED_MOVES ; i++) {
-                Move move = game.suggestedMoves.get(i);
-                XYCoord crd0 = getCoordByPosition(move.fromPosition);
-                XYCoord crd1 = getCoordByPosition(move.toPosition);
-                Paint p = new Paint();
-                p.setStyle(Paint.Style.FILL);
-                p.setAntiAlias(true);
-                p.setColor(Color.GREEN);
-                DrawArrow(canvas, crd0, crd1, p, ChoiceBitmaps[i]);
-            }
+        List<Move> suggestedMoves = game.suggestedMoves;
+        for(int i = 0; i < suggestedMoves.size() && i < MAX_SUGGESTED_MOVES ; i++) {
+            Move move = suggestedMoves.get(i);
+            DrawArrow(canvas, getCoordByPosition(move.fromPosition), getCoordByPosition(move.toPosition),
+                    suggestionPaint, ChoiceBitmaps[i]);
         }
     }
 
     private void showControllerState(Canvas canvas) {
         int targetSize = Scale(30);
         int xOffset = Scale(BOARD_GRID_INTERVAL * 4 + 45);
-        Rect tempDesRect = new Rect(destBoardRect.centerX() - targetSize + xOffset, destBoardRect.centerY() - targetSize,
+        tmpDestRect.set(destBoardRect.centerX() - targetSize + xOffset, destBoardRect.centerY() - targetSize,
                 destBoardRect.centerX() + targetSize + xOffset, destBoardRect.centerY() + targetSize);
+        Bitmap bitmap;
         if (controller.isRedTurn()) {
-            Bitmap bitmap = PieceBitmaps[0];
-            Rect tempSrcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-            canvas.drawBitmap(bitmap, tempSrcRect, tempDesRect, null);
+            bitmap = PieceBitmaps[0];
         } else if (controller.isBlackTurn()) {
-            Bitmap bitmap = PieceBitmaps[7];
-            Rect tempSrcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-            canvas.drawBitmap(bitmap, tempSrcRect, tempDesRect, null);
+            bitmap = PieceBitmaps[7];
         } else {
-            Bitmap bitmap = ThinkBitmap;
-            Rect tempSrcRect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
-            canvas.drawBitmap(bitmap, tempSrcRect, tempDesRect, null);
+            bitmap = ThinkBitmap;
         }
+        drawBitmap(canvas, bitmap, tmpDestRect);
     }
 
-    private void HighlighSelectedPiece(Canvas canvas) {
-        // draw selected piece
-        Game game = controller.game;
-        Board board = game.currentBoard;
-        Rect tempDesRect, tempSrcRect;
-        Position pos = game.startPos;
-        int piece = board.getPieceByPosition(pos);
-        if (Piece.isValid(piece)) {
-            // valid piece is selected
-            tempDesRect = getDestRect(pos);
-            if (Piece.isRed(piece)) {
-                tempSrcRect = new Rect(0, 0, R_box.getWidth(), R_box.getHeight());
-                canvas.drawBitmap(R_box, tempSrcRect, tempDesRect, null);
-            } else {
-                tempSrcRect = new Rect(0, 0, B_box.getWidth(), B_box.getHeight());
-                canvas.drawBitmap(B_box, tempSrcRect, tempDesRect, null);
-            }
-        }
-    }
-
-    private void DrawMoveHistory(Canvas canvas) {
-        Game game = controller.game;
-        Board board = game.currentBoard;
-        XYCoord crd0, crd1;
-
-        Paint p = new Paint();
-        p.setStyle(Paint.Style.FILL);
-        p.setAntiAlias(true);
-
+    private void DrawMoveHistory(Canvas canvas, Game game) {
         // draw arrow for the last several moves in historyMoves
         int num_of_history_moves = 2;
-        if(controller!= null && controller.settings != null) {
+        if(controller.settings != null) {
             num_of_history_moves = controller.settings.getHistory_moves();
         }
-        for(int i = game.history.size() - 1; i >= 0 && i >= game.history.size() - num_of_history_moves; i--) {
-            Game.HistoryRecord record = game.history.get(i);
-            crd0 = getCoordByPosition(record.move.fromPosition);
-            crd1 = getCoordByPosition(record.move.toPosition);
+        List<Game.HistoryRecord> history = game.history;
+        int size = history.size();
+        for(int i = size - 1; i >= 0 && i >= size - num_of_history_moves; i--) {
+            Game.HistoryRecord record = history.get(i);
 
             // color
-            if(Piece.isRed(record.move.piece)) {
-                p.setColor(Color.RED);
-            } else {
-                p.setColor(Color.BLACK);
-            }
+            historyPaint.setColor(Piece.isRed(record.move.piece) ? Color.RED : Color.BLACK);
 
             // calculate alpha value, the last move is the most opaque one
-            int idx = (game.history.size() - 1 - i);
-            int value = 220 - idx * 40;
-            if(value < 0) value = 0;
-            p.setAlpha(value);
+            int idx = (size - 1 - i);
+            historyPaint.setAlpha(Math.max(0, 220 - idx * 40));
 
-            DrawArrow(canvas, crd0, crd1, p, null);
+            DrawArrow(canvas, getCoordByPosition(record.move.fromPosition),
+                    getCoordByPosition(record.move.toPosition), historyPaint, null);
         }
     }
 
@@ -261,10 +227,9 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         * 画箭头，并在箭头上显示bitmap。这个bitmap一般是数字，来标识箭头
      */
     void DrawArrow(Canvas canvas, XYCoord crd0, XYCoord crd1, Paint p, Bitmap bitmap) {
-        ArrowShape arrow = new ArrowShape();
-        Path path = new Path();
-        arrow.getTransformedPath(path, crd0.x, crd0.y, crd1.x, crd1.y);
-        canvas.drawPath(path, p);
+        arrowPath.reset();
+        arrowShape.getTransformedPath(arrowPath, crd0.x, crd0.y, crd1.x, crd1.y);
+        canvas.drawPath(arrowPath, p);
 
         if(bitmap != null) {
             int offset_to_endpos = 80;
@@ -275,7 +240,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
             XYCoord crd3 = new XYCoord(0, 0);
             int dx = crd1.x - crd0.x;
             int dy = crd1.y - crd0.y;
-            int d = (int)Math.sqrt(dx*dx + dy*dy);
+            int d = Math.max(1, (int)Math.sqrt(dx*dx + dy*dy));
             crd3.x = crd1.x - offset_to_endpos * dx / d;
             crd3.y = crd1.y - offset_to_endpos * dy / d;
 
@@ -288,13 +253,12 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
             XYCoord crd = d3 < d4 ? crd3 : crd4;
 
             // draw bitmap to crd position
-            int sx = bitmap.getWidth();
+            int sx = Math.max(1, bitmap.getWidth());
             int sy = bitmap.getHeight();
             int nx = width_of_bitmap / 2;
             int ny = nx * sy / sx / 2;
-            Rect tempSrcRect = new Rect(0, 0, sx, sy);
-            Rect tempDesRect = new Rect(crd.x - nx, crd.y - ny, crd.x + nx, crd.y + ny);
-            canvas.drawBitmap(bitmap, tempSrcRect, tempDesRect, null);
+            tmpDestRect.set(crd.x - nx, crd.y - ny, crd.x + nx, crd.y + ny);
+            drawBitmap(canvas, bitmap, tmpDestRect);
         }
     }
 
@@ -302,19 +266,20 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         return (int)(x * scaleRatio);
     }
 
-        @NonNull
-    private Rect getDestRect(Position pos) {
-        return new Rect(
-                Scale(pos.x * BOARD_GRID_INTERVAL + BOARD_X_OFFSET),
-                Scale(pos.y * BOARD_GRID_INTERVAL + BOARD_Y_OFFSET),
-                Scale(pos.x * BOARD_GRID_INTERVAL + BOARD_X_OFFSET + BOARD_PIECE_SIZE),
-                Scale(pos.y * BOARD_GRID_INTERVAL + BOARD_Y_OFFSET + BOARD_PIECE_SIZE));
+    @NonNull
+    private Rect getDestRect(int x, int y, @NonNull Rect out) {
+        out.set(Scale(x * BOARD_GRID_INTERVAL + BOARD_X_OFFSET),
+                Scale(y * BOARD_GRID_INTERVAL + BOARD_Y_OFFSET),
+                Scale(x * BOARD_GRID_INTERVAL + BOARD_X_OFFSET + BOARD_PIECE_SIZE),
+                Scale(y * BOARD_GRID_INTERVAL + BOARD_Y_OFFSET + BOARD_PIECE_SIZE));
+        return out;
     }
 
 
     public XYCoord getCoordByPosition(Position pos) {
-        Rect r = getDestRect(pos);
-        return new XYCoord(r.centerX(), r.centerY());
+        int half = BOARD_PIECE_SIZE / 2;
+        return new XYCoord(Scale(pos.x * BOARD_GRID_INTERVAL + BOARD_X_OFFSET + half),
+                Scale(pos.y * BOARD_GRID_INTERVAL + BOARD_Y_OFFSET + half));
     }
 
 
@@ -336,12 +301,26 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
-        this.thread = new ChessViewThread(getHolder());
+        stopDrawThread();
+        this.thread = new ChessViewThread(holder);
         this.thread.start();
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
+        // surface销毁前必须停止绘制线程，否则每次重建surface都会泄漏一个线程
+        stopDrawThread();
+    }
 
+    private void stopDrawThread() {
+        ChessViewThread t = this.thread;
+        this.thread = null;
+        if (t == null) {
+            return;
+        }
+        // 不在主线程join：running是volatile，线程最多再画一帧就退出；
+        // 若此时surface已销毁，unlockCanvasAndPost的异常会被捕获并退出线程
+        t.running = false;
+        t.interrupt();
     }
 
     public Position getPosByCoord(float x, float y) {
@@ -351,7 +330,10 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         int ix = (int)((vx - BOARD_X_OFFSET) / BOARD_GRID_INTERVAL);
         int iy = (int)((vy - BOARD_Y_OFFSET) / BOARD_GRID_INTERVAL);
 
-        Rect rect = getDestRect(new Position(ix, iy));
+        if (ix < 0 || ix >= Board.BOARD_PIECE_WIDTH || iy < 0 || iy >= Board.BOARD_PIECE_HEIGHT) {
+            return null;
+        }
+        Rect rect = getDestRect(ix, iy, new Rect());
         if(rect.contains((int)x, (int)y)) {
             Log.d("ChessView", "getPosByCoord: " + ix + ", " + iy);
             return new Position(ix, iy);
@@ -365,26 +347,35 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     class ChessViewThread extends Thread {
         //刷帧线程
         public int span = 100;//睡眠100毫秒数
-        public SurfaceHolder surfaceHolder;
+        public final SurfaceHolder surfaceHolder;
+        volatile boolean running = true;
 
         public ChessViewThread(SurfaceHolder surfaceHolder) {
+            super("ChessViewThread");
             this.surfaceHolder = surfaceHolder;
         }
 
-        public void run() {//重写的方法
-            Canvas c;//画布
-            while (true) {//循环绘制
-                c = this.surfaceHolder.lockCanvas();
-                try {
-                    Draw(c);//绘制方法
-                } catch (Exception e) {
-                    e.printStackTrace();//输出异常堆栈信息
+        public void run() {
+            while (running) {
+                Canvas c = this.surfaceHolder.lockCanvas();
+                if (c != null) {
+                    try {
+                        Draw(c);
+                    } catch (Exception e) {
+                        Log.e("ChessView", "Draw failed", e);
+                    } finally {
+                        try {
+                            this.surfaceHolder.unlockCanvasAndPost(c);
+                        } catch (IllegalStateException | IllegalArgumentException e) {
+                            // surface已被销毁
+                            return;
+                        }
+                    }
                 }
-                if (c != null) this.surfaceHolder.unlockCanvasAndPost(c);
                 try {
-                    Thread.sleep(span);//睡眠时间，单位是毫秒
-                } catch (Exception e) {
-                    e.printStackTrace();//输出异常堆栈信息
+                    Thread.sleep(span);
+                } catch (InterruptedException e) {
+                    return;
                 }
             }
         }

@@ -19,8 +19,6 @@
 
 package com.zfdang.chess.gamelogic;
 
-import java.util.HashMap;
-
 /** Constants for different piece types.
  * https://www.xqbase.com/protocol/cchess_move.htm
  *
@@ -50,63 +48,6 @@ public class Piece {
 
     public static final int nPieceTypes = 15;
 
-    public static final HashMap<Integer, Character> pieceCharMap = new HashMap<>();
-    static {
-        pieceCharMap.put(WSHUAI, 'K');
-        pieceCharMap.put(WSHI, 'A');
-        pieceCharMap.put(WXIANG, 'B');
-        pieceCharMap.put(WMA, 'N');
-        pieceCharMap.put(WJU, 'R');
-        pieceCharMap.put(WPAO, 'C');
-        pieceCharMap.put(WBING, 'P');
-
-        pieceCharMap.put(BJIANG, 'k');
-        pieceCharMap.put(BSHI, 'a');
-        pieceCharMap.put(BXIANG, 'b');
-        pieceCharMap.put(BMA, 'n');
-        pieceCharMap.put(BJU, 'r');
-        pieceCharMap.put(BPAO, 'c');
-        pieceCharMap.put(BZU, 'p');
-    }
-
-    public static final HashMap<Integer, Character> pieceNameMap = new HashMap<>();
-    static {
-        pieceNameMap.put(WSHUAI, '帅');
-        pieceNameMap.put(WSHI, '仕');
-        pieceNameMap.put(WXIANG, '相');
-        pieceNameMap.put(WMA, '马');
-        pieceNameMap.put(WJU, '车');
-        pieceNameMap.put(WPAO, '炮');
-        pieceNameMap.put(WBING, '兵');
-
-        pieceNameMap.put(BJIANG, '将');
-        pieceNameMap.put(BSHI, '士');
-        pieceNameMap.put(BXIANG, '象');
-        pieceNameMap.put(BMA, '马');
-        pieceNameMap.put(BJU, '车');
-        pieceNameMap.put(BPAO, '炮');
-        pieceNameMap.put(BZU, '卒');
-    }
-
-    public static final HashMap<Character, Integer> pieceValueMap = new HashMap<>();
-    static {
-        pieceValueMap.put('K', WSHUAI);
-        pieceValueMap.put('A', WSHI);
-        pieceValueMap.put('B', WXIANG);
-        pieceValueMap.put('N', WMA);
-        pieceValueMap.put('R', WJU);
-        pieceValueMap.put('C', WPAO);
-        pieceValueMap.put('P', WBING);
-
-        pieceValueMap.put('k', BJIANG);
-        pieceValueMap.put('a', BSHI);
-        pieceValueMap.put('b', BXIANG);
-        pieceValueMap.put('n', BMA);
-        pieceValueMap.put('r', BJU);
-        pieceValueMap.put('c', BPAO);
-        pieceValueMap.put('p', BZU);
-    }
-
     /**
      * Return true if p is a white piece, false otherwise.
      * Note that if p is EMPTY, an unspecified value is returned.
@@ -128,33 +69,33 @@ public class Piece {
         return isRed(pType) ? pType + (BZU - WBING) : pType - (BZU - WBING);
     }
 
+    // 用数组代替HashMap查找，避免装箱
+    private static final char[] CHARS = {' ', 'K', 'A', 'B', 'N', 'R', 'C', 'P', 'k', 'a', 'b', 'n', 'r', 'c', 'p'};
+    private static final char[] NAMES = {' ', '帅', '仕', '相', '马', '车', '炮', '兵', '将', '士', '象', '马', '车', '炮', '卒'};
+    private static final int[] VALUES_BY_CHAR = new int[128];
+    static {
+        for (int i = WSHUAI; i <= BZU; i++) {
+            VALUES_BY_CHAR[CHARS[i]] = i;
+        }
+    }
+
+    // 不装箱的版本，供热路径使用
+    static char charOf(int i){
+        return isValid(i) ? CHARS[i] : ' ';
+    }
+
     // Return piece byte value by piece type
     static public Character getCharByValue(int i){
-        // find in pieceByteMap
-        if(pieceCharMap.containsKey(i)){
-            return pieceCharMap.get(i);
-        } else {
-            return EMPTY_CHAR;
-        }
+        return isValid(i) ? CHARS[i] : EMPTY_CHAR;
     }
 
     // return piece name by piece value
     static public Character getNameByValue(int i){
-        // find in pieceNameMap
-        if(pieceNameMap.containsKey(i)){
-            return pieceNameMap.get(i);
-        } else {
-            return EMPTY_CHAR;
-        }
+        return isValid(i) ? NAMES[i] : EMPTY_CHAR;
     }
 
     // return piece value by piece byte
     static public int getValueByChar(char b){
-        // find in pieceValueMap
-        if(pieceValueMap.containsKey(b)){
-            return pieceValueMap.get(b);
-        } else {
-            return EMPTY;
-        }
+        return b < VALUES_BY_CHAR.length ? VALUES_BY_CHAR[b] : EMPTY;
     }
 }
