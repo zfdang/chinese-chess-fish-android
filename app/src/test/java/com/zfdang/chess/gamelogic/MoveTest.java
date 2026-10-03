@@ -20,8 +20,9 @@ public class MoveTest {
 
     @Test
     public void testGetChsString() {
-        Board board = new Board();
-        Move move = new Move(board);
+        // Move(Board) keeps its own copy of the board, so mutate that copy
+        Move move = new Move(new Board());
+        Board board = move.board;
 
         // red pieces
         move.fromPosition = new Position(8, 9);
