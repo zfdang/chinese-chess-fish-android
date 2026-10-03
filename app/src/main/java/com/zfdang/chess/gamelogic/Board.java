@@ -186,7 +186,7 @@ public class Board implements Serializable {
                         fen.append(zeros);
                         zeros = 0;
                     }
-                    fen.append(Piece.getCharByValue(p).charValue());
+                    fen.append(Piece.charOf(p));
                 } else {
                     zeros++;
                 }
@@ -254,6 +254,10 @@ public class Board implements Serializable {
         for (int i = 0; i < fen.length(); i++) {
             char c = fen.charAt(i);
             if (c == '/') {
+                if (x != BOARD_PIECE_WIDTH) {
+                    Log.e("Board", "Row too short in FEN string: " + fenString);
+                    return false;
+                }
                 // next row
                 x = 0;
                 y++;
@@ -276,6 +280,11 @@ public class Board implements Serializable {
                 parsed[y][x] = value;
                 x++;
             }
+        }
+
+        if (y != BOARD_PIECE_HEIGHT - 1 || x != BOARD_PIECE_WIDTH) {
+            Log.e("Board", "Missing rows or columns in FEN string: " + fenString);
+            return false;
         }
 
         bRedGo = redGo;

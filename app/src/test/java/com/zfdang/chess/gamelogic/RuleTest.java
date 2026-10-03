@@ -50,6 +50,7 @@ public class RuleTest {
         assertEquals(44, perft(board, 1));
         assertEquals(1920, perft(board, 2));
         assertEquals(79666, perft(board, 3));
+        assertEquals(3290240, perft(board, 4));
     }
 
     @Test
@@ -78,7 +79,7 @@ public class RuleTest {
         Board mate = fromFEN("3k5/4R4/3R5/9/9/9/9/9/9/5K3 b - - 0 1");
         Position bk = Rule.findJiangShuaiPos(Piece.BJIANG, mate);
         assertTrue(Rule.isJiangShuaiInDanger(Piece.BJIANG, bk, mate));
-        assertTrue(Rule.isJiangShuaiDead(Piece.BJIANG, bk, mate));
+        assertFalse(Rule.hasLegalMove(false, mate));
 
         // 困毙：黑将未被将军，但无子可走
         Board stalemate = fromFEN("3k5/4R4/9/9/9/9/9/9/9/5K3 b - - 0 1");
@@ -109,6 +110,41 @@ public class RuleTest {
         String before = board.toFENString();
         assertFalse(board.restoreFromFEN("rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNRX w - - 0 1"));
         assertFalse(board.restoreFromFEN("rnbakabnr/9/1c5c1/p1p1p1p1p/9/9/P1P1P1P1P/1C5C1/9/RNBAKABNR/9 w - - 0 1"));
+        // 行数不足、行宽不足
+        assertFalse(board.restoreFromFEN("4k4/9/9/9/9/9/9/9/9 w - - 0 1"));
+        assertFalse(board.restoreFromFEN("4k4/9/9/9/9/9/9/9/9/4K3 w - - 0 1"));
+        assertFalse(board.restoreFromFEN("4k3/9/9/9/9/9/9/9/9/4K4 w - - 0 1"));
         assertEquals(before, board.toFENString());
+    }
+
+    @Test
+    public void testNoKingIsNotStalemate() {
+        // 黑方无将且无子：无法判断终局，不应判困毙
+        Game game = new Game(true);
+        assertTrue(game.currentBoard.restoreFromFEN("9/9/9/9/9/9/9/4R4/9/4K4 w - - 0 1"));
+        game.setStartPos(new Position(4, 7));
+        game.setEndPos(new Position(4, 6));
+        game.movePiece();
+        assertEquals(GameStatus.MOVE, game.updateGameStatus());
+        assertFalse(game.isGameOver);
+    }
+
+    @Test
+    public void testCheckmateEndsGameAndUndoResets() {
+        // 红车进到底线将死黑将
+        Game game = new Game(true);
+        assertTrue(game.currentBoard.restoreFromFEN("3k5/9/3R5/9/9/9/9/9/4R4/5K3 w - - 0 1"));
+        game.setStartPos(new Position(4, 8));
+        game.setEndPos(new Position(4, 1));
+        game.movePiece();
+        assertEquals(GameStatus.CHECKMATE, game.updateGameStatus());
+        assertTrue(game.isGameOver);
+        assertTrue(game.isCheckMate);
+        assertEquals(1, game.history.size());
+
+        game.undoMove();
+        assertFalse(game.isGameOver);
+        assertEquals(0, game.history.size());
+        assertEquals(Piece.WJU, game.currentBoard.getPieceByPosition(4, 8));
     }
 }

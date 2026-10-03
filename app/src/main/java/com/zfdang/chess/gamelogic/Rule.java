@@ -138,19 +138,8 @@ public class Rule {
     }
 
     /*
-       判断将帅是否被将死(或困毙)：己方没有任何合法走法
-     */
-    public static boolean isJiangShuaiDead(int piece, Position bosspos, Board board) {
-        if (piece == Piece.WSHUAI) {
-            return !hasLegalMove(true, board);
-        } else if (piece == Piece.BJIANG) {
-            return !hasLegalMove(false, board);
-        }
-        return true;
-    }
-
-    /*
      * 判断某一方是否还有合法走法。找到第一个合法走法即返回。
+     * 没有合法走法时：被将军则为将死，否则为困毙，两者都判负。
      */
     public static boolean hasLegalMove(boolean red, Board board) {
         int king = red ? Piece.WSHUAI : Piece.BJIANG;

@@ -46,10 +46,10 @@ public class Game implements Serializable {
         }
     }
 
-    // create ListArray of HistoryRecord
-    public ArrayList<HistoryRecord> history = new ArrayList<>();
+    // history和currentBoard会被绘制线程读取：只整体替换引用，不原地修改(copy-on-write)
+    public volatile ArrayList<HistoryRecord> history = new ArrayList<>();
 
-    public Board currentBoard = null;
+    public volatile Board currentBoard = null;
     public transient Move currentMove = null;
     public transient Position startPos =  null;
     public transient Position endPos = null;
@@ -90,11 +90,15 @@ public class Game implements Serializable {
         String chsString = m.getChsString();
         String ucciString = m.getUCCIString();
         HistoryRecord record = new HistoryRecord(m, ucciString, chsString, Piece.isRed(piece));
-        history.add(record);
+        ArrayList<HistoryRecord> newHistory = new ArrayList<>(history);
+        newHistory.add(record);
 
-        // move piece in currentBoard
-        currentMove = new Move(startPos, endPos, currentBoard);
-        currentBoard.doMove(currentMove);
+        // move piece on a copy, then publish the new board and history
+        Board next = new Board(currentBoard);
+        currentMove = new Move(startPos, endPos, next);
+        next.doMove(currentMove);
+        currentBoard = next;
+        history = newHistory;
 
         Log.d("Game", "Move piece " + Piece.getNameByValue(piece) + " from " + startPos.toString() + " to " + endPos.toString());
 
@@ -106,8 +110,11 @@ public class Game implements Serializable {
 
     public HistoryRecord undoMove(){
         if(history.size() > 0){
-            HistoryRecord record = history.remove(history.size()-1);
+            ArrayList<HistoryRecord> newHistory = new ArrayList<>(history);
+            HistoryRecord record = newHistory.remove(newHistory.size()-1);
             currentBoard = new Board(record.move.board);
+            history = newHistory;
+            currentMove = null;
             resetGameOver();
             clearStartPos();
             endPos = null;
@@ -115,6 +122,10 @@ public class Game implements Serializable {
             return record;
         }
         return null;
+    }
+
+    public void clearHistory() {
+        history = new ArrayList<>();
     }
 
     private void resetGameOver() {
@@ -131,6 +142,10 @@ public class Game implements Serializable {
         // 检查刚走完一步之后，对方是否被将军/将死/困毙
         int king = Piece.isRed(currentMove.piece) ? Piece.BJIANG : Piece.WSHUAI;
         Position pos = Rule.findJiangShuaiPos(king, currentBoard);
+        if(pos == null) {
+            // 残局摆子时可能没有将帅，无法判断将军/将死/困毙
+            return GameStatus.MOVE;
+        }
         boolean isCheck = Rule.isJiangShuaiInDanger(king, pos, currentBoard);
         boolean noLegalMove = !Rule.hasLegalMove(king == Piece.WSHUAI, currentBoard);
 

@@ -79,6 +79,11 @@ public class Piece {
         }
     }
 
+    // 不装箱的版本，供热路径使用
+    static char charOf(int i){
+        return isValid(i) ? CHARS[i] : ' ';
+    }
+
     // Return piece byte value by piece type
     static public Character getCharByValue(int i){
         return isValid(i) ? CHARS[i] : EMPTY_CHAR;

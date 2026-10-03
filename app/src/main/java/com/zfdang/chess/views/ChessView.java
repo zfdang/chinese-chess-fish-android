@@ -253,7 +253,7 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
             XYCoord crd = d3 < d4 ? crd3 : crd4;
 
             // draw bitmap to crd position
-            int sx = bitmap.getWidth();
+            int sx = Math.max(1, bitmap.getWidth());
             int sy = bitmap.getHeight();
             int nx = width_of_bitmap / 2;
             int ny = nx * sy / sx / 2;
@@ -317,13 +317,10 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
         if (t == null) {
             return;
         }
+        // 不在主线程join：running是volatile，线程最多再画一帧就退出；
+        // 若此时surface已销毁，unlockCanvasAndPost的异常会被捕获并退出线程
         t.running = false;
         t.interrupt();
-        try {
-            t.join(500);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
     }
 
     public Position getPosByCoord(float x, float y) {

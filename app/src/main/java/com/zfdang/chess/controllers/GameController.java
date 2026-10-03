@@ -53,6 +53,8 @@ public class GameController implements EngineListener, SearchListener {
 
     BHOpenBook bhBook = null;
 
+    private static final String GAME_OVER_HINT = "对局已结束，可悔棋或开新局";
+
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     public ControllerState state;
@@ -126,7 +128,7 @@ public class GameController implements EngineListener, SearchListener {
         } else {
             state = ControllerState.WAITING_FOR_ENGINE;
         }
-        game.history.clear();
+        game.clearHistory();
         game.startPos = null;
         game.endPos = null;
         gui.onGameEvent(GameStatus.UPDATEUI, "从FEN开局");
@@ -178,6 +180,10 @@ public class GameController implements EngineListener, SearchListener {
 
     // computer to play his turn
     public synchronized void computerForward() {
+        if (game.isGameOver) {
+            gui.onGameEvent(GameStatus.ILLEGAL, GAME_OVER_HINT);
+            return;
+        }
         if (state == ControllerState.WAITING_FOR_USER) {
             // play only plays the black
             gui.onGameEvent(GameStatus.ILLEGAL, "该红方出子");
@@ -466,6 +472,14 @@ public class GameController implements EngineListener, SearchListener {
             return;
         }
 
+        // 已将死或困毙，只能悔棋或开新局
+        if (game.isGameOver) {
+            gui.onGameEvent(GameStatus.ILLEGAL, GAME_OVER_HINT);
+            game.clearStartPos();
+            game.endPos = null;
+            return;
+        }
+
         // check piece color to move
         int piece = game.currentBoard.getPieceByPosition(game.startPos);
         if (Piece.isRed(piece) != isRedTurn()) {
@@ -495,6 +509,8 @@ public class GameController implements EngineListener, SearchListener {
         // send notification to GUI
         if (status == GameStatus.CHECKMATE) {
             gui.onGameEvent(GameStatus.CHECKMATE, game.isStalemate ? "困毙！" : "将死！");
+            // 对局结束：不再评估局面，也不再触发电脑自动走棋
+            return;
         } else if (status == GameStatus.CHECK) {
             gui.onGameEvent(GameStatus.CHECK, "将军！");
         } else {

@@ -73,7 +73,7 @@ public class ManualController extends GameController{
 
                 // reset game
                 game.currentBoard = new Board(manual.board);
-                game.history.clear();
+                game.clearHistory();
                 game.clearSuggestedMoves();
                 game.startPos = null;
                 game.endPos = null;
@@ -177,7 +177,7 @@ public class ManualController extends GameController{
 
         // reset game
         game.currentBoard = new Board(manual.board);
-        game.history.clear();
+        game.clearHistory();
         game.clearSuggestedMoves();
         game.startPos = null;
         game.endPos = null;
