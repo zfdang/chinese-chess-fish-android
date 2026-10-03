@@ -4,7 +4,6 @@ package com.zfdang.chess.gamelogic;
 import static java.lang.Math.abs;
 
 import java.io.Serializable;
-import java.util.HashMap;
 
 public class Move implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -29,18 +28,11 @@ public class Move implements Serializable {
 
     public String comment;
 
-    // create hashmap to convert Arabic numerals to Chinese numerals
-    public static final HashMap<Integer, String> arabicToChineseMap = new HashMap<>();
-    static {
-        arabicToChineseMap.put(1, "一");
-        arabicToChineseMap.put(2, "二");
-        arabicToChineseMap.put(3, "三");
-        arabicToChineseMap.put(4, "四");
-        arabicToChineseMap.put(5, "五");
-        arabicToChineseMap.put(6, "六");
-        arabicToChineseMap.put(7, "七");
-        arabicToChineseMap.put(8, "八");
-        arabicToChineseMap.put(9, "九");
+    // convert Arabic numerals (1-9) to Chinese numerals
+    private static final String[] CHINESE_NUMERALS = {"", "一", "二", "三", "四", "五", "六", "七", "八", "九"};
+
+    private static String toChinese(int n) {
+        return (n >= 1 && n <= 9) ? CHINESE_NUMERALS[n] : null;
     }
 
     public Move(Position fromPosition, Position toPosition, Board board) {
@@ -106,11 +98,9 @@ public class Move implements Serializable {
 
     // h2e2
     public String getUCCIString(){
-        char s, e;
-        s = (char)('a' + fromPosition.x);
-        e = (char)('a' + toPosition.x);
-        String result = String.format("%c%d%c%d", s, 9 - fromPosition.y, e, 9 - toPosition.y);
-        return result;
+        return new String(new char[]{
+                (char) ('a' + fromPosition.x), (char) ('0' + 9 - fromPosition.y),
+                (char) ('a' + toPosition.x), (char) ('0' + 9 - toPosition.y)});
     }
 
     /*
@@ -132,27 +122,27 @@ public class Move implements Serializable {
         }
         int piece = board.getPieceByPosition(fromPosition);
         if(Piece.isValid(piece)) {
-            char name = Piece.pieceNameMap.get(piece);
+            char name = Piece.getNameByValue(piece);
             String num1, action, num2;
 
             if(Piece.isRed(piece)) {
-                num1 = arabicToChineseMap.get(9 - fromPosition.x);
+                num1 = toChinese(9 - fromPosition.x);
 
                 action = "平";
                 // 3.对于走直线的棋子，需要考虑是进退（最后一个数字是纵坐标的差值），还是平移（最后一个数字是目标位置的横坐标）
-                num2 = arabicToChineseMap.get(abs(toPosition.y - fromPosition.y));
+                num2 = toChinese(abs(toPosition.y - fromPosition.y));
                 if(toPosition.y > fromPosition.y){
                     action = "退";
                 } else if(toPosition.y < fromPosition.y){
                     action = "进";
                 } else {
                     // 3.对于走直线的棋子，需要考虑是进退（最后一个数字是纵坐标的差值），还是平移（最后一个数字是目标位置的横坐标）
-                    num2 = arabicToChineseMap.get(9 - toPosition.x);
+                    num2 = toChinese(9 - toPosition.x);
                 }
 
                 if(Piece.isDiagonalPiece(piece)) {
                     // 4. 对于走斜线的棋子（马、相、士），需要考虑是进退，最后一个数字是目标位置的横坐标
-                    num2 = arabicToChineseMap.get(9 - toPosition.x);
+                    num2 = toChinese(9 - toPosition.x);
                 }
 
                 // 6.还需要处理同一列有相同的棋子，使用前后来区分，比如前炮退二，后炮进二.
@@ -163,23 +153,23 @@ public class Move implements Serializable {
                     return multiple + name + action + num2;
                 }
             } else if(Piece.isBlack(piece)) {
-                num1 = String.format("%d", fromPosition.x + 1);
+                num1 = String.valueOf(fromPosition.x + 1);
 
                 action = "平";
                 // 3.对于走直线的棋子，需要考虑是进退（最后一个数字是纵坐标的差值），还是平移（最后一个数字是目标位置的横坐标）
-                num2 = String.format("%d", abs(toPosition.y - fromPosition.y));
+                num2 = String.valueOf(abs(toPosition.y - fromPosition.y));
                 if(toPosition.y > fromPosition.y){
                     action = "进";
                 } else if(toPosition.y < fromPosition.y){
                     action = "退";
                 } else {
                     // 3.对于走直线的棋子，需要考虑是进退（最后一个数字是纵坐标的差值），还是平移（最后一个数字是目标位置的横坐标）
-                    num2 = String.format("%d", toPosition.x + 1);
+                    num2 = String.valueOf(toPosition.x + 1);
                 }
 
                 if(Piece.isDiagonalPiece(piece)) {
                     // 4. 对于走斜线的棋子（马、相、士），需要考虑是进退，最后一个数字是目标位置的横坐标
-                    num2 = String.format("%d", toPosition.x + 1);
+                    num2 = String.valueOf(toPosition.x + 1);
                 }
 
                 // 6.还需要处理同一列有相同的棋子，使用前后来区分，比如前炮退二，后炮进二.
@@ -260,9 +250,9 @@ public class Move implements Serializable {
         }
         // 三个以上兵在一条纵线上：最前面的兵用“一”代替“前”，以后依次是“二”、“三”、“四”和“五”；
         if(Piece.isRed(piece)){
-            return String.format("%s",arabicToChineseMap.get(index));
+            return toChinese(index);
         } else {
-            return String.format("%d",index);
+            return String.valueOf(index);
         }
     }
 

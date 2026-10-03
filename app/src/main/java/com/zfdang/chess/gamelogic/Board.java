@@ -15,8 +15,8 @@ public class Board implements Serializable {
     public boolean bRedGo = true;
     public int rounds = 1;
     public float score = 0;
-    static public int BOARD_PIECE_WIDTH = 9;
-    static public int BOARD_PIECE_HEIGHT = 10;
+    public static final int BOARD_PIECE_WIDTH = 9;
+    public static final int BOARD_PIECE_HEIGHT = 10;
 
     // do not access piece value directly, use getPieceByPosition instead
     // it's easy to make mistake with values of (x,y)
@@ -176,36 +176,31 @@ public class Board implements Serializable {
         // 棋盘的编号：从左到右为a-i，从下到上为0-9
         // FEN字符串中棋子的位置的顺序是从左到右，从上到下，空格用数字表示:
         // a9-i9, a8-i8, ..., a1-i1, a0-i0
-        String fen = "";
+        StringBuilder fen = new StringBuilder(96);
         for (int y = 0; y < BOARD_PIECE_HEIGHT; y++) {
-            String row = "";
             int zeros = 0;
             for (int x = 0; x < BOARD_PIECE_WIDTH; x++) {
-                int piece = getPieceByPosition(x, y);
-                if (piece != 0) {
-                    // if zeros > 0, add zeros to fen
+                int p = piece[y][x];
+                if (p != Piece.EMPTY) {
                     if (zeros > 0) {
-                        row += zeros;
+                        fen.append(zeros);
                         zeros = 0;
                     }
-                    // convert piece to FEN
-                    char fenPiece = Piece.pieceCharMap.get(piece);
-                    row += (char) (fenPiece);
+                    fen.append(Piece.charOf(p));
                 } else {
                     zeros++;
                 }
             }
             if (zeros > 0) {
-                row += zeros;
+                fen.append(zeros);
             }
-            fen += row;
             if (y < BOARD_PIECE_HEIGHT - 1) {
                 // add / to separate rows
-                fen += "/";
+                fen.append('/');
             }
         }
-        String result = String.format("%s %s - - %s %s", fen, bRedGo ? "w" : "b", 0, rounds);
-        return result;
+        fen.append(bRedGo ? " w - - 0 " : " b - - 0 ").append(rounds);
+        return fen.toString();
     }
 
     public long getZobrist(boolean redGo) {
@@ -222,7 +217,7 @@ public class Board implements Serializable {
         }
 
         // parse fen string
-        String[] parts = fenString.split(" ");
+        String[] parts = fenString.split("\\s+");
         if (parts.length != 6) {
             Log.e("Board", "Failed to parse FEN string: " + fenString);
             return false;
@@ -230,11 +225,12 @@ public class Board implements Serializable {
 
         // parse isRedGo
         String side = parts[1].toLowerCase();
+        boolean redGo;
         if(side.equals("w") || side.equals("r")) {
             // white or red, both are valid
-            bRedGo = true;
+            redGo = true;
         } else if(side.equals("b")) {
-            bRedGo = false;
+            redGo = false;
         } else {
             Log.e("Board", "Failed to parse side from FEN string: " + fenString);
             return false;
@@ -242,34 +238,58 @@ public class Board implements Serializable {
 
         // parse rounds
         String part5 = parts[5];
+        int parsedRounds;
         try {
-            rounds = Integer.parseInt(part5);
+            parsedRounds = Integer.parseInt(part5);
         } catch (NumberFormatException e) {
             Log.e("Board", "Failed to parse rounds from FEN string: " + fenString);
             return false;
         }
 
-        // parse fen string
+        // parse fen string into a temp array first, so a malformed FEN won't corrupt the board
         String fen = parts[0];
+        int[][] parsed = new int[BOARD_PIECE_HEIGHT][BOARD_PIECE_WIDTH];
         int x = 0;
         int y = 0;
         for (int i = 0; i < fen.length(); i++) {
             char c = fen.charAt(i);
             if (c == '/') {
+                if (x != BOARD_PIECE_WIDTH) {
+                    Log.e("Board", "Row too short in FEN string: " + fenString);
+                    return false;
+                }
                 // next row
                 x = 0;
                 y++;
+                if (y >= BOARD_PIECE_HEIGHT) {
+                    Log.e("Board", "Too many rows in FEN string: " + fenString);
+                    return false;
+                }
             } else if (c >= '0' && c <= '9') {
-                for (int k = 0; k < c - '0'; k++) {
-                    piece[y][x] = 0;
-                    x++;
+                x += c - '0';
+                if (x > BOARD_PIECE_WIDTH) {
+                    Log.e("Board", "Row overflow in FEN string: " + fenString);
+                    return false;
                 }
             } else {
-                int value = Piece.pieceValueMap.get(c);
-                piece[y][x] = value;
+                int value = Piece.getValueByChar(c);
+                if (value == Piece.EMPTY || x >= BOARD_PIECE_WIDTH) {
+                    Log.e("Board", "Invalid piece in FEN string: " + fenString);
+                    return false;
+                }
+                parsed[y][x] = value;
                 x++;
             }
         }
+
+        if (y != BOARD_PIECE_HEIGHT - 1 || x != BOARD_PIECE_WIDTH) {
+            Log.e("Board", "Missing rows or columns in FEN string: " + fenString);
+            return false;
+        }
+
+        bRedGo = redGo;
+        rounds = parsedRounds;
+        piece = parsed;
         return true;
     }
 
