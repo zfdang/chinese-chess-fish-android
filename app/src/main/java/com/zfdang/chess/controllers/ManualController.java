@@ -74,7 +74,7 @@ public class ManualController extends GameController{
                 // reset game
                 game.currentBoard = new Board(manual.board);
                 game.history.clear();
-                game.suggestedMoves.clear();
+                game.clearSuggestedMoves();
                 game.startPos = null;
                 game.endPos = null;
 
@@ -144,7 +144,7 @@ public class ManualController extends GameController{
 
         if(moveNode.parent == null) {
             String hint = "已经到达开局" + "," + getFirstMoveColor();
-            game.suggestedMoves.clear();
+            game.clearSuggestedMoves();
             gui.onGameEvent(GameStatus.MOVE, hint);
             return;
         }
@@ -178,7 +178,7 @@ public class ManualController extends GameController{
         // reset game
         game.currentBoard = new Board(manual.board);
         game.history.clear();
-        game.suggestedMoves.clear();
+        game.clearSuggestedMoves();
         game.startPos = null;
         game.endPos = null;
 
@@ -210,7 +210,7 @@ public class ManualController extends GameController{
                     game.movePiece();
                     toggleTurn();
 
-                    game.suggestedMoves.clear();
+                    game.clearSuggestedMoves();
                     gui.onGameEvent(GameStatus.MOVE, "分支" + (i+1) + ": " + game.getLastMoveDesc());
                 }
             }
