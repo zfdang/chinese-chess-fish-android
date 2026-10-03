@@ -52,6 +52,13 @@ android {
         }
     }
 
+    testOptions {
+        // gamelogic uses android.util.Log; let plain JVM unit tests run without mocking it.
+        // Caveat: this applies to ALL android.* stubs (they return 0/false/null instead of throwing),
+        // so unit tests must not rely on any other Android API behaviour.
+        unitTests.isReturnDefaultValues = true
+    }
+
     packaging {
         resources.excludes.addAll(
             listOf("/META-INF/{AL2.0,LGPL2.1}",

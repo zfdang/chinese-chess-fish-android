@@ -25,6 +25,11 @@ public class Position implements Serializable {
         return this.x == position.x && this.y == position.y;
     }
 
+    @Override
+    public int hashCode() {
+        return y * 16 + x;
+    }
+
     // write toString method
     @Override
     public String toString() {

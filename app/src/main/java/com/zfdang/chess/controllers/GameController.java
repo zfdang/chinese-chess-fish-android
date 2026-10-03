@@ -53,8 +53,14 @@ public class GameController implements EngineListener, SearchListener {
 
     BHOpenBook bhBook = null;
 
+    private static final String GAME_OVER_HINT = "对局已结束，可悔棋或开新局";
+
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+
     public ControllerState state;
     public ControllerState preEvalState;
+    // 正在被评估的局面，评估结果写回到它上面
+    private volatile Board evalBoard = null;
 
     public Settings settings = null;
 
@@ -124,7 +130,7 @@ public class GameController implements EngineListener, SearchListener {
         } else {
             state = ControllerState.WAITING_FOR_ENGINE;
         }
-        game.history.clear();
+        game.clearHistory();
         game.startPos = null;
         game.endPos = null;
         gui.onGameEvent(GameStatus.UPDATEUI, "从FEN开局");
@@ -176,6 +182,10 @@ public class GameController implements EngineListener, SearchListener {
 
     // computer to play his turn
     public synchronized void computerForward() {
+        if (game.isGameOver) {
+            gui.onGameEvent(GameStatus.ILLEGAL, GAME_OVER_HINT);
+            return;
+        }
         if (state == ControllerState.WAITING_FOR_USER) {
             // play only plays the black
             gui.onGameEvent(GameStatus.ILLEGAL, "该红方出子");
@@ -213,23 +223,7 @@ public class GameController implements EngineListener, SearchListener {
         state = ControllerState.WAITING_FOR_ENGINE_BESTMV;
 
         // trigger searchrequest, engine will call notifySearchResult for bestmove
-        searchStartTime = System.currentTimeMillis();
-        Board board = null;
-        if (game.history.size() == 0) {
-            board = game.currentBoard;
-        } else {
-            board = game.history.get(0).move.board;
-        }
-        SearchRequest sr = SearchRequest.searchRequest(
-                searchId++,
-                board,
-                game.getMoveList(),
-                new Board(game.currentBoard),
-                null,
-                false,
-                engineName,
-                settings.getRandom_move() ? 3 : 1);
-        player.queueSearchRequest(sr);
+        queueSearch(settings.getRandom_move() ? 3 : 1);
     }
 
     public synchronized void computerAskForMultiPV() {
@@ -270,23 +264,7 @@ public class GameController implements EngineListener, SearchListener {
         multiPVs.clear();
 
         // trigger searchrequest, engine will call notifySearchResult for bestmove
-        searchStartTime = System.currentTimeMillis();
-        Board board = null;
-        if (game.history.size() == 0) {
-            board = game.currentBoard;
-        } else {
-            board = game.history.get(0).move.board;
-        }
-        SearchRequest sr = SearchRequest.searchRequest(
-                searchId++,
-                board,
-                game.getMoveList(),
-                new Board(game.currentBoard),
-                null,
-                false,
-                engineName,
-                3);
-        player.queueSearchRequest(sr);
+        queueSearch(3);
     }
 
 
@@ -312,22 +290,24 @@ public class GameController implements EngineListener, SearchListener {
         multiPVs.clear();
 
         // trigger searchrequest, engine will call notifySearchResult for bestmove
+        queueSearch(3);
+    }
+
+    /*
+     * 以初始局面+着法历史的方式发起搜索请求，便于引擎识别重复局面
+     */
+    private void queueSearch(int numPV) {
         searchStartTime = System.currentTimeMillis();
-        Board board = null;
-        if (game.history.size() == 0) {
-            board = game.currentBoard;
-        } else {
-            board = game.history.get(0).move.board;
-        }
+        Board startBoard = game.history.isEmpty() ? game.currentBoard : game.history.get(0).move.board;
         SearchRequest sr = SearchRequest.searchRequest(
                 searchId++,
-                board,
+                startBoard,
                 game.getMoveList(),
                 new Board(game.currentBoard),
                 null,
                 false,
                 engineName,
-                3);
+                numPV);
         player.queueSearchRequest(sr);
     }
 
@@ -343,6 +323,7 @@ public class GameController implements EngineListener, SearchListener {
         // trigger searchrequest, engine will call notifySearchResult for bestmove
         searchStartTime = System.currentTimeMillis();
         Board board = game.currentBoard;
+        evalBoard = board;
         SearchRequest sr = SearchRequest.evalRequest(
                 searchId++,
                 board,
@@ -494,6 +475,14 @@ public class GameController implements EngineListener, SearchListener {
             return;
         }
 
+        // 已将死或困毙，只能悔棋或开新局
+        if (game.isGameOver) {
+            gui.onGameEvent(GameStatus.ILLEGAL, GAME_OVER_HINT);
+            game.clearStartPos();
+            game.endPos = null;
+            return;
+        }
+
         // check piece color to move
         int piece = game.currentBoard.getPieceByPosition(game.startPos);
         if (Piece.isRed(piece) != isRedTurn()) {
@@ -522,7 +511,9 @@ public class GameController implements EngineListener, SearchListener {
 
         // send notification to GUI
         if (status == GameStatus.CHECKMATE) {
-            gui.onGameEvent(GameStatus.CHECKMATE, "将死！");
+            gui.onGameEvent(GameStatus.CHECKMATE, game.isStalemate ? "困毙！" : "将死！");
+            // 对局结束：不再评估局面，也不再触发电脑自动走棋
+            return;
         } else if (status == GameStatus.CHECK) {
             gui.onGameEvent(GameStatus.CHECK, "将军！");
         } else {
@@ -637,9 +628,12 @@ public class GameController implements EngineListener, SearchListener {
     @Override
     public void notifyEvalResult(int searchId, float eval) {
         Log.d("GameController", "Eval result: eval=" + eval);
-        game.currentBoard.score = eval;
-
+        // 写回被评估的那个局面(而不是此刻的currentBoard)，并在UI线程上写，与movePiece串行
+        Board evaluated = evalBoard;
         gui.runOnUIThread(() -> {
+                if (evaluated != null) {
+                    evaluated.score = eval;
+                }
                 gui.onGameEvent(GameStatus.UPDATEUI);
         });
 
@@ -649,12 +643,7 @@ public class GameController implements EngineListener, SearchListener {
         // auto nextstep for computer if applicable
         if (isAutoPlay && isComputerPlaying && isBlackTurn()) {
             // 因为要显示预测着法，所以让电脑延迟500s走棋
-            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    computerForward();
-                }
-            }, 500);
+            mainHandler.postDelayed(this::computerForward, 500);
         }
 
     }

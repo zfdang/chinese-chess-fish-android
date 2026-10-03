@@ -20,8 +20,9 @@ public class MoveTest {
 
     @Test
     public void testGetChsString() {
-        Board board = new Board();
-        Move move = new Move(board);
+        // Move(Board) keeps its own copy of the board, so mutate that copy
+        Move move = new Move(new Board());
+        Board board = move.board;
 
         // red pieces
         move.fromPosition = new Position(8, 9);
@@ -89,5 +90,28 @@ public class MoveTest {
         // Test invalid UCCI string (invalid characters)
         result = move.fromUCCIString("h2e@");
         assertFalse(result);
+    }
+
+    @Test
+    public void testUCCIRoundTrip() {
+        for (int y = 0; y < Board.BOARD_PIECE_HEIGHT; y++) {
+            for (int x = 0; x < Board.BOARD_PIECE_WIDTH; x++) {
+                Move move = new Move(new Position(x, y), new Position(8 - x, 9 - y));
+                Move parsed = new Move(new Board());
+                assertTrue(parsed.fromUCCIString(move.getUCCIString()));
+                assertEquals(move.fromPosition, parsed.fromPosition);
+                assertEquals(move.toPosition, parsed.toPosition);
+            }
+        }
+        assertEquals("a9i0", new Move(new Position(0, 0), new Position(8, 9)).getUCCIString());
+    }
+
+    @Test
+    public void testChsStringFromInitialPosition() {
+        Board board = new Board();
+        assertEquals("炮二平五", new Move(new Position(7, 7), new Position(4, 7), board).getChsString());
+        assertEquals("马八进七", new Move(new Position(1, 9), new Position(2, 7), board).getChsString());
+        assertEquals("炮8平5", new Move(new Position(7, 2), new Position(4, 2), board).getChsString());
+        assertEquals("马2进3", new Move(new Position(1, 0), new Position(2, 2), board).getChsString());
     }
 }
