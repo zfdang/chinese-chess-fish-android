@@ -214,10 +214,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
     }
 
     fun saveThenExit() {
-        // in case there is any ongoing searching task
-        controller.player.stopSearch()
-        // delay 300 ms to save game status
-        Thread.sleep(100)
+        controller.close()
         if(!isFromManual){
             // 如果从打谱界面进入，不保存游戏状态
             controller.saveGameStatus();
@@ -445,9 +442,13 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
 
     // create fun to handle onbackpressed
     override fun onBackPressed() {
-        // save game to file
-        super.onBackPressed()
         saveThenExit()
+    }
+
+    override fun onDestroy() {
+        if (::controller.isInitialized) controller.close()
+        if (::soundPlayer.isInitialized) soundPlayer.release()
+        super.onDestroy()
     }
 
     override fun onGameEvent(event: GameStatus?) {
@@ -455,8 +456,10 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
     }
 
     override fun runOnUIThread(runnable: Runnable?) {
-            runOnUiThread(runnable);
+        runOnUiThread {
+            if (!isFinishing && !isDestroyed) runnable?.run()
         }
+    }
 
     override fun onDialogPositiveClick() {
         // save setting values to variables in settings
