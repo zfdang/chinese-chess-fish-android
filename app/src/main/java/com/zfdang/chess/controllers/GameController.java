@@ -56,6 +56,13 @@ public class GameController implements EngineListener, SearchListener {
     private static final String GAME_OVER_HINT = "对局已结束，可悔棋或开新局";
 
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private volatile boolean closed = false;
+
+    public void close() {
+        closed = true;
+        mainHandler.removeCallbacksAndMessages(null);
+        player.close();
+    }
 
     public ControllerState state;
     public ControllerState preEvalState;
@@ -182,6 +189,7 @@ public class GameController implements EngineListener, SearchListener {
 
     // computer to play his turn
     public synchronized void computerForward() {
+        if (closed) return;
         if (game.isGameOver) {
             gui.onGameEvent(GameStatus.ILLEGAL, GAME_OVER_HINT);
             return;
@@ -594,6 +602,7 @@ public class GameController implements EngineListener, SearchListener {
 
     @Override
     public void notifySearchResult(int searchId, String bestMove, String nextPonderMove) {
+        if (closed) return;
         // engine返回bestmove, 有3种情况，一种是电脑搜索走棋的结果，一种是红方寻求帮助的结果，一种是电脑被强制要求变着的结果
 
         Log.d("GameController", "Search result: bestMove=" + bestMove + ", nextPonderMove=" + nextPonderMove);
@@ -627,10 +636,12 @@ public class GameController implements EngineListener, SearchListener {
 
     @Override
     public void notifyEvalResult(int searchId, float eval) {
+        if (closed) return;
         Log.d("GameController", "Eval result: eval=" + eval);
         // 写回被评估的那个局面(而不是此刻的currentBoard)，并在UI线程上写，与movePiece串行
         Board evaluated = evalBoard;
         gui.runOnUIThread(() -> {
+                if (closed) return;
                 if (evaluated != null) {
                     evaluated.score = eval;
                 }

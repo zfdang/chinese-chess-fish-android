@@ -27,9 +27,9 @@ class HistoryAndTrendAdapter(private val context: Context, private val tableLayo
         val entries = ArrayList<Entry>();
         for(i in 0 until controller.game.history.size) {
             val item = controller.game.history[i].move.board.score
-            entries.add(Entry(i.toFloat(), item));
+            if (item.isFinite()) entries.add(Entry(i.toFloat(), item))
         }
-        if(controller.game.currentBoard.score != 0.toFloat()) {
+        if(controller.game.currentBoard.score.isFinite()) {
             entries.add(Entry(controller.game.history.size.toFloat(), controller.game.currentBoard.score));
         }
 

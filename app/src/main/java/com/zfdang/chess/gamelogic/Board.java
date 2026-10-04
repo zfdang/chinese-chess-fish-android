@@ -14,7 +14,7 @@ public class Board implements Serializable {
 
     public boolean bRedGo = true;
     public int rounds = 1;
-    public float score = 0;
+    public float score = Float.NaN;
     public static final int BOARD_PIECE_WIDTH = 9;
     public static final int BOARD_PIECE_HEIGHT = 10;
 
@@ -290,6 +290,7 @@ public class Board implements Serializable {
         bRedGo = redGo;
         rounds = parsedRounds;
         piece = parsed;
+        score = Float.NaN;
         return true;
     }
 

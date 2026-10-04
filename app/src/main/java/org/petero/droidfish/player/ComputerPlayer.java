@@ -170,12 +170,20 @@ public class ComputerPlayer {
     }
 
     /**
-     * Stop the engine process.
+     * Cancel pending work and release the player when its owner is destroyed.
      */
+    public final synchronized void close() {
+        searchRequest = null;
+        shutdownEngine();
+    }
+
+    /** Stop the engine, preserving a pending request during an internal restart. */
     public final synchronized void shutdownEngine() {
-        if (uciEngine != null) {
+        if (engineMonitor != null) {
             engineMonitor.interrupt();
             engineMonitor = null;
+        }
+        if (uciEngine != null) {
             uciEngine.shutDown();
             uciEngine = null;
         }
@@ -517,11 +525,13 @@ public class ComputerPlayer {
                 if (nTok > 2) {
                     // Final evaluation       +0.23 (white side) [with scaled NNUE, ...]
                     if (tokens[0].equals("Final")) {
-                        float score = 0;
+                        // NaN represents an unavailable evaluation (e.g. "none (in check)").
+                        float score = Float.NaN;
                         try {
                             score = Float.parseFloat(tokens[2]);
+                            if (!Float.isFinite(score)) score = Float.NaN;
                         } catch (NumberFormatException e) {
-                            Log.d("ComputerPlayer", "processEngineOutput: " + e);
+                            Log.d("ComputerPlayer", "Evaluation unavailable: " + tokens[2]);
                         }
                         engineListener.notifyEvalResult(engineState.searchId, score);
 
