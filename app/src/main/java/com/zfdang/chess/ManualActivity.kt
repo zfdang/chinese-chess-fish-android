@@ -186,6 +186,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
     }
 
     fun saveThenExit() {
+        controller.close()
         finish()
     }
 
@@ -445,9 +446,13 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
 
     // create fun to handle onbackpressed
     override fun onBackPressed() {
-        // save game to file
-        super.onBackPressed()
         saveThenExit()
+    }
+
+    override fun onDestroy() {
+        if (::controller.isInitialized) controller.close()
+        if (::soundPlayer.isInitialized) soundPlayer.release()
+        super.onDestroy()
     }
 
     override fun onGameEvent(event: GameStatus?) {
@@ -455,6 +460,8 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
     }
 
     override fun runOnUIThread(runnable: Runnable?) {
-            runOnUiThread(runnable);
+        runOnUiThread {
+            if (!isFinishing && !isDestroyed) runnable?.run()
         }
+    }
 }
