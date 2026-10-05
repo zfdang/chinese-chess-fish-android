@@ -22,7 +22,8 @@
             android:exported="false"
             android:stopWithTask="true" />
         <activity
-            android:name=".views.WebviewActivity"
+            android:name=".views.InformationActivity"
+            android:theme="@style/Theme.ChineseChess.Refreshed"
             android:screenOrientation="portrait"
             android:exported="false" />
         <activity

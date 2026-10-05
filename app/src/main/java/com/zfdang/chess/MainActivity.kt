@@ -11,7 +11,7 @@ import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import com.zfdang.chess.views.WebviewActivity
+import com.zfdang.chess.views.InformationActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,26 +51,22 @@ class MainActivity : AppCompatActivity() {
 
 
         buttonHelp.setOnClickListener {
-            // Handle button setting click
-            // launch promptactivity
-            val intent = Intent(this, WebviewActivity::class.java).apply {
-                putExtra("url", "https://fish.zfdang.com/help.html")
+            val intent = Intent(this, InformationActivity::class.java).apply {
+                putExtra(InformationActivity.EXTRA_PAGE, InformationActivity.HELP)
             }
             startActivity(intent)
         }
 
         buttonAbout.setOnClickListener {
-            // launch webview activity
-            val intent = Intent(this, WebviewActivity::class.java).apply {
-                putExtra("url", "https://fish.zfdang.com/")
+            val intent = Intent(this, InformationActivity::class.java).apply {
+                putExtra(InformationActivity.EXTRA_PAGE, InformationActivity.ABOUT)
             }
             startActivity(intent)
         }
 
         buttonPrivacy.setOnClickListener {
-            // launch webview activity for privacy policy
-            val intent = Intent(this, WebviewActivity::class.java).apply {
-                putExtra("url", "https://fish.zfdang.com/privacy.html")
+            val intent = Intent(this, InformationActivity::class.java).apply {
+                putExtra(InformationActivity.EXTRA_PAGE, InformationActivity.PRIVACY)
             }
             startActivity(intent)
         }
