@@ -5,8 +5,33 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.lang.reflect.Field;
 
 public class BoardTest {
+
+    private Board roundTrip(Board board) throws Exception {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        try (ObjectOutputStream output = new ObjectOutputStream(bytes)) { output.writeObject(board); }
+        try (ObjectInputStream input = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()))) {
+            return (Board) input.readObject();
+        }
+    }
+
+    @Test public void legacyUnknownZeroIsMigratedButNewZeroIsPreserved() throws Exception {
+        Board board = new Board();
+        board.score = 0f;
+        assertEquals(0f, roundTrip(board).score, 0f);
+        Field format = Board.class.getDeclaredField("evaluationFormatVersion");
+        format.setAccessible(true);
+        format.setInt(board, 0);
+        assertTrue(Float.isNaN(roundTrip(board).score));
+        board.score = -1.25f;
+        assertEquals(-1.25f, roundTrip(board).score, 0f);
+    }
 
     @Test
     public void evaluationIsUnknownUntilComputedAndResetOnFenImport() {

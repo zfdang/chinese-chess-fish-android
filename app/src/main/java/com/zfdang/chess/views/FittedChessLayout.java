@@ -13,13 +13,24 @@ public class FittedChessLayout extends FrameLayout {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int width = MeasureSpec.getSize(widthMeasureSpec);
-        int height = MeasureSpec.getSize(heightMeasureSpec);
-        int boardWidth = Math.min(width, height * 1240 / 1340);
-        int boardHeight = boardWidth * 1340 / 1240;
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int width = widthMode == MeasureSpec.UNSPECIFIED
+                ? Math.max(getSuggestedMinimumWidth(), ChessView.BOARD_WIDTH)
+                : MeasureSpec.getSize(widthMeasureSpec);
+        int contentWidth = Math.max(0, width - getPaddingLeft() - getPaddingRight());
+        int desiredHeight = contentWidth * ChessView.BOARD_HEIGHT / ChessView.BOARD_WIDTH
+                + getPaddingTop() + getPaddingBottom();
+        int height = heightMode == MeasureSpec.EXACTLY ? MeasureSpec.getSize(heightMeasureSpec)
+                : resolveSize(Math.max(getSuggestedMinimumHeight(), desiredHeight), heightMeasureSpec);
+        int contentHeight = Math.max(0, height - getPaddingTop() - getPaddingBottom());
+        int boardWidth = Math.min(contentWidth,
+                contentHeight * ChessView.BOARD_WIDTH / ChessView.BOARD_HEIGHT);
+        int boardHeight = boardWidth * ChessView.BOARD_HEIGHT / ChessView.BOARD_WIDTH;
         for (int i = 0; i < getChildCount(); i++) {
-            getChildAt(i).measure(
-                    MeasureSpec.makeMeasureSpec(boardWidth, MeasureSpec.EXACTLY),
+            View child = getChildAt(i);
+            if (child.getVisibility() == GONE) continue;
+            child.measure(MeasureSpec.makeMeasureSpec(boardWidth, MeasureSpec.EXACTLY),
                     MeasureSpec.makeMeasureSpec(boardHeight, MeasureSpec.EXACTLY));
         }
         setMeasuredDimension(width, height);
@@ -29,8 +40,11 @@ public class FittedChessLayout extends FrameLayout {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
-            int x = (getWidth() - child.getMeasuredWidth()) / 2;
-            int y = (getHeight() - child.getMeasuredHeight()) / 2;
+            if (child.getVisibility() == GONE) continue;
+            int x = getPaddingLeft() + (getWidth() - getPaddingLeft() - getPaddingRight()
+                    - child.getMeasuredWidth()) / 2;
+            int y = getPaddingTop() + (getHeight() - getPaddingTop() - getPaddingBottom()
+                    - child.getMeasuredHeight()) / 2;
             child.layout(x, y, x + child.getMeasuredWidth(), y + child.getMeasuredHeight());
         }
     }

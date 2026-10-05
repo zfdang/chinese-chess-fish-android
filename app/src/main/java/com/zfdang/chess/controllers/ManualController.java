@@ -116,15 +116,16 @@ public class ManualController extends GameController{
             }
         } else if(children.size() > 1){
             // multiple children, show a dialog to let user choose
-            multiPVs.clear();
+            ArrayList<PvInfo> choices = new ArrayList<>();
             for(XQFManual.MoveNode child : children){
                 PvInfo pvInfo = new PvInfo(0, 0, 0, 0, 0, 0, 0, 0, false, false, false, new ArrayList<>());
                 pvInfo.pv.add(child.move);
-                multiPVs.add(pvInfo);
+                choices.add(pvInfo);
             }
-            game.generateSuggestedMoves(multiPVs);
+            suggestedPVs = java.util.Collections.unmodifiableList(choices);
+            game.generateSuggestedMoves(suggestedPVs);
             gui.onGameEvent(GameStatus.MULTIPV, "请选择分支: ");
-            Log.d("ManualController", "multiPVs: " + multiPVs.size());
+            Log.d("ManualController", "multiPVs: " + suggestedPVs.size());
         } else{
             gui.onGameEvent(GameStatus.ILLEGAL, "没有下一步了");
         }

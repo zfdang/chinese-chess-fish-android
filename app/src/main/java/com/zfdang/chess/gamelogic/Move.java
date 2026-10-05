@@ -20,7 +20,7 @@ public class Move implements Serializable {
 
     public void setComment(String comment) {
         if(comment != null) {
-            comment = comment.strip();
+            comment = com.zfdang.chess.utils.TextUtil.stripWhitespace(comment);
             comment = comment.replace("&nbsp;", " ");
         }
         this.comment = comment;

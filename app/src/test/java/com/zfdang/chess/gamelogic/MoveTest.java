@@ -10,6 +10,15 @@ import org.junit.Test;
 public class MoveTest {
 
     @Test
+    public void commentWhitespaceRemainsCompatibleWithOlderAndroid() {
+        Move move = new Move(new Board());
+        move.setComment("\u2003 注释 \u2003");
+        assertEquals("注释", move.getComment());
+        move.setComment(null);
+        assertEquals(null, move.getComment());
+    }
+
+    @Test
     public void testGetUCCIString() {
         Position from = new Position(7, 7); // h2
         Position to = new Position(4, 7); // e2

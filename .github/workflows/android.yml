@@ -8,10 +8,14 @@ on:
   pull_request:
     branches: [master]
     types: [opened, synchronize, reopened]
+    paths-ignore:
+      - 'docs/**'
   # The base-repository event also allows releases after merging fork PRs.
   pull_request_target:
     branches: [master]
     types: [closed]
+    paths-ignore:
+      - 'docs/**'
 
 permissions:
   contents: read
@@ -21,6 +25,10 @@ jobs:
     # Closing an unmerged PR does not need another build.
     if: github.event.action != 'closed' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    concurrency:
+      group: build-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+      # Every merged PR must finish its release build; superseded checks can be cancelled.
+      cancel-in-progress: ${{ github.event_name != 'pull_request_target' }}
     outputs:
       revision: ${{ steps.revision.outputs.number }}
       commit: ${{ steps.revision.outputs.commit }}
@@ -89,10 +97,14 @@ jobs:
           REVISION: ${{ needs.build.outputs.revision }}
           RELEASE_SHA: ${{ needs.build.outputs.commit }}
         run: |
-          gh release create "tag-${REVISION}" \
+          if ! gh release view "tag-${REVISION}" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            gh release create "tag-${REVISION}" \
+              --repo "$GITHUB_REPOSITORY" \
+              --target "$RELEASE_SHA" \
+              --title "Release ${REVISION}" \
+              --generate-notes
+          fi
+          gh release upload "tag-${REVISION}" \
             release-assets/armv8-/release/chessfish-armv8.zip \
             release-assets/armv8-dotprod-/release/chessfish-armv8-dotprod.zip \
-            --repo "$GITHUB_REPOSITORY" \
-            --target "$RELEASE_SHA" \
-            --title "Release ${REVISION}" \
-            --generate-notes
+            --repo "$GITHUB_REPOSITORY" --clobber

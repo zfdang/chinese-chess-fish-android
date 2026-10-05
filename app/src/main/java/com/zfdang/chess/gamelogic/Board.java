@@ -3,6 +3,8 @@ package com.zfdang.chess.gamelogic;
 import android.util.Log;
 
 import java.io.Serializable;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 
 /**
@@ -15,6 +17,15 @@ public class Board implements Serializable {
     public boolean bRedGo = true;
     public int rounds = 1;
     public float score = Float.NaN;
+    private int evaluationFormatVersion = 1;
+
+    private void readObject(ObjectInputStream input) throws IOException, ClassNotFoundException {
+        input.defaultReadObject();
+        // Legacy saves used zero for both unknown and balanced evaluations.
+        // Treat ambiguous legacy zeros as unknown, but preserve zeros saved by this format.
+        if (evaluationFormatVersion == 0 && score == 0f) score = Float.NaN;
+        evaluationFormatVersion = 1;
+    }
     public static final int BOARD_PIECE_WIDTH = 9;
     public static final int BOARD_PIECE_HEIGHT = 10;
 

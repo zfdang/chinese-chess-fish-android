@@ -294,7 +294,7 @@ public class XQFManual {
 
     public void setAnnotation(String annotation) {
         if(annotation != null) {
-            annotation = annotation.strip();
+            annotation = com.zfdang.chess.utils.TextUtil.stripWhitespace(annotation);
             annotation = annotation.replace("&nbsp;", " ");
         }
         this.annotation = annotation;
