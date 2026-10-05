@@ -24,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         val buttonLearn: Button = findViewById(R.id.button_learn)
         val buttonHelp: Button = findViewById(R.id.button_help)
         val buttonAbout: Button = findViewById(R.id.button_about)
+        val buttonPrivacy: Button = findViewById(R.id.button_privacy)
 
         // Give the two main entries a clear title and a quieter second line.
         for (button in listOf(buttonPlay, buttonLearn)) {
@@ -62,6 +63,14 @@ class MainActivity : AppCompatActivity() {
             // launch webview activity
             val intent = Intent(this, WebviewActivity::class.java).apply {
                 putExtra("url", "https://fish.zfdang.com/")
+            }
+            startActivity(intent)
+        }
+
+        buttonPrivacy.setOnClickListener {
+            // launch webview activity for privacy policy
+            val intent = Intent(this, WebviewActivity::class.java).apply {
+                putExtra("url", "https://fish.zfdang.com/privacy.html")
             }
             startActivity(intent)
         }
