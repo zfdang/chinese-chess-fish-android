@@ -215,6 +215,9 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
                 controller.manualFirst()
             }
             binding.gamebt -> {
+                // Upstream UCI uses process-global streams. Release the idle manual engine
+                // before the game creates its session; the manual itself remains on the back stack.
+                controller.player.close()
                 // start game activity here
                 val intent = Intent(this, GameActivity::class.java)
                 intent.putExtra("FENString", controller.game.currentBoard.toFENString())

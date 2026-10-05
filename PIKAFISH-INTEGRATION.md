@@ -6,11 +6,11 @@ The bundled engine and NNUE are pinned to the official Pikafish-2026-09-06 relea
 
 `PikafishNativeEngine` carries UCI commands over Binder to a non-exported bound `PikafishService` in the `:pikafish` process. The service loads `libpikafish.so` (ARMv8) or `libpikafish_dotprod.so` (ARMv8.2 dot product) with JNI. It does not execute a binary or download native code.
 
-The service serializes sessions because upstream uses global UCI streams. Shutdown cancels queued commands and sends `quit`; upstream destroys the engine and its search threads before another session starts. An upstream fatal error terminates only the service. The UI reports the failure and a later search can create a fresh session.
+The service serializes sessions because upstream uses global UCI streams. The manual page releases its idle engine before opening a game, so the game does not wait behind a session retained on the back stack. Shutdown cancels queued commands and sends `quit`; upstream destroys the engine and its search threads before another session starts. An upstream fatal error terminates only the service. The UI reports the failure and a later search can create a fresh session.
 
-The release network is an APK asset. On first use the service worker copies it atomically to a versioned private directory, checks its size and SHA-256, and uses that exact file for EvalFile. A verified copy is recorded with a `pikafish.nnue.verified` marker bound to the version, size and hash, so later starts skip re-hashing the 50 MB file; networks from older pinned versions are pruned on install. UCI configuration is kept in a writable private `pikafish.ini`; EvalFile is always redirected to the bundled release network.
+The release network is an APK asset. On first use the service worker copies it atomically to a versioned private directory, checks its size and SHA-256, and uses that exact file for EvalFile. Every start verifies the installed file size and SHA-256, repairing damaged copies from the packaged asset. Networks from older pinned versions are pruned after successful verification or installation. UCI configuration is kept in a writable private `pikafish.ini`; EvalFile is always redirected to the bundled release network.
 
-The dot-product flavor is compiled with `-march=armv8.2-a+dotprod`. The service checks the CPU capability before starting a session and reports an error instead of aborting with SIGILL on unsupported hardware.
+The dot-product flavor is compiled with `-march=armv8.2-a+dotprod`. The service checks the CPU capability using the baseline nativeutil library before loading the optimized library and reports an error instead of aborting with SIGILL on unsupported hardware.
 
 ## Build and Play artifacts
 

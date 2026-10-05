@@ -7,13 +7,6 @@
 #include <streambuf>
 #include <string>
 #include <unordered_map>
-#if defined(__ANDROID__)
-#include <sys/auxv.h>
-#endif
-// NDK headers do not always expose this ARM64 capability bit.
-#ifndef HWCAP_ASIMDDP
-#define HWCAP_ASIMDDP (1 << 20)
-#endif
 #include "src/attacks.h"
 #include "src/misc.h"
 #include "src/position.h"
@@ -140,17 +133,6 @@ std::shared_ptr<Session> find(jlong id) {
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* javaVm, void*) {
     vm = javaVm;
     return JNI_VERSION_1_6;
-}
-extern "C" JNIEXPORT jboolean JNICALL
-Java_com_zfdang_chess_engine_NativeBridge_supportsDotprod(JNIEnv*, jclass) {
-    // The dot-product flavor is built with -march=armv8.2-a+dotprod; loading it on a CPU
-    // without that extension aborts with SIGILL. Let the caller refuse instead.
-#if defined(__aarch64__) && defined(__ANDROID__)
-    unsigned long hwcap = getauxval(AT_HWCAP);
-    return (hwcap & HWCAP_ASIMDDP) != 0 ? JNI_TRUE : JNI_FALSE;
-#else
-    return JNI_FALSE;
-#endif
 }
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_zfdang_chess_engine_NativeBridge_create(JNIEnv* env, jclass, jobject callback) {

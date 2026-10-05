@@ -32,6 +32,7 @@ public final class PikafishNativeEngine extends UCIEngineBase {
     private long session;
     private volatile boolean closed;
     private boolean bound;
+    private boolean failureReported;
 
     public PikafishNativeEngine(EngineListener listener) { this.listener = listener; }
     private final IPikafishCallback.Stub callback = new IPikafishCallback.Stub() {
@@ -57,7 +58,13 @@ public final class PikafishNativeEngine extends UCIEngineBase {
         @Override public void onNullBinding(ComponentName name) { fail("Pikafish service unavailable"); }
     };
     private void fail(String message) {
-        if (!closed) { listener.reportEngineError(message); shutDown(); }
+        synchronized (this) {
+            if (closed || failureReported) return;
+            failureReported = true;
+        }
+        // Report before closing the pipe, so observing EOF also implies the error was delivered.
+        // Always release the transport even if a listener throws.
+        try { listener.reportEngineError(message); } finally { shutDown(); }
     }
     @Override protected synchronized void startProcess() {
         try {
@@ -118,8 +125,8 @@ public final class PikafishNativeEngine extends UCIEngineBase {
 
     /**
      * The transposition-table size in MB, capped by the device's per-app heap budget so the
-     * long-lived {@code :pikafish} service never bloats to a point where the LMK kills it mid-search.
-     * The 50 MB NNUE weights are shared/read-only, so they are not counted against the hash.
+     * long-lived {@code :pikafish} service starts with a conservative allocation.
+     * Decompressed NNUE weights and native allocations also need memory outside the Java heap.
      */
     private int defaultHashMb() {
         int memoryClassMb;

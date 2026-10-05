@@ -465,7 +465,6 @@ public class ComputerPlayer {
                     pendingOptions.clear();
                     uci.initConfig(engineConfig);
                     uci.applyIniFile();
-                    setOptimizedThreads();
                     uci.writeLineToEngine("ucinewgame");
                     uci.writeLineToEngine("isready");
                     engineState.setState(EngineStateValue.WAIT_READY);
