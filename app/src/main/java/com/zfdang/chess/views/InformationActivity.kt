@@ -5,6 +5,8 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import java.io.IOException
 import android.text.method.LinkMovementMethod
 import android.view.View
 import android.widget.LinearLayout
@@ -157,12 +159,21 @@ class InformationActivity : AppCompatActivity() {
     }
     private fun privacy() {
         // The same document is published on the website and bundled by the build for offline use.
-        val html = assets.open("documents/privacy.html").bufferedReader(Charsets.UTF_8).use { it.readText() }
-        val updated = Regex("更新日期：([^<]*)").find(html)?.groupValues?.get(1).orEmpty()
-        heading("您的数据与隐私", "隐私政策 · 更新于 $updated\n此页面可离线阅读。")
-        val article = Regex("<section\\b[^>]*>(.*?)</section>", RegexOption.DOT_MATCHES_ALL)
+        val html = try {
+            assets.open("documents/privacy.html").bufferedReader(Charsets.UTF_8).use { it.readText() }
+        } catch (error: IOException) {
+            Log.w("InformationActivity", "Cannot read bundled privacy policy", error)
+            heading("您的数据与隐私", "隐私政策")
+            card("暂时无法显示", "本地隐私政策暂时无法读取。您可以查看官网最新政策，或更新应用后重试。", "privacy-unavailable")
+            link("查看官网隐私政策", "https://fish.zfdang.com/privacy.html")
+            return
+        }
+        val updated = Regex("更新日期[：:]\\s*([^<]+)").find(html)?.groupValues?.get(1)?.trim().orEmpty()
+        val date = if (updated.isNotEmpty()) " · 更新于 $updated" else ""
+        heading("您的数据与隐私", "隐私政策$date\n此页面可离线阅读。")
+        val article = Regex("<section\\b[^>]*>(.*?)</section>", setOf(RegexOption.DOT_MATCHES_ALL, RegexOption.IGNORE_CASE))
             .find(html)?.groupValues?.get(1) ?: html
-        val titles = Regex("<h4\\b[^>]*>(.*?)</h4>", RegexOption.DOT_MATCHES_ALL).findAll(article).toList()
+        val titles = Regex("<h4\\b[^>]*>(.*?)</h4>", setOf(RegexOption.DOT_MATCHES_ALL, RegexOption.IGNORE_CASE)).findAll(article).toList()
         if (titles.isEmpty()) {
             card("政策正文", HtmlCompat.fromHtml(article, HtmlCompat.FROM_HTML_MODE_LEGACY).trim(), "privacy-full")
             return
