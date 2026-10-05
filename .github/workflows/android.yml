@@ -47,8 +47,8 @@ jobs:
           distribution: temurin
           cache: gradle
 
-      - name: Assemble Release APK
-        run: ./gradlew assembleRelease bundleRelease --stacktrace
+      - name: Test, lint and build APKs and app bundles
+        run: ./gradlew testArmv8-DebugUnitTest testArmv8-dotprod-DebugUnitTest lintArmv8-Debug assembleRelease bundleRelease --stacktrace
 
       - name: Create ZIP armv8
         working-directory: ./app/build/outputs/apk/armv8-/release/
