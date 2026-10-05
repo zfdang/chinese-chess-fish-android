@@ -2,6 +2,11 @@ package com.zfdang.chess
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.AbsoluteSizeSpan
+import android.text.style.StyleSpan
+import android.graphics.Typeface
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -23,6 +28,17 @@ class MainActivity : AppCompatActivity() {
         val buttonLearn: Button = findViewById(R.id.button_learn)
         val buttonHelp: Button = findViewById(R.id.button_help)
         val buttonAbout: Button = findViewById(R.id.button_about)
+
+        // Give the two main entries a clear title and a quieter second line.
+        for (button in listOf(buttonPlay, buttonLearn)) {
+            val label = SpannableString(button.text)
+            val subtitleStart = label.indexOf('\n') + 1
+            if (subtitleStart > 0) {
+                label.setSpan(AbsoluteSizeSpan(14, true), subtitleStart, label.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                label.setSpan(StyleSpan(Typeface.BOLD), 0, subtitleStart, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+            }
+            button.text = label
+        }
 
         // Set click listeners
         buttonPlay.setOnClickListener {

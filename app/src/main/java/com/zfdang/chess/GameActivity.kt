@@ -9,10 +9,12 @@ import android.os.Looper
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.EditText
 import android.widget.FrameLayout
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.app.AppCompatActivity
 import com.github.mikephil.charting.components.Description
 import com.zfdang.chess.adapters.HistoryAndTrendAdapter
@@ -58,6 +60,18 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
 
         binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.morebt.setOnClickListener {
+            val expanded = binding.advancedTools.visibility != View.VISIBLE
+            binding.advancedTools.visibility = if (expanded) View.VISIBLE else View.GONE
+            binding.morebt.text = if (expanded) "收起引擎与棋局工具  ▴" else "引擎与棋局工具  ▾"
+        }
+
+        // Size the board for the collapsed page; expanded tools may extend below the fold.
+        binding.root.addOnLayoutChangeListener { _, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom ->
+            if (right - left != oldRight - oldLeft || bottom - top != oldBottom - oldTop) {
+                binding.root.post { fitBoardToScreen() }
+            }
+        }
 
         // new game
         controller = GameController(this)
@@ -103,7 +117,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
         val historyTable = binding.historyTable
         val chart = binding.trendchart
         historyAndTrendAdapter = HistoryAndTrendAdapter(this, historyTable, chart, controller)
-        historyAndTrendAdapter.update()
+        updateGameHistory()
 
         // customize chart
         chart.description = Description().apply {
@@ -149,41 +163,62 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        // 防止重复点击
+        if (event == null) return false
+        // A page drag is intercepted by the scroll view and cancels this tap.
+        if (event.action != MotionEvent.ACTION_UP) return true
         lastClickTime = System.currentTimeMillis()
-        if (lastClickTime - curClickTime < MIN_CLICK_DELAY_TIME) {
-            return false
-        }
+        if (lastClickTime - curClickTime < MIN_CLICK_DELAY_TIME) return true
         curClickTime = lastClickTime
+        v?.performClick()
+        val pos = chessView.getPosByCoord(event.x, event.y) ?: return true
+        controller.touchPosition(pos)
+        return true
+    }
 
-        if (event!!.action === MotionEvent.ACTION_DOWN) {
-            val x = event!!.x
-            val y = event!!.y
-            val pos = chessView.getPosByCoord(x, y)
-            if(pos == null) {
-                // pos is not valid
-                return false
-            }
-            controller.touchPosition(pos);
-            Log.d("PlayActivity", "onTouch: x = $x, y = $y, pos = " + pos.toString())
+    private fun fitBoardToScreen() {
+        val content = binding.gameContent
+        var fixedHeight = content.paddingTop + content.paddingBottom
+        for (i in 0 until content.childCount) {
+            val child = content.getChildAt(i)
+            if (child === binding.chesslayout || child === binding.advancedTools) continue
+            val margins = child.layoutParams as ViewGroup.MarginLayoutParams
+            fixedHeight += child.measuredHeight + margins.topMargin + margins.bottomMargin
         }
-        return false
+        val boardParams = binding.chesslayout.layoutParams as ViewGroup.MarginLayoutParams
+        val available = binding.root.height - fixedHeight - boardParams.topMargin - boardParams.bottomMargin
+        val fullWidthHeight = (content.width - content.paddingLeft - content.paddingRight) * 1340 / 1240
+        val height = minOf(fullWidthHeight, available.coerceAtLeast(0))
+        if (boardParams.height != height) {
+            boardParams.height = height
+            binding.chesslayout.layoutParams = boardParams
+        }
+    }
+
+    private fun updateGameHistory() {
+        historyAndTrendAdapter.update()
+        binding.historyTitle.text = if (controller.isShowTrends) "局势评估" else "棋局记录"
+        binding.historyEmpty.visibility =
+            if (controller.game.history.isEmpty() && !controller.isShowTrends) View.VISIBLE else View.GONE
+        binding.trendchart.visibility = if (controller.isShowTrends) View.VISIBLE else View.GONE
+        binding.historyscroll.visibility = if (controller.isShowTrends) View.GONE else View.VISIBLE
     }
 
     // create function to set status text
     fun setStatusText(text: String) {
         binding.statustv.text = text
+        binding.opponentLabel.text = if (controller.isComputerPlaying) "你执红 · 电脑执黑" else "红黑双方 · 人工执棋"
     }
 
     fun showNewGameConfirmDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("确定开始新游戏?")
-        builder.setMessage("你是否要放弃当前的游戏，开始新游戏呢?")
+        val builder = MaterialAlertDialogBuilder(this)
+            .setBackground(AppCompatResources.getDrawable(this, R.drawable.ui_dialog_background))
+        builder.setTitle("开始新的一局？")
+        builder.setMessage("当前棋局将被替换。准备好了，就重新落子吧。")
 
-        builder.setPositiveButton("开始新游戏") { dialog, which ->
+        builder.setPositiveButton("开始新局") { dialog, which ->
             // User clicked Yes button
             controller.startNewGame()
-            historyAndTrendAdapter.update()
+            updateGameHistory()
             if(controller.settings.red_go_first) {
                 setStatusText("新游戏，红方先行")
             } else {
@@ -203,13 +238,13 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
             }, 1000)
         }
 
-        builder.setNegativeButton("继续当前游戏") { dialog, which ->
+        builder.setNegativeButton("继续对弈") { dialog, which ->
             // User clicked No button
             dialog.dismiss()
         }
 
         builder.setCancelable(true)
-        val dialog: AlertDialog = builder.create()
+        val dialog = builder.create()
         dialog.show()
     }
 
@@ -223,12 +258,14 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
     }
 
     fun showInputFENDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("从FEN串开始新游戏")
-        builder.setMessage("请输入棋局的FEN串：")
+        val builder = MaterialAlertDialogBuilder(this)
+            .setBackground(AppCompatResources.getDrawable(this, R.drawable.ui_dialog_background))
+        builder.setTitle("导入棋局")
+        builder.setMessage("粘贴 FEN 棋局串，从这个局面开始对弈。")
 
         // Set up the input
-        val input = EditText(this)
+        val inputView = layoutInflater.inflate(R.layout.dialog_fen, null)
+        val input = inputView.findViewById<EditText>(R.id.fen_input)
 
         // get content from clipboard
         val clipboard = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
@@ -240,10 +277,10 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
         input.setSelection(input.text.length)
         input.setSelectAllOnFocus(true)
 
-        builder.setView(input)
+        builder.setView(inputView)
 
         // Set up the buttons
-        builder.setPositiveButton("确定", DialogInterface.OnClickListener { dialog, which ->
+        builder.setPositiveButton("导入棋局", DialogInterface.OnClickListener { dialog, which ->
             val userInput = input.text.toString()
             controller.startFENGame(userInput)
             // Handle the input string here
@@ -345,7 +382,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
                     binding.historyscroll.visibility = View.VISIBLE
                 }
 
-                historyAndTrendAdapter.update()
+                updateGameHistory()
             }
             binding.exitbt -> {
                 saveThenExit();
@@ -437,7 +474,7 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
         }
 
         // update history table
-        historyAndTrendAdapter.update()
+        updateGameHistory()
     }
 
     // create fun to handle onbackpressed

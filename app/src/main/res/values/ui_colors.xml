@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="ui_paper">#F6F3ED</color>
+    <color name="ui_surface">#FFFCF7</color>
+    <color name="ui_ink">#292D2A</color>
+    <color name="ui_muted">#797D73</color>
+    <color name="ui_red">#A33D32</color>
+    <color name="ui_line">#E5DFD3</color>
+</resources>

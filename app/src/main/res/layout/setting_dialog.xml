@@ -1,326 +1,259 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
-
+    android:clipToPadding="false">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:padding="2dp">
-
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="16dp">
         <TextView
             android:id="@+id/textView_engine_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="6dp"
-            android:paddingBottom="6dp"
             android:text="引擎"
-            android:textSize="16sp" />
-    </LinearLayout>
-
-    <View
-        android:id="@+id/divider12"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <CheckBox
-            android:id="@+id/boolean_openbook"
-            android:layout_width="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@color/ui_muted"
+            android:layout_marginBottom="4dp" />
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="对弈偏好"
+            android:textSize="13sp"
+            android:textColor="@color/ui_ink"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="8dp" />
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/boolean_openbook"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
             android:text="使用开局库"
-            android:textSize="16sp" />
-
+            android:textSize="14sp"
+            android:textColor="@color/ui_ink"
+            app:useMaterialThemeColors="false"
+                app:thumbTint="@color/ui_switch_thumb"
+                app:trackTint="@color/ui_switch_track" />
         <TextView
             android:id="@+id/textViewOpenBook"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:paddingLeft="6dp"
-            android:text="(当前开局库)"
-            android:textSize="16sp" />
-    </LinearLayout>
-
-    <View
-        android:id="@+id/divider1"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <CheckBox
+            android:text="当前开局库"
+            android:textSize="12sp"
+            android:textColor="@color/ui_muted"
+            android:paddingStart="4dp" />
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/boolean_sound"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="播放音效"
-            android:textSize="16sp" />
-    </LinearLayout>
-
-
-    <View
-        android:id="@+id/divider2"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <CheckBox
+            android:minHeight="48dp"
+            android:text="棋子音效"
+            android:textSize="14sp"
+            android:textColor="@color/ui_ink"
+            app:useMaterialThemeColors="false"
+                app:thumbTint="@color/ui_switch_thumb"
+                app:trackTint="@color/ui_switch_track" />
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/boolean_redgofirst"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="红方先行 (新建游戏有效)"
-            android:textSize="16sp" />
-    </LinearLayout>
-
-    <View
-        android:id="@+id/divider21"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <CheckBox
+            android:minHeight="48dp"
+            android:text="红方先行 · 下局生效"
+            android:textSize="14sp"
+            android:textColor="@color/ui_ink"
+            app:useMaterialThemeColors="false"
+                app:thumbTint="@color/ui_switch_thumb"
+                app:trackTint="@color/ui_switch_track" />
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/boolean_randommove"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="增加电脑走棋的随机性"
-            android:textSize="16sp" />
-    </LinearLayout>
-
-    <View
-        android:id="@+id/divider3"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp">
-
+            android:minHeight="48dp"
+            android:text="让电脑走法更有变化"
+            android:textSize="14sp"
+            android:textColor="@color/ui_ink"
+            app:useMaterialThemeColors="false"
+                app:thumbTint="@color/ui_switch_thumb"
+                app:trackTint="@color/ui_switch_track" />
         <TextView
-            android:id="@+id/textView_history_caption"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="6"
-            android:text="显示历史着法"
-            android:textSize="16sp" />
-
+            android:text="棋盘显示"
+            android:textSize="13sp"
+            android:textColor="@color/ui_ink"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="8dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+            <TextView
+                android:id="@+id/textView_history_caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="显示最近几步走法"
+                android:textSize="14sp"
+                android:textColor="@color/ui_ink" />
+            <TextView
+                android:id="@+id/textview_history"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1"
+                android:textSize="14sp"
+                android:textColor="@color/ui_red"
+                android:textStyle="bold" />
+        </LinearLayout>
         <SeekBar
             android:id="@+id/seekbar_history"
-            style="@style/Widget.AppCompat.SeekBar.Discrete"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="7"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:min="0"
             android:max="6"
-            android:progress="1" />
-
+            android:progress="1"
+            android:progressTint="@color/ui_red"
+            android:thumbTint="@color/ui_red" />
         <TextView
-            android:id="@+id/textview_history"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="1"
-            android:textAlignment="center" />
-    </LinearLayout>
-
-    <View
-        android:id="@+id/divider4"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp">
-
-        <TextView
-            android:id="@+id/textView_hash_caption"
-            android:layout_width="0dp"
+            android:text="引擎搜索"
+            android:textSize="13sp"
+            android:textColor="@color/ui_ink"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="8dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="6"
-            android:text="Hash大小(M)"
-            android:textSize="16sp" />
-
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
+            <TextView
+                android:id="@+id/textView_hash_caption"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="引擎缓存 · MB"
+                android:textSize="14sp"
+                android:textColor="@color/ui_ink" />
+            <TextView
+                android:id="@+id/textview_hash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="256"
+                android:textSize="14sp"
+                android:textColor="@color/ui_red"
+                android:textStyle="bold" />
+        </LinearLayout>
         <SeekBar
             android:id="@+id/seekbar_hash"
-            style="@style/Widget.AppCompat.SeekBar.Discrete"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="7"
-            android:max="1024"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
             android:min="128"
-            android:progress="256" />
-
-        <TextView
-            android:id="@+id/textview_hash"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:text="256"
-            android:textAlignment="center" />
-
-    </LinearLayout>
-
-    <View
-        android:id="@+id/divider5"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
-
-    <TextView
-        android:id="@+id/textView_engine"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="6dp"
-        android:paddingBottom="0dp"
-        android:text="搜索设置："
-        android:textSize="16sp" />
-
-    <RadioGroup
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <RadioButton
-            android:id="@+id/radioButton_depth"
+            android:max="1024"
+            android:progress="256"
+            android:progressTint="@color/ui_red"
+            android:thumbTint="@color/ui_red" />
+        <RadioGroup
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="搜索固定深度 (建议20)" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingBottom="6dp">
-
-            <TextView
-                android:id="@+id/textView_depth_caption"
-                android:layout_width="0dp"
+            android:orientation="vertical">
+            <RadioButton
+                android:id="@+id/radioButton_depth"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="按深度搜索"
+                android:textSize="14sp"
+                android:textColor="@color/ui_ink"
+                android:buttonTint="@color/ui_red" />
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="深度："
-                android:textSize="14sp" />
-
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp">
+                <TextView
+                    android:id="@+id/textView_depth_caption"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="搜索深度"
+                    android:textSize="14sp"
+                    android:textColor="@color/ui_ink" />
+                <TextView
+                    android:id="@+id/textView_depth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="20"
+                    android:textSize="14sp"
+                    android:textColor="@color/ui_red"
+                    android:textStyle="bold" />
+            </LinearLayout>
             <SeekBar
                 android:id="@+id/seekBar_depth"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="6"
-                android:max="120"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
                 android:min="10"
-                android:progress="1" />
-
-            <TextView
-                android:id="@+id/textView_depth"
-                android:layout_width="0dp"
+                android:max="120"
+                android:progress="20"
+                android:progressTint="@color/ui_red"
+                android:thumbTint="@color/ui_red" />
+            <RadioButton
+                android:id="@+id/radioButton_time"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="按时间搜索"
+                android:textSize="14sp"
+                android:textColor="@color/ui_ink"
+                android:buttonTint="@color/ui_red" />
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="10"
-                android:textAlignment="center" />
-
-        </LinearLayout>
-
-        <View
-            android:id="@+id/divider6"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
-
-        <RadioButton
-            android:id="@+id/radioButton_time"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="搜索固定时间 (建议3000毫秒)" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingBottom="6dp">
-
-            <TextView
-                android:id="@+id/textView_time_caption"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="时间："
-                android:textSize="14sp" />
-
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp">
+                <TextView
+                    android:id="@+id/textView_time_caption"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="思考时间 · 毫秒"
+                    android:textSize="14sp"
+                    android:textColor="@color/ui_ink" />
+                <TextView
+                    android:id="@+id/textView_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="3000"
+                    android:textSize="14sp"
+                    android:textColor="@color/ui_red"
+                    android:textStyle="bold" />
+            </LinearLayout>
             <SeekBar
                 android:id="@+id/seekBar_time"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="6"
-                android:max="20000"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
                 android:min="500"
-                android:progress="3000" />
-
-            <TextView
-                android:id="@+id/textView_time"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="2"
-                android:text="1000"
-                android:textAlignment="center" />
-
-        </LinearLayout>
-
-        <View
-            android:id="@+id/divider7"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="?android:attr/listDivider" />
-
-        <RadioButton
-            android:id="@+id/radioButton_infinite"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:text="无限搜索，须闪电出着"
-
-            android:textSize="14sp" />
-
-    </RadioGroup>
-
-    <View
-        android:id="@+id/divider8"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="?android:attr/listDivider" />
-
-</LinearLayout>
+                android:max="20000"
+                android:progress="3000"
+                android:progressTint="@color/ui_red"
+                android:thumbTint="@color/ui_red" />
+            <RadioButton
+                android:id="@+id/radioButton_infinite"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="持续思考 · 手动停止"
+                android:textSize="14sp"
+                android:textColor="@color/ui_ink"
+                android:buttonTint="@color/ui_red" />
+        </RadioGroup>
+    </LinearLayout>
+</ScrollView>
