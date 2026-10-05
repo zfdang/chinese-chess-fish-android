@@ -39,3 +39,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+
+# .omc
+.omc/
+.workbuddy/
+app/src/.omc/
+app/src/main/java/com/zfdang/chess/.omc/
+app/src/main/java/com/zfdang/chess/controllers/.omc/
+
