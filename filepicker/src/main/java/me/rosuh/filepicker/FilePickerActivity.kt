@@ -173,6 +173,17 @@ class FilePickerActivity : AppCompatActivity(), View.OnClickListener,
         setTheme(pickerConfig.themeId)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity_for_file_picker)
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        val content = findViewById<android.view.ViewGroup>(android.R.id.content).getChildAt(0)
+        val originalPadding = intArrayOf(content.paddingLeft, content.paddingTop, content.paddingRight, content.paddingBottom)
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(content) { view, insets ->
+            val bars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars() or androidx.core.view.WindowInsetsCompat.Type.displayCutout())
+            view.setPadding(originalPadding[0] + bars.left, originalPadding[1] + bars.top, originalPadding[2] + bars.right, originalPadding[3] + bars.bottom)
+            insets
+        }
+        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() { navigateBack() }
+        })
         initView()
         // 核验权限
         // checking permission
@@ -635,9 +646,9 @@ class FilePickerActivity : AppCompatActivity(), View.OnClickListener,
             resources.getString(pickerConfig.hadSelectedText, selectedCount)
     }
 
-    override fun onBackPressed() {
+    private fun navigateBack() {
         if ((rvNav?.adapter as? FileNavAdapter)?.itemCount ?: 0 <= 1) {
-            super.onBackPressed()
+            finish()
         } else {
             // 即将进入的 item 的索引
             (rvNav?.adapter as? FileNavAdapter)?.run {

@@ -424,8 +424,12 @@ public class ComputerPlayer {
                 if (t1 - t0 >= 1000)
                     break;
             }
-            if ((s == null) || Thread.currentThread().isInterrupted())
+            if (Thread.currentThread().isInterrupted())
                 return;
+            if (s == null) {
+                processEngineOutput(uci, null);
+                return;
+            }
             processEngineOutput(uci, s);
             if (Thread.currentThread().isInterrupted())
                 return;
@@ -444,7 +448,7 @@ public class ComputerPlayer {
             return;
 
         if (s == null) {
-            shutdownEngine();
+            if (uci == uciEngine) close();
             return;
         }
 

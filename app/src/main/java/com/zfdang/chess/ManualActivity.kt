@@ -69,6 +69,10 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
 
         binding = ActivityManualBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        com.zfdang.chess.utils.WindowInsetsUtil.apply(this, binding.root)
+        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() { saveThenExit() }
+        })
 
         // new game
         controller = ManualController(this)
@@ -118,7 +122,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
         var currentVersion = ""
         try {
             val pi: PackageInfo = pm.getPackageInfo(getPackageName(), 0)
-            currentVersion = pi.versionName
+            currentVersion = pi.versionName.orEmpty()
         } catch (e: PackageManager.NameNotFoundException) {
             Log.e("Setting", "isFirstRun: " + Log.getStackTraceString(e))
         }
@@ -445,10 +449,6 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
     }
 
     // create fun to handle onbackpressed
-    override fun onBackPressed() {
-        saveThenExit()
-    }
-
     override fun onDestroy() {
         if (::controller.isInitialized) controller.close()
         if (::soundPlayer.isInitialized) soundPlayer.release()

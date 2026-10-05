@@ -19,6 +19,13 @@ class WebviewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_webview)
+        com.zfdang.chess.utils.WindowInsetsUtil.apply(this, findViewById<android.view.ViewGroup>(android.R.id.content).getChildAt(0))
+        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val web = findViewById<WebView>(R.id.webview)
+                if (web.canGoBack()) web.goBack() else finish()
+            }
+        })
 
         // bind textViewVersion
         val textViewVersion: TextView = findViewById(R.id.textViewVersion)
@@ -32,7 +39,7 @@ class WebviewActivity : AppCompatActivity() {
         // bind imageButton and set click listener
         val imageButtonBack: ImageButton = findViewById(R.id.imageButtonBack)
         imageButtonBack.setOnClickListener {
-            onBackPressed()
+            onBackPressedDispatcher.onBackPressed()
         }
 
         val webView: WebView = findViewById(R.id.webview)
@@ -50,12 +57,4 @@ class WebviewActivity : AppCompatActivity() {
     }
 
 
-    override fun onBackPressed() {
-        val webView: WebView = findViewById(R.id.webview)
-        if (webView.canGoBack()) {
-            webView.goBack()
-        } else {
-            super.onBackPressed()
-        }
-    }
 }

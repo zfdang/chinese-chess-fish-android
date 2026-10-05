@@ -48,7 +48,7 @@ jobs:
           cache: gradle
 
       - name: Assemble Release APK
-        run: ./gradlew assembleRelease --stacktrace
+        run: ./gradlew assembleRelease bundleRelease --stacktrace
 
       - name: Create ZIP armv8
         working-directory: ./app/build/outputs/apk/armv8-/release/
@@ -73,6 +73,8 @@ jobs:
           path: |
             app/build/outputs/apk/armv8-/release/chessfish-armv8.zip
             app/build/outputs/apk/armv8-dotprod-/release/chessfish-armv8-dotprod.zip
+            app/build/outputs/bundle/armv8-Release/*.aab
+            app/build/outputs/bundle/armv8-dotprod-Release/*.aab
 
   release:
     # PR updates, unmerged closures and direct pushes never publish releases.
@@ -105,6 +107,8 @@ jobs:
               --generate-notes
           fi
           gh release upload "tag-${REVISION}" \
-            release-assets/armv8-/release/chessfish-armv8.zip \
-            release-assets/armv8-dotprod-/release/chessfish-armv8-dotprod.zip \
+            release-assets/apk/armv8-/release/chessfish-armv8.zip \
+            release-assets/apk/armv8-dotprod-/release/chessfish-armv8-dotprod.zip \
+            release-assets/bundle/armv8-Release/*.aab \
+            release-assets/bundle/armv8-dotprod-Release/*.aab \
             --repo "$GITHUB_REPOSITORY" --clobber

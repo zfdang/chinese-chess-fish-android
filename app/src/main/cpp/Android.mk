@@ -1,3 +1,3 @@
-LOCAL_PATH := $(call my-dir)
-
-include src/main/cpp/nativeutil/Android.mk
+CHESS_CPP_ROOT := $(call my-dir)
+include $(CHESS_CPP_ROOT)/nativeutil/Android.mk
+include $(CHESS_CPP_ROOT)/pikafish/Android.mk

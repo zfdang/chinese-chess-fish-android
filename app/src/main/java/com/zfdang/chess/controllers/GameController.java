@@ -570,6 +570,15 @@ public class GameController implements EngineListener, SearchListener {
     @Override
     public void reportEngineError(String errMsg) {
         Log.d("GameController", "Engine error: " + errMsg);
+        if (closed) return;
+        mainHandler.post(() -> {
+            if (closed) return;
+            if (state == ControllerState.WAITING_FOR_EVAL) state = preEvalState;
+            else if (state != ControllerState.MANUAL_MODE && game != null)
+                state = game.currentBoard.bRedGo ? ControllerState.WAITING_FOR_USER
+                        : ControllerState.WAITING_FOR_ENGINE;
+            gui.onGameEvent(GameStatus.ILLEGAL, "引擎已停止，请重试：" + errMsg);
+        });
     }
 
     @Override
