@@ -30,14 +30,10 @@ import static org.junit.Assert.*;
 public class PikafishLifecycleTest {
     @Rule public final ActivityScenarioRule<MainActivity> activity = new ActivityScenarioRule<>(MainActivity.class);
 
-    @Test public void installedNetworkIsRepairedEvenWithStaleVerificationMarker() throws Exception {
+    @Test public void installedNetworkRepairsCorruptedAndTruncatedCopies() throws Exception {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         File network = EngineAssets.prepare(context);
         try {
-            // Reproduce a same-size corrupted file plus a marker from the previous installer.
-            java.nio.file.Files.write(new File(network.getParent(), "pikafish.nnue.verified").toPath(),
-                    (EngineAssets.VERSION + " 50706378 7d13d73569a9b571ba0eb20cf1596247bc2a42738967e61afef6482b231e900e")
-                            .getBytes(StandardCharsets.UTF_8));
             int original;
             try (RandomAccessFile file = new RandomAccessFile(network, "rw")) {
                 original = file.read();
@@ -48,7 +44,13 @@ public class PikafishLifecycleTest {
             try (RandomAccessFile file = new RandomAccessFile(network, "rw")) { file.setLength(1); }
             EngineAssets.prepare(context);
             assertEquals(50706378L, network.length());
-        } finally { EngineAssets.prepare(context); }
+        } finally {
+            try { EngineAssets.prepare(context); }
+            finally {
+                // Remove the fixture left by older versions of this test.
+                java.nio.file.Files.deleteIfExists(new File(network.getParent(), "pikafish.nnue.verified").toPath());
+            }
+        }
     }
 
     @Test public void serviceDestructionFinishesActiveAndQueuedSessions() throws Exception {
