@@ -60,7 +60,11 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
 
         binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        com.zfdang.chess.utils.WindowInsetsUtil.apply(this, binding.root)
+        // Insets change padding, not bounds, so the layout listener below would never fire for
+        // keyboard, rotation or cutout changes. Recompute the board from the insets callback too.
+        com.zfdang.chess.utils.WindowInsetsUtil.apply(this, binding.root) {
+            binding.root.post { fitBoardToScreen() }
+        }
         onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
             override fun handleOnBackPressed() { saveThenExit() }
         })

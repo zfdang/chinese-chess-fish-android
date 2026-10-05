@@ -126,7 +126,8 @@ android {
 }
 
 dependencies {
-    implementation("com.readystatesoftware.sqliteasset:sqliteassethelper:+")
+    // Pinned: a dynamic "+" version makes builds unreproducible and invites supply-chain drift.
+    implementation("com.readystatesoftware.sqliteasset:sqliteassethelper:2.0.1")
     // https://mvnrepository.com/artifact/com.igormaznitsa/jbbp
     implementation("com.igormaznitsa:jbbp:3.0.0")
     // https://github.com/PhilJay/MPAndroidChart

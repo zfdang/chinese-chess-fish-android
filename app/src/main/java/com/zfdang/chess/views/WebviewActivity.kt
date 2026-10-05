@@ -44,7 +44,8 @@ class WebviewActivity : AppCompatActivity() {
 
         val webView: WebView = findViewById(R.id.webview)
         webView.webViewClient = WebViewClient()
-        webView.settings.javaScriptEnabled = true
+        // These pages are static HTML; script execution only widens the attack surface.
+        webView.settings.javaScriptEnabled = false
 
         // https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/web-page-layout.md
         // set width of webView to the screen width, and disable horiztional scrolling

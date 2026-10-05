@@ -1,5 +1,7 @@
 LOCAL_PATH := $(call my-dir)
-PIKAFISH_SOURCES := $(filter-out src/main.cpp src/universal/%, $(patsubst $(LOCAL_PATH)/%,%, $(wildcard $(LOCAL_PATH)/src/*.cpp $(LOCAL_PATH)/src/*/*.cpp $(LOCAL_PATH)/src/*/*/*.cpp)))
+# Recurse instead of a fixed-depth wildcard: upstream adds deeper .cpp files over time, and a
+# fixed-depth glob would silently drop them and fail at link time.
+PIKAFISH_SOURCES := $(filter-out src/main.cpp src/universal/%, $(patsubst $(LOCAL_PATH)/%,%, $(shell find $(LOCAL_PATH)/src -name '*.cpp' -type f)))
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := pikafish

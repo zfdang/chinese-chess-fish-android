@@ -8,7 +8,9 @@ The bundled engine and NNUE are pinned to the official Pikafish-2026-09-06 relea
 
 The service serializes sessions because upstream uses global UCI streams. Shutdown cancels queued commands and sends `quit`; upstream destroys the engine and its search threads before another session starts. An upstream fatal error terminates only the service. The UI reports the failure and a later search can create a fresh session.
 
-The release network is an APK asset. On first use the service worker copies it atomically to a versioned private directory, checks its size and SHA-256, and uses that exact file for EvalFile. Existing valid-length copies are reused. UCI configuration is kept in a writable private `pikafish.ini`; EvalFile is always redirected to the bundled release network.
+The release network is an APK asset. On first use the service worker copies it atomically to a versioned private directory, checks its size and SHA-256, and uses that exact file for EvalFile. A verified copy is recorded with a `pikafish.nnue.verified` marker bound to the version, size and hash, so later starts skip re-hashing the 50 MB file; networks from older pinned versions are pruned on install. UCI configuration is kept in a writable private `pikafish.ini`; EvalFile is always redirected to the bundled release network.
+
+The dot-product flavor is compiled with `-march=armv8.2-a+dotprod`. The service checks the CPU capability before starting a session and reports an error instead of aborting with SIGILL on unsupported hardware.
 
 ## Build and Play artifacts
 

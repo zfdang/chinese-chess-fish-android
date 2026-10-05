@@ -7,6 +7,13 @@
 #include <streambuf>
 #include <string>
 #include <unordered_map>
+#if defined(__ANDROID__)
+#include <sys/auxv.h>
+#endif
+// NDK headers do not always expose this ARM64 capability bit.
+#ifndef HWCAP_ASIMDDP
+#define HWCAP_ASIMDDP (1 << 20)
+#endif
 #include "src/attacks.h"
 #include "src/misc.h"
 #include "src/position.h"
@@ -18,6 +25,26 @@ JavaVM* vm;
 std::mutex sessionsMutex, engineMutex;
 std::once_flag initializeTables;
 jlong nextId = 1;
+
+// Returns a JNIEnv usable on the calling thread, or nullptr when it cannot be obtained.
+// Deliberately not cached in a thread_local: those destructors run from __cxa_thread_finalize
+// during pthread_exit, by which point ART has already detached the thread and any JNI call
+// (even ExceptionCheck) aborts the process with "JNI calls without being attached".
+// Attaching per line costs a few microseconds, which is far below the cost of a search.
+bool acquireEnv(JNIEnv** out, bool* attached) {
+    *out = nullptr;
+    *attached = false;
+    if (vm == nullptr) return false;
+    JNIEnv* env = nullptr;
+    jint result = vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6);
+    if (result == JNI_OK) { *out = env; return true; }
+    // JNI_EVERSION or any other failure leaves env untouched, so never dereference it here.
+    if (result != JNI_EDETACHED) return false;
+    if (vm->AttachCurrentThread(&env, nullptr) != JNI_OK) return false;
+    *out = env;
+    *attached = true;
+    return true;
+}
 
 class InputBuffer : public std::streambuf {
     std::mutex mutex;
@@ -54,6 +81,8 @@ protected:
 class OutputBuffer : public std::streambuf {
     jobject callback;
     jmethodID lineMethod;
+    // Shared by every engine thread. Upstream serializes whole lines with its own
+    // IO_LOCK (sync_cout/sync_endl in src/misc.h), so characters never interleave here.
     std::string line;
     std::mutex mutex;
 public:
@@ -63,10 +92,9 @@ public:
         env->DeleteLocalRef(clazz);
     }
     ~OutputBuffer() override {
-        JNIEnv* env;
-        bool attached = vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) == JNI_EDETACHED;
-        if (attached) vm->AttachCurrentThread(&env, nullptr);
-        env->DeleteGlobalRef(callback);
+        JNIEnv* env = nullptr;
+        bool attached = false;
+        if (acquireEnv(&env, &attached)) env->DeleteGlobalRef(callback);
         if (attached) vm->DetachCurrentThread();
     }
 protected:
@@ -75,12 +103,19 @@ protected:
         std::lock_guard lock(mutex);
         char c = traits_type::to_char_type(value);
         if (c != '\n') { if (c != '\r') line += c; return value; }
-        JNIEnv* env;
-        bool attached = vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) == JNI_EDETACHED;
-        if (attached && vm->AttachCurrentThread(&env, nullptr) != JNI_OK) return traits_type::eof();
+        JNIEnv* env = nullptr;
+        bool attached = false;
+        if (!acquireEnv(&env, &attached)) {
+            // Drop the line instead of returning eof: eof would put std::cout into a bad
+            // state and silently swallow every later line, including bestmove.
+            line.clear();
+            return traits_type::not_eof(value);
+        }
         jstring text = env->NewStringUTF(line.c_str());
-        env->CallVoidMethod(callback, lineMethod, text);
-        env->DeleteLocalRef(text);
+        if (text != nullptr) {
+            env->CallVoidMethod(callback, lineMethod, text);
+            env->DeleteLocalRef(text);
+        }
         // Binder failures must not leave a pending Java exception on a search thread.
         if (env->ExceptionCheck()) env->ExceptionClear();
         if (attached) vm->DetachCurrentThread();
@@ -105,6 +140,17 @@ std::shared_ptr<Session> find(jlong id) {
 extern "C" JNIEXPORT jint JNI_OnLoad(JavaVM* javaVm, void*) {
     vm = javaVm;
     return JNI_VERSION_1_6;
+}
+extern "C" JNIEXPORT jboolean JNICALL
+Java_com_zfdang_chess_engine_NativeBridge_supportsDotprod(JNIEnv*, jclass) {
+    // The dot-product flavor is built with -march=armv8.2-a+dotprod; loading it on a CPU
+    // without that extension aborts with SIGILL. Let the caller refuse instead.
+#if defined(__aarch64__) && defined(__ANDROID__)
+    unsigned long hwcap = getauxval(AT_HWCAP);
+    return (hwcap & HWCAP_ASIMDDP) != 0 ? JNI_TRUE : JNI_FALSE;
+#else
+    return JNI_FALSE;
+#endif
 }
 extern "C" JNIEXPORT jlong JNICALL
 Java_com_zfdang_chess_engine_NativeBridge_create(JNIEnv* env, jclass, jobject callback) {

@@ -171,6 +171,9 @@ public class ComputerPlayer {
 
     /**
      * Cancel pending work and release the player when its owner is destroyed.
+     * <p>Unlike {@link #shutdownEngine()} this also drops the pending request, so a search
+     * interrupted by an engine failure is not resumed automatically: the controller reports the
+     * error and waits for the user to move again or start a new game.
      */
     public final synchronized void close() {
         searchRequest = null;

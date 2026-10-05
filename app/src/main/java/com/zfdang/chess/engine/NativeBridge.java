@@ -11,4 +11,6 @@ final class NativeBridge {
     static native void release(long session);
     static native void stop(long session);
     static native void run(long session, String networkDirectory);
+    /** True when the CPU implements the ARM dot-product extension required by the dotprod flavor. */
+    static native boolean supportsDotprod();
 }
