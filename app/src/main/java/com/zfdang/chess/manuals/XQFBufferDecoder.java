@@ -4,9 +4,9 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 
 public class XQFBufferDecoder {
-    private byte[] buffer;
+    private final byte[] buffer;
     private int index;
-    private int length;
+    private final int length;
 
     public XQFBufferDecoder(byte[] buffer) {
         this.buffer = buffer;
@@ -16,18 +16,21 @@ public class XQFBufferDecoder {
 
     private byte[] read(int size) {
         int start = index;
-        int stop = Math.min(index + size, length);
+        if (size < 0 || size > remaining()) {
+            throw new IllegalArgumentException("Truncated or invalid XQF field length: " + size);
+        }
+        int stop = index + size;
         index = stop;
         return Arrays.copyOfRange(buffer, start, stop);
     }
 
+    public int remaining() {
+        return length - index;
+    }
+
     public String readString(int size, Charset set) {
         byte[] buff = read(size);
-        try {
-            return new String(buff, set);
-        } catch (Exception e) {
-            return null;
-        }
+        return new String(buff, set);
     }
 
     public byte[] readBytes(int size) {

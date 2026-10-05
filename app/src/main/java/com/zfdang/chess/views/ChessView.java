@@ -51,8 +51,8 @@ public class ChessView extends SurfaceView implements SurfaceHolder.Callback {
     // 有2个假设：棋盘的每个格子是正方形的, 棋子也是正方形的
     // 要计算下面的几个参数，需要找到棋盘上的几个点：格子左上角的坐标(x1, y1)，格子右上角的坐标(x2, y2)
     // 本次使用的棋盘x1=77, y1=60, x2=1165, y2=60
-    final int BOARD_WIDTH = 1240;  // 根据棋盘的实际宽度来设置
-    final int BOARD_HEIGHT = 1340; // 根据棋盘的实际高度来设置
+    public static final int BOARD_WIDTH = 1240;  // 根据棋盘的实际宽度来设置
+    public static final int BOARD_HEIGHT = 1340; // 根据棋盘的实际高度来设置
     static final int BOARD_PIECE_SIZE = 110;  // 根据棋盘的实际格子大小来设置
     static final int BOARD_X_OFFSET = 22; // x1 - BOARD_PIECE_SIZE/2
     static final int BOARD_Y_OFFSET = 5; // y1 - BOARD_PIECE_SIZE/2

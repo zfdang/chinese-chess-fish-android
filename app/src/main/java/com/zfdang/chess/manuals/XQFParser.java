@@ -12,22 +12,21 @@ import com.zfdang.chess.gamelogic.Position;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.ArrayDeque;
 
 public class XQFParser {
     private static final Charset GB18030 = Charset.forName("GB18030");
 
     private static String readString(byte[] buffer) {
+        if (buffer.length == 0) return "";
         int length = buffer[0] & 0xFF;
-        if(length < 0) {
-            Log.e("XQFGame", "Invalid string length: " + length);
-            return "";
-        }
         length = Math.min(length, buffer.length - 1);
         return new String(buffer, 1, length, GB18030).trim();
     }
 
 
     static public XQFManual parse(byte[] buffer){
+        if (buffer == null || buffer.length < 0x404) return null;
         XQFManual manual = new XQFManual();
 
         final JBBPParser headerParser = JBBPParser.prepare(
@@ -83,7 +82,7 @@ public class XQFParser {
             }
 
             // version
-            manual.setVersion(szVersion[0]);
+            manual.setVersion(szVersion[0] & 0xFF);
 
             // process other head fields
             manual.setTitle(readString(szTitle));
@@ -123,7 +122,7 @@ public class XQFParser {
             manual.board.clear();
             for (int i = 0; i < 32; i++) {
                 int value = piecePos[i] & 0xFF;
-                if (value == 0xFF) {
+                if (value > 89) {
                     // 0xFF表示没有棋子
                     continue;
                 }
@@ -162,8 +161,9 @@ public class XQFParser {
 
             // 开始读取剩下的着法和注解
             readSteps(stepBaseBuff, keys, manual, manual.getHeadMove());
-        } catch (IOException e) {
-            Log.e("XQFParser", "Error parsing header", e);
+        } catch (IOException | IllegalArgumentException e) {
+            Log.e("XQFParser", "Invalid or truncated XQF file", e);
+            return null;
         }
         return manual;
     }
@@ -267,74 +267,75 @@ public class XQFParser {
         } else {
             stepInfo[2] &= 0xE0;
             if ((stepInfo[2] & 0x20) != 0) {
-                annoteLen = buffDecoder.readInt() - keys.getKeyRMKSize();
+                annoteLen = readAnnotationLength(buffDecoder, keys);
             }
         }
 
-        return annoteLen > 0 ? buffDecoder.readString(annoteLen, GB18030) : null;
+        return readAnnotation(buffDecoder, annoteLen);
     }
 
     private static void readSteps(XQFBufferDecoder buffDecoder, XQFKey keys,
                                   XQFManual manual, XQFManual.MoveNode node) {
-        byte[] stepInfo = buffDecoder.readBytes(4);
-        if (stepInfo.length == 0) return;
+        if (buffDecoder.remaining() == 0) return;
+        ArrayDeque<XQFManual.MoveNode> parents = new ArrayDeque<>();
+        parents.push(node);
+        while (!parents.isEmpty()) {
+            XQFManual.MoveNode parent = parents.pop();
+            byte[] stepInfo = buffDecoder.readBytes(4);
 
-        // print stepInfo in hex format
-//        StringBuilder sb = new StringBuilder();
-//        for (byte b : stepInfo) {
-//            sb.append(Integer.toHexString(b & 0xFF)).append(" ");
-//        }
-//        Log.d("XQFParser", "StepInfo: " + sb.toString());
+            int annoteLen = 0;
+            boolean hasNextStep = false;
+            boolean hasVarStep = false;
 
-        int annoteLen = 0;
-        boolean hasNextStep = false;
-        boolean hasVarStep = false;
+            int moveFrom, moveTo;
+            if (manual.getVersion() <= 0x0A) {
+                // 低版本在走子数据后紧跟着注释长度，长度为0则没有注释
+                if ((stepInfo[2] & 0xF0) != 0) hasNextStep = true;
+                if ((stepInfo[2] & 0x0F) != 0) hasVarStep = true;
+                annoteLen = buffDecoder.readInt();
 
-        int moveFrom, moveTo;
-        if (manual.getVersion() <= 0x0A) {
-            // 低版本在走子数据后紧跟着注释长度，长度为0则没有注释
-            if ((stepInfo[2] & 0xF0) != 0) hasNextStep = true;
-            if ((stepInfo[2] & 0x0F) != 0) hasVarStep = true;
-            annoteLen = buffDecoder.readInt();
+                moveFrom =  ((stepInfo[0] & 0xFF) - 0x18) & 0xFF;
+                moveTo =  ((stepInfo[1] & 0xFF) - 0x20) & 0xFF;
+            } else {
+                // 高版本通过flag来标记有没有注释，有则紧跟着注释长度和注释字段
+                stepInfo[2] &= 0xE0;
+                if ((stepInfo[2] & 0x80) != 0) hasNextStep = true; // #有后续
+                if ((stepInfo[2] & 0x40) != 0) hasVarStep = true; // 有变招
+                if ((stepInfo[2] & 0x20) != 0) { // 有注释
+                    annoteLen = readAnnotationLength(buffDecoder, keys);
+                }
 
-            // moveFrom = stepInfo[0] & 0xFF - 0x18; // this does not work !!!!!!, we need the parentheses
-            moveFrom =  ((stepInfo[0] & 0xFF) - 0x18) & 0xFF;
-            moveTo =  ((stepInfo[1] & 0xFF) - 0x20) & 0xFF;
-        } else {
-            // 高版本通过flag来标记有没有注释，有则紧跟着注释长度和注释字段
-            stepInfo[2] &= 0xE0;
-            if ((stepInfo[2] & 0x80) != 0) hasNextStep = true; // #有后续
-            if ((stepInfo[2] & 0x40) != 0) hasVarStep = true; // 有变招
-            if ((stepInfo[2] & 0x20) != 0) { // 有注释
-                annoteLen = buffDecoder.readInt() - keys.getKeyRMKSize();
+                moveFrom = ((((stepInfo[0] & 0xFF) - 0x18) & 0xFF ) - keys.getKeyXYf()) & 0xFF;
+                moveTo = ((((stepInfo[1] & 0xFF) - 0x20) & 0xFF ) - keys.getKeyXYt()) & 0xFF;
             }
 
-            moveFrom = ((((stepInfo[0] & 0xFF) - 0x18) & 0xFF ) - keys.getKeyXYf()) & 0xFF;
-            moveTo = ((((stepInfo[1] & 0xFF) - 0x20) & 0xFF ) - keys.getKeyXYt()) & 0xFF;
+            Position from = getPosFromValue(moveFrom);
+            Position to = getPosFromValue(moveTo);
+            Move move = new Move(from, to);
+            String annote = readAnnotation(buffDecoder, annoteLen);
+            move.setComment(annote);
+
+            // add movenode
+            XQFManual.MoveNode nextNode = new XQFManual.MoveNode(move);
+            nextNode.setParent(parent);
+            parent.addNextMove(nextNode);
+
+            if (hasVarStep) parents.push(parent);
+            if (hasNextStep) parents.push(nextNode);
         }
+    }
 
-//        Log.d("XQFParser", "Move: " + moveFrom + " -> " + moveTo);
-//        Log.d("XQFParser", "HasNextStep: " + hasNextStep + ", HasVarStep: " + hasVarStep + ", AnnoteLen: " + annoteLen);
-
-        Position from = getPosFromValue(moveFrom);
-        Position to = getPosFromValue(moveTo);
-        Move move = new Move(from, to);
-        String annote = annoteLen > 0 ? buffDecoder.readString(annoteLen, GB18030) : null;
-        move.setComment(annote);
-//        Log.d("XQFParser", "Move: " + move);
-
-        // add movenode
-        XQFManual.MoveNode nextNode = new XQFManual.MoveNode(move);
-        nextNode.setParent(node);
-        node.addNextMove(nextNode);
-
-        if (hasNextStep) {
-            readSteps(buffDecoder, keys, manual, nextNode);
+    private static int readAnnotationLength(XQFBufferDecoder decoder, XQFKey keys) {
+        long size = Integer.toUnsignedLong(decoder.readInt()) - keys.getKeyRMKSize();
+        if (size < 0 || size > decoder.remaining()) {
+            throw new IllegalArgumentException("Invalid XQF annotation length: " + size);
         }
+        return (int) size;
+    }
 
-        if (hasVarStep) {
-            readSteps(buffDecoder, keys, manual, node);
-        }
+    private static String readAnnotation(XQFBufferDecoder decoder, int size) {
+        if (size < 0) throw new IllegalArgumentException("Negative XQF annotation length");
+        return size == 0 ? null : decoder.readString(size, GB18030);
     }
 
     private static String parseResult(byte result) {
@@ -370,6 +371,9 @@ public class XQFParser {
         // 在XQF文件中，一个棋盘位置用一个字节表示，字节值 = X * 10 + Y
         // 其中X坐标从0到8,Y坐标从0到9，坐标的原点(0,0)在棋盘的左下角。
         // 我们的棋盘，坐标原点在左上角，所以需要转换一下
+        if (value < 0 || value > 89) {
+            throw new IllegalArgumentException("Invalid XQF board coordinate: " + value);
+        }
         int y = value % 10;
         int x = (value - y) / 10;
         return new Position(x, 9 - y);

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ChineseChess.Refreshed" parent="Theme.Material3.Light.NoActionBar">
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.Chess.Dialog</item>
+        <item name="colorPrimary">@color/ui_red</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSurface">@color/ui_surface</item>
+        <item name="colorOnSurface">@color/ui_ink</item>
+        <item name="colorControlNormal">@color/ui_ink</item>
+        <item name="android:colorBackground">@color/ui_paper</item>
+        <item name="android:statusBarColor">@color/ui_paper</item>
+        <item name="android:navigationBarColor">@color/ui_paper</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:fontFamily">sans</item>
+    </style>
+    <style name="Widget.Chess.Action" parent="">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:scaleType">fitCenter</item>
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+    </style>
+    <style name="ThemeOverlay.Chess.Dialog" parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/ui_red</item>
+        <item name="colorSecondary">@color/ui_red</item>
+        <item name="colorControlActivated">@color/ui_red</item>
+        <item name="colorSurface">@color/ui_surface</item>
+        <item name="colorOnSurface">@color/ui_ink</item>
+        <item name="colorOnSurfaceVariant">@color/ui_muted</item>
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Chess.Dialog</item>
+    </style>
+    <style name="ShapeAppearance.Chess.Dialog" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">28dp</item>
+    </style>
+</resources>

@@ -26,6 +26,7 @@ import org.petero.droidfish.player.SearchRequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,8 @@ public class GameController implements EngineListener, SearchListener {
     public boolean isShowTrends = false;
 
     private ControllerListener gui = null;
-    ArrayList<PvInfo> multiPVs = new ArrayList<>();
+    protected volatile List<PvInfo> multiPVs = Collections.emptyList();
+    protected List<PvInfo> suggestedPVs = Collections.emptyList();
 
     BHOpenBook bhBook = null;
 
@@ -57,15 +59,18 @@ public class GameController implements EngineListener, SearchListener {
 
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private volatile boolean closed = false;
+    private final Object pvLock = new Object();
 
     public void close() {
-        closed = true;
+        synchronized (pvLock) {
+            closed = true;
+        }
         mainHandler.removeCallbacksAndMessages(null);
-        player.close();
+        if (player != null) player.close();
     }
 
-    public ControllerState state;
-    public ControllerState preEvalState;
+    public volatile ControllerState state;
+    public volatile ControllerState preEvalState;
     // 正在被评估的局面，评估结果写回到它上面
     private volatile Board evalBoard = null;
 
@@ -90,8 +95,14 @@ public class GameController implements EngineListener, SearchListener {
     public boolean isNonGameMode() {
         return state == ControllerState.MANUAL_MODE;
     }
+    // Allows controller callback tests without starting a native engine or opening databases.
+    GameController(ControllerListener listener, ComputerPlayer computerPlayer) {
+        gui = listener;
+        player = computerPlayer;
+    }
+
     public GameController(ControllerListener cListener) {
-        gui = cListener;
+        this(cListener, null);
 
         isComputerPlaying = true;
         isAutoPlay = true;
@@ -269,7 +280,7 @@ public class GameController implements EngineListener, SearchListener {
             gui.onGameEvent(GameStatus.UPDATEUI, "搜索变着中...");
         }
         state = ControllerState.WAITING_FOR_ENGINE_MULTIPV;
-        multiPVs.clear();
+        multiPVs = Collections.emptyList();
 
         // trigger searchrequest, engine will call notifySearchResult for bestmove
         queueSearch(3);
@@ -295,7 +306,7 @@ public class GameController implements EngineListener, SearchListener {
             gui.onGameEvent(GameStatus.UPDATEUI, "寻求帮助中...");
         }
         state = ControllerState.WAITING_FOR_USER_MULTIPV;
-        multiPVs.clear();
+        multiPVs = Collections.emptyList();
 
         // trigger searchrequest, engine will call notifySearchResult for bestmove
         queueSearch(3);
@@ -437,41 +448,38 @@ public class GameController implements EngineListener, SearchListener {
     }
 
     public void processMultiPVInfos(String bestmove) {
-        // show multiPV infos
-        for (PvInfo pv : multiPVs) {
+        if (closed) return;
+        List<PvInfo> snapshot = multiPVs;
+        for (PvInfo pv : snapshot) {
             Log.d("GameController", "PV: " + pv);
         }
-        if (multiPVs.size() == 0) {
-            // add bestmove to multiPVs
-            ArrayList<Move> moves = new ArrayList<>();
+        if (snapshot.isEmpty()) {
             Move m = new Move(game.currentBoard);
-            boolean result = m.fromUCCIString(bestmove);
-            if (result) {
-                moves.add(m);
-                PvInfo pvinfo = new PvInfo(0, 0, 0, 0, 0, 0, 0, 0, false, false, false, moves);
-                multiPVs.add(pvinfo);
-            } else {
+            if (!m.fromUCCIString(bestmove)) {
                 Log.e("GameController", "Invalid move: " + bestmove);
                 gui.onGameEvent(GameStatus.LOSE, "无路可走");
                 return;
             }
+            ArrayList<Move> moves = new ArrayList<>();
+            moves.add(m);
+            snapshot = Collections.singletonList(new PvInfo(0, 0, 0, 0, 0, 0, 0, 0,
+                    false, false, false, moves));
         }
-
-        game.generateSuggestedMoves(multiPVs);
-
-        // notify GUI
+        // Keep the list used for numbered choices separate from ongoing engine updates.
+        suggestedPVs = snapshot;
+        game.generateSuggestedMoves(snapshot);
         gui.onGameEvent(GameStatus.MULTIPV, "选择编号或直接移动棋子：");
     }
 
     public void selectMultiPV(int index) {
+        List<PvInfo> snapshot = suggestedPVs;
+        if (index < 0 || index >= snapshot.size()) return;
         Move move = game.getSuggestedMove(index);
-        game.clearSuggestedMoves();
-        PvInfo pvinfo = multiPVs.get(index);
-
         if (move != null) {
+            game.clearSuggestedMoves();
             game.startPos = move.fromPosition;
             game.endPos = move.toPosition;
-            doMoveAndUpdateStatus(pvinfo);
+            doMoveAndUpdateStatus(snapshot.get(index));
         }
     }
 
@@ -582,12 +590,13 @@ public class GameController implements EngineListener, SearchListener {
 
     @Override
     public void notifyPV(int id, Board board, ArrayList<PvInfo> pvInfos, Move ponderMove) {
-        // show infos about all pvInfos
-        multiPVs.clear();
-        for (PvInfo pv : pvInfos) {
-            multiPVs.add(pv);
+        if (closed) return;
+        // Serialize publication with close(), without holding this lock while shutting down.
+        synchronized (pvLock) {
+            if (closed) return;
+            multiPVs = Collections.unmodifiableList(new ArrayList<>(pvInfos));
         }
-        Log.d("GameController", "PV: " + pvInfos);
+        Log.d("GameController", "PV: " + multiPVs);
     }
 
     @Override
@@ -622,9 +631,10 @@ public class GameController implements EngineListener, SearchListener {
             // 电脑发起的请求，走下一步棋子
             state = ControllerState.WAITING_FOR_ENGINE;
             // 如果设置了引擎的随机性，则从multiPV中随机选择一个着法。这个只针对前12步有效，后期不让电脑随机选择，否则棋力降低太多
-            if (settings.getRandom_move() && multiPVs.size() > 0 && game.currentBoard.rounds <= random_before_max_rounds) {
-                int idx = (int) (Math.random() * multiPVs.size());
-                String randomMove = multiPVs.get(idx).pv.get(0).getUCCIString();
+            List<PvInfo> snapshot = multiPVs;
+            if (settings.getRandom_move() && !snapshot.isEmpty() && game.currentBoard.rounds <= random_before_max_rounds) {
+                int idx = (int) (Math.random() * snapshot.size());
+                String randomMove = snapshot.get(idx).pv.get(0).getUCCIString();
                 gui.runOnUIThread(() -> computerMovePiece(randomMove));
                 Log.d("GameController", "Search result: bestMove=" + bestMove + ", randomMove=" + randomMove);
             } else {
@@ -675,7 +685,7 @@ public class GameController implements EngineListener, SearchListener {
     }
 
     public int getMultiPVSize() {
-        return multiPVs.size();
+        return suggestedPVs.size();
     }
 
     public void saveGameStatus() {

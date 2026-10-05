@@ -162,7 +162,7 @@ public class Game implements Serializable {
         }
     }
 
-    public boolean generateSuggestedMoves(ArrayList<PvInfo> multiPVs) {
+    public boolean generateSuggestedMoves(List<PvInfo> multiPVs) {
         // process multiPV infos
         List<Move> newMoves = new ArrayList<>();
         for(PvInfo pvinfo : multiPVs) {

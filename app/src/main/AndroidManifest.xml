@@ -24,14 +24,17 @@
             android:exported="false" />
         <activity
             android:name=".GameActivity"
+            android:theme="@style/Theme.ChineseChess.Refreshed"
             android:screenOrientation="portrait"
             android:exported="false"/>
         <activity
             android:name=".ManualActivity"
+            android:theme="@style/Theme.ChineseChess.Refreshed"
             android:screenOrientation="portrait"
             android:exported="false"/>
         <activity
             android:name=".MainActivity"
+            android:theme="@style/Theme.ChineseChess.Refreshed"
             android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
