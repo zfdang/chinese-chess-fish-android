@@ -47,8 +47,8 @@ jobs:
           distribution: temurin
           cache: gradle
 
-      - name: Assemble Release APK
-        run: ./gradlew assembleRelease --stacktrace
+      - name: Test, lint and build APKs and app bundles
+        run: ./gradlew testArmv8-DebugUnitTest testArmv8-dotprod-DebugUnitTest lintArmv8-Debug assembleRelease bundleRelease --stacktrace
 
       - name: Create ZIP armv8
         working-directory: ./app/build/outputs/apk/armv8-/release/
@@ -64,15 +64,24 @@ jobs:
           echo "number=$(git rev-list HEAD --count)" >> "$GITHUB_OUTPUT"
           echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
+      # Copy to a staging directory first: upload-artifact derives the archive layout from the
+      # least common ancestor of its inputs, so new paths would silently shift every download path.
+      - name: Stage release artifacts
+        if: github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.merged == true
+        run: |
+          mkdir -p release-staging
+          cp app/build/outputs/apk/armv8-/release/chessfish-armv8.zip release-staging/
+          cp app/build/outputs/apk/armv8-dotprod-/release/chessfish-armv8-dotprod.zip release-staging/
+          cp app/build/outputs/bundle/armv8-Release/*.aab release-staging/
+          cp app/build/outputs/bundle/armv8-dotprod-Release/*.aab release-staging/
+
       - name: Preserve merged build for release
         if: github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.merged == true
         uses: actions/upload-artifact@v4
         with:
           name: release-apks
           if-no-files-found: error
-          path: |
-            app/build/outputs/apk/armv8-/release/chessfish-armv8.zip
-            app/build/outputs/apk/armv8-dotprod-/release/chessfish-armv8-dotprod.zip
+          path: release-staging
 
   release:
     # PR updates, unmerged closures and direct pushes never publish releases.
@@ -105,6 +114,7 @@ jobs:
               --generate-notes
           fi
           gh release upload "tag-${REVISION}" \
-            release-assets/armv8-/release/chessfish-armv8.zip \
-            release-assets/armv8-dotprod-/release/chessfish-armv8-dotprod.zip \
+            release-assets/chessfish-armv8.zip \
+            release-assets/chessfish-armv8-dotprod.zip \
+            release-assets/*.aab \
             --repo "$GITHUB_REPOSITORY" --clobber

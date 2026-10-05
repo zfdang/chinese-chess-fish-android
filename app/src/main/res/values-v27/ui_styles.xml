@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ChineseChess.Refreshed" parent="Base.Theme.ChineseChess.Refreshed">
+        <item name="android:navigationBarColor">@color/ui_paper</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
+</resources>

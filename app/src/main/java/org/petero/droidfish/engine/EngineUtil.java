@@ -53,7 +53,7 @@ public class EngineUtil {
     /**
      * Return true if the required SIMD instructions are supported by the CPU.
      */
-    static native boolean isSimdSupported();
+    public static native boolean isSimdSupported();
 
     /**
      * For synchronizing non thread safe native calls.

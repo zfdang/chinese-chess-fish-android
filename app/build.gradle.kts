@@ -10,17 +10,14 @@ plugins {
 // https://discuss.kotlinlang.org/t/use-git-hash-as-version-number-in-build-gradle-kts/19818/2
 // this function will return the git version number, and will be used as versionCode
 fun gitVersion(): Int {
-    val os = org.apache.commons.io.output.ByteArrayOutputStream()
-    project.exec {
-        commandLine = "git rev-list HEAD --count".split(" ")
-        standardOutput = os
-    }
-    return String(os.toByteArray()).trim().toInt()
+    return providers.exec {
+        commandLine("git", "rev-list", "HEAD", "--count")
+    }.standardOutput.asText.get().trim().toInt()
 }
 
 android {
     namespace = "com.zfdang.chess"
-    compileSdk = 34
+    compileSdk = 36
     ndkVersion = libs.versions.ndk.get()
 
     externalNativeBuild {
@@ -31,12 +28,13 @@ android {
 
     buildFeatures {
         buildConfig = true
+        aidl = true
     }
 
     defaultConfig {
         applicationId = "com.zfdang.chess"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 36
         versionCode = gitVersion()
         versionName = "2.3"
 
@@ -45,11 +43,6 @@ android {
         }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        externalNativeBuild {
-            cmake {
-                cppFlags += ""
-            }
-        }
     }
 
     testOptions {
@@ -66,7 +59,7 @@ android {
                 "META-INF/LICENSE-notice.md")
         )
         jniLibs {
-            useLegacyPackaging = true
+            useLegacyPackaging = false
         }
     }
 
@@ -75,12 +68,12 @@ android {
         create("armv8-") {
             //flavor configurations here
             dimension = "pikafish"
-            buildConfigField("String", "PIKAFISH_ENGINE_FILE", "\"libpikafish-armv8.so\"")
+            buildConfigField("String", "PIKAFISH_LIBRARY", "\"pikafish\"")
         }
         create("armv8-dotprod-") {
             //flavor configurations here
             dimension = "pikafish"
-            buildConfigField("String", "PIKAFISH_ENGINE_FILE", "\"libpikafish-armv8-dotprod.so\"")
+            buildConfigField("String", "PIKAFISH_LIBRARY", "\"pikafish_dotprod\"")
         }
     }
 
@@ -112,7 +105,6 @@ android {
     buildFeatures {
         viewBinding = true
     }
-    ndkVersion = "25.1.8937393"
 
     // https://gist.github.com/pankajXdev/574063901ada2fafa329068f41ddb076
     // Config your output file name in Gradle Kotlin DSL
@@ -128,25 +120,9 @@ android {
     }
 }
 
-// https://withme.skullzbones.com/blog/programming/execute-native-binaries-android-q-no-root/
-tasks.register<Jar>("nativeLibsToJar") {
-    description = "create a jar archive of the native libs"
-    destinationDirectory.set(layout.buildDirectory.dir("native-libs"))
-    archiveBaseName.set("native-libs")
-    from(fileTree("src/main/pikafish/") {
-        include("**/*")
-    })
-    into("lib/")
-}
-
-tasks.named("preBuild") {
-    dependsOn(tasks.named("nativeLibsToJar"))
-}
-
 dependencies {
-    // https://withme.skullzbones.com/blog/programming/execute-native-binaries-android-q-no-root/
-    implementation(files("$buildDir/native-libs/native-libs.jar"))
-    implementation("com.readystatesoftware.sqliteasset:sqliteassethelper:+")
+    // Pinned: a dynamic "+" version makes builds unreproducible and invites supply-chain drift.
+    implementation("com.readystatesoftware.sqliteasset:sqliteassethelper:2.0.1")
     // https://mvnrepository.com/artifact/com.igormaznitsa/jbbp
     implementation("com.igormaznitsa:jbbp:3.0.0")
     // https://github.com/PhilJay/MPAndroidChart
@@ -162,3 +138,11 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.junit.jupiter)
 }
+
+// Keep the offline native privacy page and the published website on one source document.
+val stageInformationAssets by tasks.registering(Copy::class) {
+    from(rootProject.file("docs/privacy.html"))
+    into(layout.buildDirectory.dir("generated/informationAssets/documents"))
+}
+android.sourceSets.getByName("main").assets.srcDir(layout.buildDirectory.dir("generated/informationAssets"))
+tasks.named("preBuild") { dependsOn(stageInformationAssets) }

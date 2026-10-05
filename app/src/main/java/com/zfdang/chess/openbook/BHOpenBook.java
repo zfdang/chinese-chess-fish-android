@@ -36,21 +36,21 @@ public class BHOpenBook extends OpenBookBase {
         try {
             String sql = String.format("select * from bhobk where vvalid = 1 and vkey = %d order by vscore desc, vwin desc limit 5", vkey, vkey);
             Log.d("BHOpenBook", "get: " + sql);
-            Cursor cursor = db.rawQuery(sql, null);
-            // iterate result
-
-            while (cursor.moveToNext()) {
-                BookData bd = new BookData();
-                int vmove = cursor.getInt(cursor.getColumnIndex("vmove"));
-                String move = Zobrist.getMoveFromVmove(vmove);
-                bd.setMove(move);
-                bd.setScore(cursor.getInt(cursor.getColumnIndex("vscore")));
-                bd.setWinRate(cursor.getDouble(cursor.getColumnIndex("vwin")));
-                bd.setDrawNum(cursor.getInt(cursor.getColumnIndex("vdraw")));
-                bd.setLoseNum(cursor.getInt(cursor.getColumnIndex("vlost")));
-                bd.setNote(cursor.getString(cursor.getColumnIndex("vmemo")));
-                bd.setSource(this.name);
-                list.add(bd);
+            try (Cursor cursor = db.rawQuery(sql, null)) {
+                // Missing columns are reported by the query failure handler; the cursor always closes.
+                while (cursor.moveToNext()) {
+                    BookData bd = new BookData();
+                    int vmove = cursor.getInt(cursor.getColumnIndexOrThrow("vmove"));
+                    String move = Zobrist.getMoveFromVmove(vmove);
+                    bd.setMove(move);
+                    bd.setScore(cursor.getInt(cursor.getColumnIndexOrThrow("vscore")));
+                    bd.setWinRate(cursor.getDouble(cursor.getColumnIndexOrThrow("vwin")));
+                    bd.setDrawNum(cursor.getInt(cursor.getColumnIndexOrThrow("vdraw")));
+                    bd.setLoseNum(cursor.getInt(cursor.getColumnIndexOrThrow("vlost")));
+                    bd.setNote(cursor.getString(cursor.getColumnIndexOrThrow("vmemo")));
+                    bd.setSource(this.name);
+                    list.add(bd);
+                }
             }
         } catch (Exception e) {
             Log.d("BHOpenBook", "get: " + e.getMessage());

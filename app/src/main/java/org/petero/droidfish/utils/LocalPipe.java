@@ -45,14 +45,17 @@ public class LocalPipe {
     }
 
     public final synchronized void addLine(String line) {
-        while (lines.size() > 10000) {
+        while (!closed && lines.size() >= 10000) {
             try {
-                wait(10);
-            } catch (InterruptedException ignore) {
+                wait();
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                return;
             }
         }
+        if (closed) return;
         lines.add(line);
-        notify();
+        notifyAll();
     }
 
     /**
@@ -79,6 +82,7 @@ public class LocalPipe {
                 return closed ? null : "";
             String ret = lines.get(0);
             lines.remove(0);
+            notifyAll();
             return ret;
         } catch (InterruptedException e) {
             return null;
@@ -90,7 +94,8 @@ public class LocalPipe {
      */
     public final synchronized void close() {
         closed = true;
-        notify();
+        lines.clear();
+        notifyAll();
     }
 
     /**

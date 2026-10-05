@@ -60,6 +60,14 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
 
         binding = ActivityGameBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        // Insets change padding, not bounds, so the layout listener below would never fire for
+        // keyboard, rotation or cutout changes. Recompute the board from the insets callback too.
+        com.zfdang.chess.utils.WindowInsetsUtil.apply(this, binding.root) {
+            binding.root.post { fitBoardToScreen() }
+        }
+        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() { saveThenExit() }
+        })
         binding.morebt.setOnClickListener {
             val expanded = binding.advancedTools.visibility != View.VISIBLE
             binding.advancedTools.visibility = if (expanded) View.VISIBLE else View.GONE
@@ -185,8 +193,8 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
             fixedHeight += child.measuredHeight + margins.topMargin + margins.bottomMargin
         }
         val boardParams = binding.chesslayout.layoutParams as ViewGroup.MarginLayoutParams
-        val available = binding.root.height - fixedHeight - boardParams.topMargin - boardParams.bottomMargin
-        val fullWidthHeight = (content.width - content.paddingLeft - content.paddingRight) * 1340 / 1240
+        val available = binding.root.height - binding.root.paddingTop - binding.root.paddingBottom - fixedHeight - boardParams.topMargin - boardParams.bottomMargin
+        val fullWidthHeight = (content.width - content.paddingLeft - content.paddingRight) * ChessView.BOARD_HEIGHT / ChessView.BOARD_WIDTH
         val height = minOf(fullWidthHeight, available.coerceAtLeast(0))
         if (boardParams.height != height) {
             boardParams.height = height
@@ -478,10 +486,6 @@ class GameActivity() : AppCompatActivity(), View.OnTouchListener, ControllerList
     }
 
     // create fun to handle onbackpressed
-    override fun onBackPressed() {
-        saveThenExit()
-    }
-
     override fun onDestroy() {
         if (::controller.isInitialized) controller.close()
         if (::soundPlayer.isInitialized) soundPlayer.release()

@@ -91,4 +91,24 @@ public class ComputerPlayerTest {
         player.shutdownEngine();
         assertSame(request, field("searchRequest").get(player));
     }
+
+    @Test public void closedTransportClearsPendingSearchAndAllowsRestart() throws Exception {
+        ComputerPlayer player = new ComputerPlayer(new Listener(), null, null);
+        AtomicInteger shutdowns = new AtomicInteger();
+        UCIEngine engine = (UCIEngine) Proxy.newProxyInstance(UCIEngine.class.getClassLoader(),
+                new Class<?>[]{UCIEngine.class}, (proxy, method, args) -> {
+                    if (method.getName().equals("shutDown")) shutdowns.incrementAndGet();
+                    return null;
+                });
+        field("uciEngine").set(player, engine);
+        field("searchRequest").set(player, SearchRequest.startRequest(1, "test"));
+        ((EngineState) field("engineState").get(player)).setState(EngineStateValue.SEARCH);
+        Method monitor = ComputerPlayer.class.getDeclaredMethod("monitorLoop", UCIEngine.class);
+        monitor.setAccessible(true);
+        monitor.invoke(player, engine);
+        assertEquals(1, shutdowns.get());
+        assertNull(field("searchRequest").get(player));
+        assertEquals(EngineStateValue.DEAD, ((EngineState) field("engineState").get(player)).state);
+        assertFalse(player.computerBusy());
+    }
 }

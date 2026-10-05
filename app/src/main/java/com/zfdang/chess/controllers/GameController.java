@@ -570,6 +570,18 @@ public class GameController implements EngineListener, SearchListener {
     @Override
     public void reportEngineError(String errMsg) {
         Log.d("GameController", "Engine error: " + errMsg);
+        if (closed) return;
+        mainHandler.post(() -> {
+            if (closed) return;
+            if (state == ControllerState.WAITING_FOR_EVAL) state = preEvalState;
+            else if (state != ControllerState.MANUAL_MODE && game != null && game.currentBoard != null)
+                state = game.currentBoard.bRedGo ? ControllerState.WAITING_FOR_USER
+                        : ControllerState.WAITING_FOR_ENGINE;
+            // The raw message is a Java/exception string; keep it in the log and give the user
+            // an actionable hint. A stopped engine is not restarted automatically by design:
+            // repeated restarts against a broken engine would just thrash.
+            gui.onGameEvent(GameStatus.ILLEGAL, "引擎已停止，请重新走子或开新局");
+        });
     }
 
     @Override

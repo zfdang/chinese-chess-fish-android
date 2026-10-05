@@ -2,6 +2,7 @@ package com.zfdang.chess.utils;
 
 import android.content.Context;
 import android.os.Environment;
+import java.io.File;
 
 /**
  * Created by tongdexin on 2017/2/21.
@@ -117,7 +118,7 @@ public class PathUtil {
      * 应用删除后,文件内容删除
      */
     public static String getExternalStorageAppFileDir(Context context) {
-        return context.getExternalFilesDir("").toString();
+        return getExternalStorageAppFileDir(context, null);
     }
 
     /**
@@ -127,7 +128,9 @@ public class PathUtil {
      * @param folderName Environment.DIRECTORY_MUSIC/Environment.Picture/"filexample"
      */
     public static String getExternalStorageAppFileDir(Context context, String folderName) {
-        return getExternalStorageAppFileDir(context, folderName);
+        File directory = context.getExternalFilesDir(folderName);
+        if (directory == null) throw new IllegalStateException("External app storage is unavailable");
+        return directory.getAbsolutePath();
     }
 
     /**

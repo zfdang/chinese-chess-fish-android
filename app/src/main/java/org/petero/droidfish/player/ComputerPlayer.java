@@ -171,6 +171,9 @@ public class ComputerPlayer {
 
     /**
      * Cancel pending work and release the player when its owner is destroyed.
+     * <p>Unlike {@link #shutdownEngine()} this also drops the pending request, so a search
+     * interrupted by an engine failure is not resumed automatically: the controller reports the
+     * error and waits for the user to move again or start a new game.
      */
     public final synchronized void close() {
         searchRequest = null;
@@ -424,8 +427,12 @@ public class ComputerPlayer {
                 if (t1 - t0 >= 1000)
                     break;
             }
-            if ((s == null) || Thread.currentThread().isInterrupted())
+            if (Thread.currentThread().isInterrupted())
                 return;
+            if (s == null) {
+                processEngineOutput(uci, null);
+                return;
+            }
             processEngineOutput(uci, s);
             if (Thread.currentThread().isInterrupted())
                 return;
@@ -444,7 +451,7 @@ public class ComputerPlayer {
             return;
 
         if (s == null) {
-            shutdownEngine();
+            if (uci == uciEngine) close();
             return;
         }
 
@@ -458,7 +465,6 @@ public class ComputerPlayer {
                     pendingOptions.clear();
                     uci.initConfig(engineConfig);
                     uci.applyIniFile();
-                    setOptimizedThreads();
                     uci.writeLineToEngine("ucinewgame");
                     uci.writeLineToEngine("isready");
                     engineState.setState(EngineStateValue.WAIT_READY);
