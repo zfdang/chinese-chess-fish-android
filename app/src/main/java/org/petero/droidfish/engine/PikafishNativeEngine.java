@@ -1,5 +1,6 @@
 package org.petero.droidfish.engine;
 
+import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -99,14 +100,41 @@ public final class PikafishNativeEngine extends UCIEngineBase {
         File config = new File(context.getFilesDir(), "pikafish.ini");
         if (!config.exists()) {
             Properties defaults = new Properties();
-            defaults.setProperty("Threads", "4");
-            defaults.setProperty("Hash", "512");
+            defaults.setProperty("Threads", Integer.toString(defaultThreads()));
+            defaults.setProperty("Hash", Integer.toString(defaultHashMb()));
             defaults.setProperty("MultiPV", "5");
             defaults.setProperty("EvalFile", EngineAssets.networkFile(context).getAbsolutePath());
             try (FileOutputStream out = new FileOutputStream(config)) { defaults.store(out, null); }
             catch (IOException error) { listener.reportEngineError(error.toString()); }
         }
         return config;
+    }
+
+    /** A conservative number of search threads: leave at least one core for the UI and render threads. */
+    private static int defaultThreads() {
+        int cores = Runtime.getRuntime().availableProcessors();
+        return Math.max(1, Math.min(4, cores - 1));
+    }
+
+    /**
+     * The transposition-table size in MB, capped by the device's per-app heap budget so the
+     * long-lived {@code :pikafish} service never bloats to a point where the LMK kills it mid-search.
+     * The 50 MB NNUE weights are shared/read-only, so they are not counted against the hash.
+     */
+    private int defaultHashMb() {
+        int memoryClassMb;
+        try {
+            ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+            memoryClassMb = am != null ? am.getMemoryClass() : 0;
+        } catch (RuntimeException error) {
+            memoryClassMb = 0;
+        }
+        if (memoryClassMb <= 0) return 64;
+        // Hash is a fraction of the per-app heap (memoryClass), leaving headroom for the NNUE
+        // weights, allocator overhead, and the rest of the app. Typical devices:
+        //   96MB heap -> 32MB, 128MB -> 48, 192MB -> 64, 256MB -> 96, 512MB -> 128.
+        int hash = memoryClassMb / 3;
+        return Math.max(32, Math.min(128, hash));
     }
     @Override public boolean configOk(EngineConfig config) { return isConfigOk && !closed; }
 }

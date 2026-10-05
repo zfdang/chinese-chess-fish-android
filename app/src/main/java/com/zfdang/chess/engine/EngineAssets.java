@@ -20,7 +20,7 @@ public final class EngineAssets {
     /** Run on the service worker, never on the UI thread. Atomically install the pinned network. */
     static synchronized File prepare(Context context) throws IOException {
         File target = networkFile(context);
-        if (target.isFile() && target.length() == NETWORK_SIZE) return target;
+        if (target.isFile() && verify(target)) return target;
         File dir = target.getParentFile();
         if (!dir.isDirectory() && !dir.mkdirs()) throw new IOException("Cannot create network directory");
         File temporary = new File(dir, "pikafish.nnue.tmp");
@@ -42,6 +42,24 @@ public final class EngineAssets {
         } catch (NoSuchAlgorithmException error) {
             throw new IOException(error);
         } finally { temporary.delete(); }
+    }
+
+    /** Re-verify an already-installed network by both length and SHA-256; a corrupt or truncated file is re-extracted. */
+    private static boolean verify(File file) {
+        if (!file.isFile() || file.length() != NETWORK_SIZE) return false;
+        try {
+            MessageDigest hash = MessageDigest.getInstance("SHA-256");
+            try (InputStream in = new java.io.FileInputStream(file)) {
+                byte[] buffer = new byte[65536];
+                int count;
+                while ((count = in.read(buffer)) != -1) hash.update(buffer, 0, count);
+            }
+            StringBuilder digest = new StringBuilder();
+            for (byte b : hash.digest()) digest.append(String.format(java.util.Locale.ROOT, "%02x", b & 255));
+            return SHA256.contentEquals(digest);
+        } catch (IOException | NoSuchAlgorithmException error) {
+            return false;
+        }
     }
     private EngineAssets() {}
 }

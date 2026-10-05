@@ -39,7 +39,7 @@ public final class PikafishService extends Service {
     @Override public IBinder onBind(Intent intent) { return binder; }
     @Override public void onDestroy() {
         for (long id : sessions.keySet()) NativeBridge.stop(id);
-        worker.shutdown();
+        worker.shutdownNow();
         super.onDestroy();
     }
 }
