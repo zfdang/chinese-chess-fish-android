@@ -1,6 +1,9 @@
 package com.zfdang.chess.engine;
 
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import com.zfdang.chess.MainActivity;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.petero.droidfish.engine.EngineConfig;
@@ -12,6 +15,8 @@ import static org.junit.Assert.*;
 /** Uses the packaged JNI libraries and pinned NNUE on an actual Android device. */
 @RunWith(AndroidJUnit4.class)
 public class PikafishIntegrationTest {
+    // OEM background freezers may suspend an instrumentation process with no visible activity.
+    @Rule public final ActivityScenarioRule<MainActivity> activity = new ActivityScenarioRule<>(MainActivity.class);
     private final AtomicReference<String> error = new AtomicReference<>();
     private PikafishNativeEngine connect() {
         PikafishNativeEngine engine = new PikafishNativeEngine(new EngineListener() {
