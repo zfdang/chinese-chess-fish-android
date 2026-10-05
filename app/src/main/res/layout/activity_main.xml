@@ -1,72 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/chessbg"
-    tools:context=".MainActivity">
-
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    android:fillViewport="true"
+    android:background="@color/ui_paper">
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <Button
+        android:orientation="vertical"
+        android:padding="28dp">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="象棋鱼 · CHESS FISH"
+            android:textSize="12sp"
+            android:textColor="@color/ui_muted"
+            android:letterSpacing="0.12"
+            android:layout_marginTop="24dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="一局棋，\n慢慢来。"
+            android:textSize="36sp"
+            android:textColor="@color/ui_ink"
+            android:textStyle="bold"
+            android:layout_marginTop="20dp"
+            android:lineSpacingExtra="4dp"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="与强手过招，或重温一盘好棋。"
+            android:textSize="15sp"
+            android:textColor="@color/ui_muted"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="20dp"/>
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_play"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:text="对弈"
-            android:textSize="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/button_learn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-
-        <Button
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="12dp"
+            android:text="对弈　 →\n落子有声 · 人机对弈"
+            android:textSize="18sp"
+            android:textStyle="normal"
+            android:gravity="start|center_vertical"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:textColor="@color/white"
+            app:backgroundTint="@color/ui_red"
+            app:cornerRadius="20dp"
+            app:strokeWidth="0dp"
+            app:strokeColor="@color/ui_line"
+            app:icon="@drawable/ui_board"
+            app:iconTint="@color/white"
+            app:iconSize="28dp"
+            app:iconPadding="22dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"/>
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button_learn"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="12dp"
+            android:text="打谱　 →\n重温经典 · 研习棋谱"
+            android:textSize="18sp"
+            android:textStyle="normal"
+            android:gravity="start|center_vertical"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:textColor="@color/ui_ink"
+            app:backgroundTint="@color/ui_surface"
+            app:cornerRadius="20dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/ui_line"
+            app:icon="@drawable/manual"
+            app:iconTint="@color/ui_red"
+            app:iconSize="28dp"
+            app:iconPadding="22dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:text="打谱"
-            android:textSize="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/button_help"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_play" />
-
-        <Button
-            android:id="@+id/button_help"
-            android:layout_width="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_help"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                android:text="帮助"
+                android:textSize="16sp"
+                android:textColor="@color/ui_ink"
+                app:backgroundTint="@color/ui_surface"
+                app:cornerRadius="18dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/ui_line"
+                app:icon="@drawable/help"
+                app:iconTint="@color/ui_muted"
+                app:iconSize="22dp"
+                app:iconGravity="textStart"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_about"
+                android:layout_width="0dp"
+                android:layout_height="72dp"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                android:text="关于"
+                android:textSize="16sp"
+                android:textColor="@color/ui_ink"
+                app:backgroundTint="@color/ui_surface"
+                app:cornerRadius="18dp"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/ui_line"
+                app:icon="@drawable/ui_info"
+                app:iconTint="@color/ui_muted"
+                app:iconSize="22dp"
+                app:iconGravity="textStart"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"/>
+        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:text="帮助"
-            android:textSize="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/button_about"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_learn" />
-
-        <Button
-            android:id="@+id/button_about"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="10dp"
-            android:text="关于"
-            android:textSize="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/button_help" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:text="楚河汉界之间，自有天地。"
+            android:textSize="12sp"
+            android:textColor="@color/ui_muted"
+            android:gravity="center"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="12dp"/>
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

@@ -3,11 +3,12 @@ package com.zfdang.chess
 import android.app.Dialog
 import android.os.Bundle
 import android.view.View
-import android.widget.CheckBox
+import android.widget.CompoundButton
 import android.widget.RadioButton
 import android.widget.SeekBar
 import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.DialogFragment
 import com.zfdang.chess.controllers.GameController
 import com.zfdang.chess.openbook.BHDatabase
@@ -33,8 +34,9 @@ class SettingDialogFragment : DialogFragment() {
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val builder = AlertDialog.Builder(requireActivity())
-        val inflater = requireActivity().layoutInflater
+        val builder = MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_Chess_Dialog)
+            .setBackground(AppCompatResources.getDrawable(requireContext(), R.drawable.ui_dialog_background))
+        val inflater = android.view.LayoutInflater.from(builder.context)
         val view: View = inflater.inflate(R.layout.setting_dialog, null)
 
         // bind all items in setting_dialog.xml
@@ -46,11 +48,11 @@ class SettingDialogFragment : DialogFragment() {
             engineInfoTV.text = "引擎: " + engineInfo
         }
 
-        val booleanOpenbook = view.findViewById<CheckBox>(R.id.boolean_openbook)
+        val booleanOpenbook = view.findViewById<CompoundButton>(R.id.boolean_openbook)
         val textviewOpenbook = view.findViewById<TextView>(R.id.textViewOpenBook)
         textviewOpenbook.text = "(" + BHDatabase.OPENBOOK_NAME + ")"
 
-        val booleanSound = view.findViewById<CheckBox>(R.id.boolean_sound)
+        val booleanSound = view.findViewById<CompoundButton>(R.id.boolean_sound)
 
         val historyInput = view.findViewById<SeekBar>(R.id.seekbar_history)
         val historyText = view.findViewById<TextView>(R.id.textview_history)
@@ -65,9 +67,9 @@ class SettingDialogFragment : DialogFragment() {
 
         val radioInfinite = view.findViewById<RadioButton>(R.id.radioButton_infinite)
 
-        val redgoFirst = view.findViewById<CheckBox>(R.id.boolean_redgofirst)
+        val redgoFirst = view.findViewById<CompoundButton>(R.id.boolean_redgofirst)
 
-        val randomMove = view.findViewById<CheckBox>(R.id.boolean_randommove)
+        val randomMove = view.findViewById<CompoundButton>(R.id.boolean_randommove)
 
         val seekbarHash = view.findViewById<SeekBar>(R.id.seekbar_hash)
         val textviewHash = view.findViewById<TextView>(R.id.textview_hash)
@@ -151,8 +153,8 @@ class SettingDialogFragment : DialogFragment() {
 
 
         builder.setView(view)
-            .setTitle("游戏设置")
-            .setPositiveButton("确定") { dialog, id ->
+            .setTitle("对弈设置")
+            .setPositiveButton("保存设置") { dialog, id ->
                 settings.openbook = booleanOpenbook.isChecked
                 settings.sound_effect = booleanSound.isChecked
                 settings.history_moves = historyInput.progress
