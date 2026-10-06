@@ -1,41 +1,195 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="UTF-8">
-    <title>象棋鱼 by zfdang - Release</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='http://fonts.loli.net/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
-    <section class="main-content">
-      <h3>象棋鱼--下载</h3>
-
-<p>项目主页: <a href="https://fish.zfdang.com/">象棋鱼</a></p>
-
-<hr>
-
-<h4>有两个apk, 我该下载哪个apk？</h4>
-
-<ui>
-  <li>armv8-dotprod：如果你的手机是最近几年买的，你的CPU支持dotprod技术，那么就下载这个。</li>
-  <li>armv8：dotprod版本没法正常工作，就下载这个</li>
-</ui>
-
-
-<hr>
-
-<p>本地下载:</p>
-<iframe src="https://fish.zfdang.com/apk/" width="100%" frameBorder="0" height="300"></iframe>
-
-
-<p> 手机扫码可打开当前网页：</p>
-<img src="images/fishdownload.bmp" alt="barcode" width="200">
-
-    </section>
-
-  
-  </body>
+<html lang="zh-CN">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <meta content="下载象棋鱼 Android 安装包，了解 armv8 通用版和 armv8-dotprod 版的区别与安装步骤。" name="description"/>
+  <meta content="#f6f3ed" name="theme-color"/>
+  <title>
+   下载 · 象棋鱼
+  </title>
+  <link href="images/chessfish.png" rel="icon" type="image/png"/>
+  <link href="stylesheets/stylesheet.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <a class="skip-link" href="#content">
+   跳到正文
+  </a>
+  <header class="site-header">
+   <div class="header-inner">
+    <a class="brand" href="index.html">
+     <img alt="" height="40" src="images/chessfish.png" width="40"/>
+     <span>
+      象棋鱼
+      <small>
+       中国象棋学习工具
+      </small>
+     </span>
+    </a>
+    <nav aria-label="主导航">
+     <a href="index.html">
+      首页
+     </a>
+     <a href="help.html">
+      使用帮助
+     </a>
+     <a aria-current="page" href="release.html">
+      下载
+     </a>
+     <a href="privacy.html">
+      隐私政策
+     </a>
+    </nav>
+   </div>
+  </header>
+  <main id="content">
+   <div class="wrap page-intro">
+    <p class="eyebrow">
+     下载象棋鱼
+    </p>
+    <h1>
+     选好版本，即可开局
+    </h1>
+    <p class="lead">
+     适用于 Android 8.0 及以上的 ARM64 设备。
+     <br/>
+     无需账号，对弈与打谱可离线使用。
+    </p>
+    <div class="actions">
+     <a class="button primary" href="https://github.com/zfdang/chinese-chess-fish-android/releases/latest">
+      GitHub 最新版本 ↗
+     </a>
+     <a class="button" href="https://fish.zfdang.com/apk/">
+      本地下载目录 ↗
+     </a>
+    </div>
+   </div>
+   <section aria-labelledby="versions" class="wrap section">
+    <div class="section-heading">
+     <h2 id="versions">
+      两个版本，该选哪个？
+     </h2>
+     <p>
+      安装包名称包含对应标识。不了解手机处理器时，选择通用版。
+     </p>
+    </div>
+    <div class="download-grid">
+     <article class="card">
+      <span class="badge">
+       推荐起点
+      </span>
+      <h3>
+       armv8 通用版
+      </h3>
+      <p>
+       面向 ARM64 设备，无需额外的 dotprod 指令支持。
+      </p>
+      <p class="package-name">
+       chessfish-armv8.zip
+      </p>
+      <p>
+       在发布页的 Assets 中下载并解压，安装其中的 APK。
+      </p>
+     </article>
+     <article class="card">
+      <span class="badge subtle">
+       支持 dotprod 的设备
+      </span>
+      <h3>
+       armv8-dotprod 版
+      </h3>
+      <p>
+       利用 ARM dotprod 指令优化引擎计算，需要设备支持该指令。
+      </p>
+      <p class="package-name">
+       chessfish-armv8-dotprod.zip
+      </p>
+      <p>
+       如果该版本无法正常运行，请改用 armv8 通用版。
+      </p>
+     </article>
+    </div>
+   </section>
+   <section aria-labelledby="install" class="wrap section">
+    <div class="section-heading">
+     <p class="eyebrow">
+      安装步骤
+     </p>
+     <h2 id="install">
+      下载、解压、安装
+     </h2>
+    </div>
+    <ol class="steps">
+     <li>
+      <strong>
+       打开发布页
+      </strong>
+      <p>
+       选择最新 release，展开 Assets，下载对应版本的 ZIP；本地目录也提供可用安装包。
+      </p>
+     </li>
+     <li>
+      <strong>
+       取出 APK
+      </strong>
+      <p>
+       使用手机的文件管理器解压 ZIP，再打开 APK。如果下载的是 APK，可直接打开。
+      </p>
+     </li>
+     <li>
+      <strong>
+       按系统提示安装
+      </strong>
+      <p>
+       通过浏览器或文件管理器安装时，Android 可能要求允许该应用安装未知来源应用。升级时请选择相同版本类型。
+      </p>
+     </li>
+    </ol>
+    <aside class="note">
+     本地目录由网站维护，更新可能晚于 GitHub。请以 GitHub release 的发布说明和附件为准。
+    </aside>
+   </section>
+   <aside class="wrap callout">
+    <div>
+     <h2>
+      第一次使用？
+     </h2>
+     <p>
+      从对弈开始，或者选一份棋谱逐步研习。
+     </p>
+    </div>
+    <a class="button" href="help.html">
+     查看使用帮助
+    </a>
+   </aside>
+  </main>
+  <footer class="site-footer">
+   <div>
+    <a class="footer-brand" href="index.html">
+     象棋鱼
+    </a>
+    <p>
+     开源免费，让每一步都有收获。
+    </p>
+   </div>
+   <div class="footer-links">
+    <a href="https://github.com/zfdang/chinese-chess-fish-android">
+     GitHub 源代码
+    </a>
+    <a href="https://github.com/zfdang/chinese-chess-fish-android/issues">
+     问题反馈
+    </a>
+    <a href="privacy.html">
+     隐私政策
+    </a>
+    <span>
+     由
+     <a href="https://github.com/zfdang">
+      zfdang
+     </a>
+     维护
+    </span>
+   </div>
+  </footer>
+ </body>
 </html>

@@ -1,77 +1,273 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="UTF-8">
-    <title>象棋鱼 by zfdang</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='http://fonts.loli.net/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
-    <section class="page-header">
-      <h1 class="project-name">象棋鱼</h1>
-      <h2 class="project-tagline">开源免费的安卓版象棋学习工具</h2>
-      <a href="https://github.com/zfdang/chinese-chess-fish-android/" class="btn">GitHub项目</a>
-      <a href="https://github.com/zfdang/chinese-chess-fish-android/releases" class="btn">Github下载</a>
-      <a href="release.html" class="btn">本地下载</a>
-    </section>
-
-    <section class="main-content">
-      <h3>象棋鱼</h3>
-
-<p>开源免费的安卓版象棋学习工具</p>
-
-<p>为什么叫象棋鱼呢？因为它使用了<a href="https://www.pikafish.com/">皮卡鱼</a>引擎，同时它的目标是提供一个开源免费的象棋学习工具！</p>
-
-
-<img src="images/chessfish.png" style="max-width:250px">
-
-<h3></a>本工具有如下特色功能：</h3>
-
-<ui>
-  <li>开源免费;</li>
-  <li>使用了皮卡鱼象棋引擎，棋力强大;</li>
-  <li>显示历史轨迹(图1)</li>
-  <li>选择棋子后，显示可移动位置(图2)</li>
-  <li>己方出着时可寻求引擎帮助，可视化推荐着法，一键选择着法(图3)</li>
-  <li>强制电脑变着，可视化显示变着，一键选择变着</li>
-  <li>显示局势评估曲线图(图4)</li>
-  <li>支持打谱模式，内置了XQF格式的一些棋谱(图5、图6)</li>
-  <li>丰富的对弈与棋局工具(图7)</li>
-  <li>皮卡鱼可配置(图8)</li>
-</ui>
-
-<br>
-
-查看：<a href="help.html">使用说明</a>
-
-<!-- <hr>
-<h3></a>打赏作者：</h3>
-
-<img src="images/alipay.png" alt="barcode" width="200">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<img src="images/wechatpay.jpeg" alt="barcode" width="200">
- -->
-
-<hr>
-<h3>屏幕截图:</h3>
-<a href="images/1.jpg"><img src="images/1.jpg" style="max-width: 200px"></a>
-<a href="images/2.jpg"><img src="images/2.jpg" style="max-width: 200px"></a>
-<a href="images/3.jpg"><img src="images/3.jpg" style="max-width: 200px"></a>
-<a href="images/4.jpg"><img src="images/4.jpg" style="max-width: 200px"></a>
-<a href="images/5.jpg"><img src="images/5.jpg" style="max-width: 200px"></a>
-<a href="images/6.jpg"><img src="images/6.jpg" style="max-width: 200px"></a>
-<a href="images/7.jpg"><img src="images/7.jpg" style="max-width: 200px"></a>
-<a href="images/8.jpg"><img src="images/8.jpg" style="max-width: 200px"></a>
-
-
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/zfdang/chinese-chess-fish-android/">象棋鱼</a> is maintained by <a href="https://github.com/zfdang">zfdang</a>.</span>
-      </footer>
-
-    </section>
-
-  
-  </body>
+<html lang="zh-CN">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <meta content="开源免费的 Android 中国象棋学习工具，使用皮卡鱼引擎，支持人机对弈、棋局分析和 XQF 打谱。" name="description"/>
+  <meta content="#f6f3ed" name="theme-color"/>
+  <title>
+   随身对弈与棋谱研习 · 象棋鱼
+  </title>
+  <link href="images/chessfish.png" rel="icon" type="image/png"/>
+  <link href="stylesheets/stylesheet.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <a class="skip-link" href="#content">
+   跳到正文
+  </a>
+  <header class="site-header">
+   <div class="header-inner">
+    <a class="brand" href="index.html">
+     <img alt="" height="40" src="images/chessfish.png" width="40"/>
+     <span>
+      象棋鱼
+      <small>
+       中国象棋学习工具
+      </small>
+     </span>
+    </a>
+    <nav aria-label="主导航">
+     <a aria-current="page" href="index.html">
+      首页
+     </a>
+     <a href="help.html">
+      使用帮助
+     </a>
+     <a href="release.html">
+      下载
+     </a>
+     <a href="privacy.html">
+      隐私政策
+     </a>
+    </nav>
+   </div>
+  </header>
+  <main id="content">
+   <div class="hero wrap">
+    <div class="hero-copy">
+     <p class="eyebrow">
+      开源 · 免费 · Android
+     </p>
+     <h1>
+      落子有声，
+      <br/>
+      学棋有道。
+     </h1>
+     <p class="lead">
+      和皮卡鱼对弈，在经典棋谱中研习。
+      <br/>
+      象棋鱼，让手机成为随身的象棋学习工具。
+     </p>
+     <div class="actions">
+      <a class="button primary" href="release.html">
+       下载象棋鱼
+       <span aria-hidden="true">
+        ↗
+       </span>
+      </a>
+      <a class="button" href="help.html">
+       了解如何使用
+      </a>
+     </div>
+     <p class="hero-note">
+      Android 8.0 及以上 · ARM64 设备
+     </p>
+    </div>
+    <div class="hero-visual">
+     <div class="phone">
+      <img alt="象棋鱼新版首页，包含对弈、打谱、帮助和关于入口" fetchpriority="high" height="1584" src="images/home.jpg" width="720"/>
+     </div>
+     <span class="visual-caption">
+      一方棋盘，随时开局
+     </span>
+    </div>
+   </div>
+   <section aria-labelledby="features" class="wrap section">
+    <div class="section-heading">
+     <p class="eyebrow">
+      从实战到研习
+     </p>
+     <h2 id="features">
+      你的下一步，不止一种可能
+     </h2>
+     <p>
+      为什么叫象棋鱼？因为它使用了开源的 Pikafish（皮卡鱼）象棋引擎。
+     </p>
+    </div>
+    <div class="feature-grid">
+     <article class="card">
+      <span class="number">
+       01 / 对弈
+      </span>
+      <h3>
+       与强手过招
+      </h3>
+      <p>
+       选择执棋模式，回看历史着法。落子轨迹与可移动位置，让棋局更易读。
+      </p>
+     </article>
+     <article class="card">
+      <span class="number">
+       02 / 分析
+      </span>
+      <h3>
+       看见更多好棋
+      </h3>
+      <p>
+       请求引擎提示，查看候选着法与局势曲线。也可导入 FEN 局面，从任意位置继续对弈。
+      </p>
+     </article>
+     <article class="card">
+      <span class="number">
+       03 / 打谱
+      </span>
+      <h3>
+       在经典中找答案
+      </h3>
+      <p>
+       浏览内置 XQF 棋谱，逐步回放、阅读注释、探索分支，再以当前局面开始对弈。
+      </p>
+     </article>
+    </div>
+   </section>
+   <section aria-labelledby="screens" class="wrap section">
+    <div class="section-heading split">
+     <div>
+      <p class="eyebrow">
+       新版界面
+      </p>
+      <h2 id="screens">
+       熟悉的象棋，更清楚的布局
+      </h2>
+     </div>
+     <p>
+      2026 年 10 月 6 日 · Android 真机截图
+      <br/>
+      点击图片可查看完整尺寸。
+     </p>
+    </div>
+    <div class="screenshot-grid">
+     <figure class="screenshot">
+      <a aria-label="查看从首页开始完整截图" href="images/home.jpg">
+       <img alt="对弈、打谱、帮助和关于，常用入口一目了然。" decoding="async" height="1584" loading="lazy" src="images/home.jpg" width="720"/>
+      </a>
+      <figcaption>
+       <strong>
+        从首页开始
+       </strong>
+       <span>
+        对弈、打谱、帮助和关于，常用入口一目了然。
+       </span>
+      </figcaption>
+     </figure>
+     <figure class="screenshot">
+      <a aria-label="查看专注每一步完整截图" href="images/game.jpg">
+       <img alt="棋盘、常用操作与棋局记录集中呈现。" decoding="async" height="1584" loading="lazy" src="images/game.jpg" width="720"/>
+      </a>
+      <figcaption>
+       <strong>
+        专注每一步
+       </strong>
+       <span>
+        棋盘、常用操作与棋局记录集中呈现。
+       </span>
+      </figcaption>
+     </figure>
+     <figure class="screenshot">
+      <a aria-label="查看沿着棋谱研习完整截图" href="images/manual.jpg">
+       <img alt="逐步回放，选择分支，结合注释理解棋理。" decoding="async" height="1584" loading="lazy" src="images/manual.jpg" width="720"/>
+      </a>
+      <figcaption>
+       <strong>
+        沿着棋谱研习
+       </strong>
+       <span>
+        逐步回放，选择分支，结合注释理解棋理。
+       </span>
+      </figcaption>
+     </figure>
+     <figure class="screenshot">
+      <a aria-label="查看找到想看的棋谱完整截图" href="images/picker.jpg">
+       <img alt="按目录浏览，搜索当前目录中的棋谱名称。" decoding="async" height="1584" loading="lazy" src="images/picker.jpg" width="720"/>
+      </a>
+      <figcaption>
+       <strong>
+        找到想看的棋谱
+       </strong>
+       <span>
+        按目录浏览，搜索当前目录中的棋谱名称。
+       </span>
+      </figcaption>
+     </figure>
+     <figure class="screenshot">
+      <a aria-label="查看按自己的节奏思考完整截图" href="images/settings.jpg">
+       <img alt="调整搜索深度、时间和引擎缓存。" decoding="async" height="1584" loading="lazy" src="images/settings.jpg" width="720"/>
+      </a>
+      <figcaption>
+       <strong>
+        按自己的节奏思考
+       </strong>
+       <span>
+        调整搜索深度、时间和引擎缓存。
+       </span>
+      </figcaption>
+     </figure>
+     <figure class="screenshot">
+      <a aria-label="查看随时查看帮助完整截图" href="images/help.jpg">
+       <img alt="应用内帮助可离线阅读，按主题展开。" decoding="async" height="1584" loading="lazy" src="images/help.jpg" width="720"/>
+      </a>
+      <figcaption>
+       <strong>
+        随时查看帮助
+       </strong>
+       <span>
+        应用内帮助可离线阅读，按主题展开。
+       </span>
+      </figcaption>
+     </figure>
+    </div>
+   </section>
+   <aside class="wrap callout">
+    <div>
+     <h2>
+      打开棋盘，从这一局开始
+     </h2>
+     <p>
+      无需账号。对弈与打谱可离线使用；云开局库查询需要联网。
+     </p>
+    </div>
+    <a class="button primary" href="release.html">
+     选择下载版本
+    </a>
+   </aside>
+  </main>
+  <footer class="site-footer">
+   <div>
+    <a class="footer-brand" href="index.html">
+     象棋鱼
+    </a>
+    <p>
+     开源免费，让每一步都有收获。
+    </p>
+   </div>
+   <div class="footer-links">
+    <a href="https://github.com/zfdang/chinese-chess-fish-android">
+     GitHub 源代码
+    </a>
+    <a href="https://github.com/zfdang/chinese-chess-fish-android/issues">
+     问题反馈
+    </a>
+    <a href="privacy.html">
+     隐私政策
+    </a>
+    <span>
+     由
+     <a href="https://github.com/zfdang">
+      zfdang
+     </a>
+     维护
+    </span>
+   </div>
+  </footer>
+ </body>
 </html>

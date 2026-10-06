@@ -1,125 +1,361 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="UTF-8">
-    <title>象棋鱼 by zfdang - Help</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='http://fonts.loli.net/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
-    <section class="main-content">
-
-      <h3>象棋鱼--帮助</h3>
-
-<p>项目主页: <a href="https://fish.zfdang.com/">象棋鱼</a></p>
-
-<hr>
-<h3>1. 工具栏介绍</h3>
-
-<div class="imgbox">
-    <a href="images/interface.jpg"><img class="center-fit" src='images/interface.jpg' style="max-width: 300px"></a>
-</div>
-
-
-<h4>说明：</h4>
-
-<ui>
-  <li>工具行：新局、悔棋、提示、走势——点击「引擎与棋局工具」可展开更多：执棋模式、退一步、电脑走棋、自动走棋、候选着法、立即落子、导入棋局、复制棋局等</li>
-  <li>提示：当己方出着时，可以寻求帮助，引擎会提供3个候选着法</li>
-  <li>停止提示：当电脑在搜索着法或者己方在寻求帮助时，点击将结束搜索，立刻返回结果</li>
-  <li>导入棋局：直接输入FEN字符串开局</li>
-  <li>状态提示：红帅表示该红方出着；黑将表示该黑方出着；思考中...</li>
-
-</ui>
-
-
-<h3>2. 寻求帮助的结果</h3>
-
-<b>寻求帮助，或者强制电脑变着后，会出现如下结果（绿色箭头）：</b>
-
-<br><br>
-
-
-<div class="imgbox">
-    <a href="images/multipv.jpg"><img class="center-fit" src='images/multipv.jpg' style="max-width: 300px"></a>
-</div>
-
-<br>
-
-此时可以直接点击状态提示栏的数字，选择着法。
-<br>
-也可以忽略提示的着法，在棋盘上直接出着
-
-<hr>
-
-<h3>3. 设置界面</h3>
-
-<div class="imgbox">
-    <a href="images/settings.jpg"><img class="center-fit" src='images/settings.jpg' style="max-width: 300px"></a>
-</div>
-
-<h4>3.1 支持红方先行或黑方先行</h4>
-
-<ui>
-  <li>缺省为红方先行</li>
-  <li>取消勾选后，为黑方先行；如果设置了电脑执黑且自动走棋，则黑方在开局后会自动走棋</li>
-  <li>只针对新建游戏有效</li>
-</ui>
-
-
-<h4>3.2 增加电脑走棋的随机性</h4>
-
-<ui>
-  <li>缺省不勾选</li>
-  <li>勾选后，在最初的12步内，电脑会在几个可能的着法之间随机选择一个；增加随机性，但是同时会降低电脑的棋力</li>
-  <li>这个功能的目的，是避免电脑每次都走一样的着法，跟电脑对弈会无聊</li>
-</ui>
-
-<h4>3.4 引擎缓存 (Hash)</h4>
-
-<ui>
-  <li>缺省根据手机内存自动设置（约为应用内存预算的三分之一，32–128MB），也可在设置中手动调整</li>
-  <li>越大越好，但是大了程序可能会被系统终止</li>
-</ui>
-
-<h4>3.5 引擎搜索设置</h4>
-
-<h5>支持三种模式的引擎搜索方法：</h5>
-
-<ui>
-  <li>设定搜索深度：引擎在搜索固定深度后自动返回。设置的数值越高，需要越长时间来完成搜索。</li>
-  <li>设定固定搜索时间：引擎在搜索固定时间后自动返回</li>
-  <li>无限搜索：引擎一直搜索，直到用户点击“闪电出着”</li>
-</ui>
-
-<hr>
-
-<h3>4. 常见问题</h3>
-
-<h4>4.1 引擎下棋的速度太慢了，该怎么办？</h4>
-
-这时候，需要调整引擎搜索方法，降低搜索的深度，或者设置更短的固定搜索时间，再或者更换更好的手机...
-
-<h4>4.2 有两个apk, 我该下载哪个apk？</h4>
-
-有两个版本：
-
-<ui>
-  <li>chessfish-armv8-dotprod.zip：如果你的手机是最近几年买的，你的CPU支持dotprod技术，那么就下载这个。</li>
-  <li>chessfish-armv8.zip：dotprod版本没法正常工作，就下载这个</li>
-</ui>
-
-
-
-<h4>4.3 发现程序的bug该怎么办？</h4>
-
-将棋盘的FEN导出，然后在github上创建个issue. 如果不会上述操作，那...
-
-    </section>
-
-  
-  </body>
+<html lang="zh-CN">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1" name="viewport"/>
+  <meta content="了解象棋鱼的人机对弈、引擎提示、FEN 导入、棋谱搜索、分支回放及引擎设置。" name="description"/>
+  <meta content="#f6f3ed" name="theme-color"/>
+  <title>
+   使用帮助 · 象棋鱼
+  </title>
+  <link href="images/chessfish.png" rel="icon" type="image/png"/>
+  <link href="stylesheets/stylesheet.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <a class="skip-link" href="#content">
+   跳到正文
+  </a>
+  <header class="site-header">
+   <div class="header-inner">
+    <a class="brand" href="index.html">
+     <img alt="" height="40" src="images/chessfish.png" width="40"/>
+     <span>
+      象棋鱼
+      <small>
+       中国象棋学习工具
+      </small>
+     </span>
+    </a>
+    <nav aria-label="主导航">
+     <a href="index.html">
+      首页
+     </a>
+     <a aria-current="page" href="help.html">
+      使用帮助
+     </a>
+     <a href="release.html">
+      下载
+     </a>
+     <a href="privacy.html">
+      隐私政策
+     </a>
+    </nav>
+   </div>
+  </header>
+  <main id="content">
+   <div class="wrap page-intro">
+    <p class="eyebrow">
+     使用帮助
+    </p>
+    <h1>
+     从第一步，到下一局
+    </h1>
+    <p class="lead">
+     对弈、分析和打谱的常用操作，都在这里。
+    </p>
+   </div>
+   <div class="wrap guide-layout">
+    <aside class="guide-nav">
+     <nav aria-label="帮助目录">
+      <a href="#start">
+       01 开始对弈
+      </a>
+      <a href="#analysis">
+       02 提示与分析
+      </a>
+      <a href="#manual">
+       03 打谱与棋谱选择
+      </a>
+      <a href="#fen">
+       04 导入与复制棋局
+      </a>
+      <a href="#settings">
+       05 引擎设置
+      </a>
+      <a href="#questions">
+       06 常见问题
+      </a>
+     </nav>
+    </aside>
+    <div class="guide-content">
+     <section class="guide-section" id="start">
+      <p class="eyebrow">
+       01 / 开始对弈
+      </p>
+      <h2>
+       打开首页，选择「对弈」
+      </h2>
+      <p>
+       进入棋盘后，点击己方棋子，再点击目标位置落子。选中棋子时会显示可移动位置，棋盘箭头显示最近的行棋轨迹。
+      </p>
+      <ul>
+       <li>
+        <strong>
+         新局
+        </strong>
+        ：重新开始一局。
+       </li>
+       <li>
+        <strong>
+         悔棋
+        </strong>
+        ：撤销之前的着法。
+       </li>
+       <li>
+        <strong>
+         提示
+        </strong>
+        ：请求引擎推荐候选着法。
+       </li>
+       <li>
+        <strong>
+         走势
+        </strong>
+        ：查看局势评估曲线。
+       </li>
+      </ul>
+      <p>
+       点击「引擎与棋局工具」展开更多操作，包括执棋模式、退一步、电脑走棋、自动走棋、候选着法、立即落子、导入棋局和复制棋局。棋局记录保留在页面下方。
+      </p>
+      <figure class="screenshot">
+       <a aria-label="查看对弈界面完整截图" href="images/game.jpg">
+        <img alt="常用操作在棋盘下方，更多工具按需展开。" decoding="async" height="1584" loading="lazy" src="images/game.jpg" width="720"/>
+       </a>
+       <figcaption>
+        <strong>
+         对弈界面
+        </strong>
+        <span>
+         常用操作在棋盘下方，更多工具按需展开。
+        </span>
+       </figcaption>
+      </figure>
+     </section>
+     <section class="guide-section" id="analysis">
+      <p class="eyebrow">
+       02 / 提示与分析
+      </p>
+      <h2>
+       看看引擎会怎么走
+      </h2>
+      <p>
+       轮到己方时点击「提示」，引擎会计算候选着法，并在棋盘上用带编号的绿色箭头显示。点击对应编号可选择着法，也可以忽略建议，直接在棋盘上落子。
+      </p>
+      <p>
+       电脑思考或引擎分析时，可使用工具中的「立即落子」结束当前搜索并返回结果。「候选着法」可以帮助你比较不同选择；「走势」显示已有评估的局势变化。
+      </p>
+     </section>
+     <section class="guide-section" id="manual">
+      <p class="eyebrow">
+       03 / 打谱
+      </p>
+      <h2>
+       找一份棋谱，慢慢读懂它
+      </h2>
+      <ol>
+       <li>
+        在首页点击「打谱」，再点击右上角「选择棋谱」。首次进入时会准备内置棋谱，请等待完成。
+       </li>
+       <li>
+        打开目录，点击棋谱即可加载。搜索框只筛选
+        <strong>
+         当前目录
+        </strong>
+        中的名称；顶部路径可返回上级目录。
+       </li>
+       <li>
+        使用「下一步」「上一步」和「回到开局」回放。遇到分支时，点击候选着法按钮；更多分支可横向滑动查看。
+       </li>
+       <li>
+        在「棋谱注释」中阅读讲解。分支或注释较多时可以上下滚动页面。
+       </li>
+       <li>
+        点击「以此对弈」，从当前棋谱局面进入对弈模式。
+       </li>
+      </ol>
+      <div class="guide-shots">
+       <figure class="screenshot">
+        <a aria-label="查看选择棋谱完整截图" href="images/picker.jpg">
+         <img alt="目录路径、名称搜索和棋谱列表。" decoding="async" height="1584" loading="lazy" src="images/picker.jpg" width="720"/>
+        </a>
+        <figcaption>
+         <strong>
+          选择棋谱
+         </strong>
+         <span>
+          目录路径、名称搜索和棋谱列表。
+         </span>
+        </figcaption>
+       </figure>
+       <figure class="screenshot">
+        <a aria-label="查看回放与分支完整截图" href="images/manual.jpg">
+         <img alt="棋盘保持稳定，分支与注释在下方显示。" decoding="async" height="1584" loading="lazy" src="images/manual.jpg" width="720"/>
+        </a>
+        <figcaption>
+         <strong>
+          回放与分支
+         </strong>
+         <span>
+          棋盘保持稳定，分支与注释在下方显示。
+         </span>
+        </figcaption>
+       </figure>
+      </div>
+     </section>
+     <section class="guide-section" id="fen">
+      <p class="eyebrow">
+       04 / 棋局工具
+      </p>
+      <h2>
+       从一个局面开始
+      </h2>
+      <p>
+       在对弈页展开「引擎与棋局工具」，选择「导入棋局」，在输入框粘贴或填写 FEN 字符串，再确认导入。FEN 用于描述棋子位置与走棋状态。
+      </p>
+      <p>
+       使用「复制棋局」可复制当前局面的 FEN，方便保存、分享或在反馈问题时提供复现信息。
+      </p>
+     </section>
+     <section class="guide-section" id="settings">
+      <p class="eyebrow">
+       05 / 引擎设置
+      </p>
+      <h2>
+       找到适合手机的思考节奏
+      </h2>
+      <p>
+       点击对弈页右上角的设置图标，调整新局与引擎选项。
+      </p>
+      <ul>
+       <li>
+        <strong>
+         红方先行
+        </strong>
+        ：控制新局的先行方，修改后对新建对局生效。
+       </li>
+       <li>
+        <strong>
+         开局随机性
+        </strong>
+        ：在最初的 12 步中增加变化，也会降低电脑的棋力。
+       </li>
+       <li>
+        <strong>
+         引擎缓存（Hash）
+        </strong>
+        ：默认根据应用内存预算设置为 32–128 MB。应结合设备内存调整，过大可能导致应用被系统终止。
+       </li>
+       <li>
+        <strong>
+         搜索深度
+        </strong>
+        ：达到指定深度后返回；深度越高通常耗时越长。
+       </li>
+       <li>
+        <strong>
+         固定时间
+        </strong>
+        ：按指定时间进行搜索。
+       </li>
+       <li>
+        <strong>
+         无限搜索
+        </strong>
+        ：持续分析，直到手动结束搜索。
+       </li>
+      </ul>
+      <figure class="screenshot">
+       <a aria-label="查看设置界面完整截图" href="images/settings.jpg">
+        <img alt="按设备性能调整缓存和搜索方式。" decoding="async" height="1584" loading="lazy" src="images/settings.jpg" width="720"/>
+       </a>
+       <figcaption>
+        <strong>
+         设置界面
+        </strong>
+        <span>
+         按设备性能调整缓存和搜索方式。
+        </span>
+       </figcaption>
+      </figure>
+     </section>
+     <section class="guide-section" id="questions">
+      <p class="eyebrow">
+       06 / 常见问题
+      </p>
+      <h2>
+       遇到问题时
+      </h2>
+      <details open="">
+       <summary>
+        引擎走棋太慢怎么办？
+       </summary>
+       <p>
+        降低搜索深度，或切换为较短的固定搜索时间。使用无限搜索时，点击「立即落子」可结束当前搜索。
+       </p>
+      </details>
+      <details open="">
+       <summary>
+        应该下载哪个版本？
+       </summary>
+       <p>
+        不确定时选择 armv8 通用版。确认设备支持 ARM dotprod 指令时，可尝试 armv8-dotprod 版；如无法正常运行，请改用通用版。两个版本都面向 ARM64 设备，详见
+        <a href="release.html">
+         下载页
+        </a>
+        。
+       </p>
+      </details>
+      <details>
+       <summary>
+        没有网络还能使用吗？
+       </summary>
+       <p>
+        内置引擎对弈、打谱及应用内帮助均可离线使用。启用云开局库时需要网络；打开外部链接也需要联网。
+       </p>
+      </details>
+      <details>
+       <summary>
+        如何反馈问题？
+       </summary>
+       <p>
+        在
+        <a href="https://github.com/zfdang/chinese-chess-fish-android/issues">
+         GitHub Issues
+        </a>
+        提交问题，附上应用版本、手机型号、Android 版本及复现步骤。与局面有关的问题，请通过「复制棋局」提供 FEN。
+       </p>
+      </details>
+     </section>
+    </div>
+   </div>
+  </main>
+  <footer class="site-footer">
+   <div>
+    <a class="footer-brand" href="index.html">
+     象棋鱼
+    </a>
+    <p>
+     开源免费，让每一步都有收获。
+    </p>
+   </div>
+   <div class="footer-links">
+    <a href="https://github.com/zfdang/chinese-chess-fish-android">
+     GitHub 源代码
+    </a>
+    <a href="https://github.com/zfdang/chinese-chess-fish-android/issues">
+     问题反馈
+    </a>
+    <a href="privacy.html">
+     隐私政策
+    </a>
+    <span>
+     由
+     <a href="https://github.com/zfdang">
+      zfdang
+     </a>
+     维护
+    </span>
+   </div>
+  </footer>
+ </body>
 </html>
