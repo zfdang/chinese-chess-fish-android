@@ -15,9 +15,9 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.Toast
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.zfdang.chess.adapters.HistoryAndTrendAdapter
 import com.zfdang.chess.utils.CopyAssetsUtil
 import com.zfdang.chess.utils.PathUtil
 import com.zfdang.chess.controllers.ControllerListener
@@ -26,9 +26,9 @@ import com.zfdang.chess.databinding.ActivityManualBinding
 import com.zfdang.chess.gamelogic.GameStatus
 import com.zfdang.chess.manuals.XQFParser
 import com.zfdang.chess.views.ChessView
-import me.rosuh.filepicker.config.FilePickerManager
-import me.rosuh.filepicker.filetype.FileType
-import me.rosuh.filepicker.filetype.XQFFileType
+import androidx.activity.result.contract.ActivityResultContracts
+import android.view.ViewGroup
+import com.google.android.material.button.MaterialButton
 import java.io.File
 import java.io.FileInputStream
 
@@ -41,6 +41,14 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
     private lateinit var waitingDialog: AlertDialog
 
     private var last_selected_path = ""
+    private val manualPicker = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.getStringExtra(ManualPickerActivity.EXTRA_MANUAL)?.let { path ->
+                last_selected_path = File(path).parent.orEmpty()
+                loadManualFromFile(path)
+            }
+        }
+    }
 
     // 防止重复点击
     private val MIN_CLICK_DELAY_TIME: Int = 100
@@ -52,7 +60,6 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
 
     // 棋盘
     private lateinit var chessView: ChessView
-    private lateinit var historyAndTrendAdapter: HistoryAndTrendAdapter
 
     // controller, player, game
     private lateinit var controller: ManualController
@@ -69,7 +76,9 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
 
         binding = ActivityManualBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        com.zfdang.chess.utils.WindowInsetsUtil.apply(this, binding.root)
+        com.zfdang.chess.utils.WindowInsetsUtil.apply(this, binding.root) { binding.root.post { fitBoardToScreen() } }
+        binding.root.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> fitBoardToScreen() }
+        binding.manualContent.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ -> fitBoardToScreen() }
         onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
             override fun handleOnBackPressed() { saveThenExit() }
         })
@@ -90,11 +99,6 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
             binding.forwardbt,
             binding.gamebt,
             binding.exitbt,
-            binding.choice1bt,
-            binding.choice2bt,
-            binding.choice3bt,
-            binding.choice4bt,
-            binding.choice5bt,
         )
         for (button in imageButtons) {
             button.setOnClickListener(this)
@@ -103,15 +107,14 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
         // init audio files
         soundPlayer = SoundPlayer(this, controller)
 
-        // Bind historyTable and initialize it with dummy data
-        val gamenote = binding.textViewNote
+        updateNavigation()
 
         // init status text
         setStatusText("未加载棋谱")
 
         // run initManual() after delaying 500ms
         Handler(Looper.getMainLooper()).postDelayed({
-            initManual()
+            if (!isFinishing && !isDestroyed) initManual()
         }, 500)
 
         last_selected_path = PathUtil.getInternalAppFilesDir(this,"XQF")
@@ -131,10 +134,11 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
             Log.d("Setting", "isFirstRun: true")
 
             // create a waiting dialog
-            val builder = AlertDialog.Builder(this)
+            binding.openbt.isEnabled = false
+            val builder = MaterialAlertDialogBuilder(this)
             builder.setCancelable(false)
             builder.setTitle("初始化中")
-            builder.setMessage("初次运行，正在初始化棋谱，时间较长(>30s)，请耐心等待...")
+            builder.setMessage("正在准备内置棋谱，完成后即可浏览与研习。请稍候…")
             waitingDialog = builder.create()
             waitingDialog.show()
 
@@ -158,6 +162,8 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
                 CopyAssetsUtil.copyAssets(this, "XQF", destPath)
                 runOnUiThread {
                     setFirstRunVersion(currentVersion)
+                    if (isFinishing || isDestroyed) return@runOnUiThread
+                    binding.openbt.isEnabled = true
                     waitingDialog.dismiss()
                     Toast.makeText(this, "初始化完成", Toast.LENGTH_SHORT).show()
                 }
@@ -226,73 +232,79 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
             binding.exitbt -> {
                 saveThenExit();
             }
-            binding.choice1bt -> {
-                setStatusText("选择分支1")
-                hideAllChoiceBts()
-                controller.selectBranch(0)
-            }
-            binding.choice2bt -> {
-                setStatusText("选择分支2")
-                hideAllChoiceBts()
-                controller.selectBranch(1)
-            }
-            binding.choice3bt -> {
-                setStatusText("选择分支3")
-                hideAllChoiceBts()
-                controller.selectBranch(2)
-            }
-            binding.choice4bt -> {
-                setStatusText("选择分支4")
-                hideAllChoiceBts()
-                controller.selectBranch(3)
-            }
-            binding.choice5bt -> {
-                setStatusText("选择分支5")
-                hideAllChoiceBts()
-                controller.selectBranch(4)
-            }
+
         }
     }
 
     private fun hideAllChoiceBts() {
-        binding.choice1bt.visibility = View.GONE;
-        binding.choice2bt.visibility = View.GONE;
-        binding.choice3bt.visibility = View.GONE;
-        binding.choice4bt.visibility = View.GONE;
-        binding.choice5bt.visibility = View.GONE;
+        binding.branchScroll.visibility = View.GONE
+        binding.branchChoices.removeAllViews()
     }
 
-
-    private fun showOpenManualDialog() {
-        val types = arrayListOf<FileType>(XQFFileType())
-        FilePickerManager
-            .from(this)
-            .setRootPath(PathUtil.getInternalAppFilesDir(this,"XQF"))
-            .setStartPath(last_selected_path)
-            .maxSelectable(1)
-            .registerFileType(types)
-            .skipDirWhenSelect(true)
-            .forResult(FilePickerManager.REQUEST_CODE)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            FilePickerManager.REQUEST_CODE -> {
-                if (resultCode == Activity.RESULT_OK) {
-                    val list = FilePickerManager.obtainData()
-                    Log.d("ManualActivity", "onActivityResult: $list")
-                    // extract the path part from filename list[0]
-                    list[0]?.let {
-                        // extract the path part from filename list[0]
-                        last_selected_path = it.substring(0, it.lastIndexOf("/") + 1)
-                        loadManualFromFile(it)
-                    }
-                } else {
-                    Toast.makeText(this, "您未选取任何文件", Toast.LENGTH_SHORT).show()
+    private fun showBranches() {
+        binding.branchChoices.removeAllViews()
+        controller.moveNode?.nextMoves?.forEachIndexed { index, node ->
+            val choice = MaterialButton(this, null, com.google.android.material.R.attr.materialButtonOutlinedStyle).apply {
+                val move = node.move
+                val description = move?.let {
+                    com.zfdang.chess.gamelogic.Move(it.fromPosition, it.toPosition, controller.game.currentBoard).chsString
+                }.orEmpty()
+                text = getString(R.string.manual_branch_label, index + 1, description)
+                textSize = 13f
+                setOnClickListener {
+                    hideAllChoiceBts()
+                    controller.selectBranch(index)
                 }
             }
+            binding.branchChoices.addView(choice, android.widget.LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply { marginEnd = (8 * resources.displayMetrics.density).toInt() })
         }
+        binding.branchScroll.visibility = View.VISIBLE
+        binding.branchScroll.scrollTo(0, 0)
+    }
+
+    private fun updateNavigation() {
+        val loaded = controller.manual != null && controller.moveNode != null
+        binding.firstbt.isEnabled = loaded && controller.moveNode.parent != null
+        binding.backbt.isEnabled = loaded && controller.moveNode.parent != null
+        binding.forwardbt.isEnabled = loaded && controller.moveNode.nextMoves.isNotEmpty()
+        binding.gamebt.isEnabled = loaded
+        listOf(binding.firstbt, binding.backbt, binding.forwardbt, binding.gamebt).forEach {
+            it.alpha = if (it.isEnabled) 1f else 0.35f
+        }
+        val steps = controller.game.history.size
+        binding.moveCounter.text = if (steps == 0) getString(R.string.manual_opening) else getString(R.string.manual_step_label, steps)
+    }
+
+    private fun fitBoardToScreen() {
+        val content = binding.manualContent
+        var fixedHeight = content.paddingTop + content.paddingBottom
+        for (i in 0 until content.childCount) {
+            val child = content.getChildAt(i)
+            if (child === binding.chesslayout || child.visibility == View.GONE) continue
+            val margins = child.layoutParams as ViewGroup.MarginLayoutParams
+            fixedHeight += child.measuredHeight + margins.topMargin + margins.bottomMargin
+        }
+        val params = binding.chesslayout.layoutParams as ViewGroup.MarginLayoutParams
+        val available = binding.root.height - binding.root.paddingTop - binding.root.paddingBottom - fixedHeight - params.topMargin - params.bottomMargin
+        val fullHeight = (content.width - content.paddingLeft - content.paddingRight) * ChessView.BOARD_HEIGHT / ChessView.BOARD_WIDTH
+        // Keep the board usable on short screens; the whole page can then scroll.
+        val height = minOf(fullHeight, available.coerceAtLeast((240 * resources.displayMetrics.density).toInt()))
+        if (height > 0 && params.height != height) {
+            params.height = height
+            binding.chesslayout.layoutParams = params
+        }
+    }
+
+    private fun showOpenManualDialog() {
+        manualPicker.launch(Intent(this, ManualPickerActivity::class.java)
+            .putExtra(ManualPickerActivity.EXTRA_DIRECTORY, last_selected_path))
+    }
+
+    private fun showNote(note: String?) {
+        binding.textViewNote.text = note?.takeIf { it.isNotBlank() } ?: getString(R.string.manual_no_comment)
+        binding.notescroll.scrollTo(0, 0)
     }
 
     fun loadManualFromFile(file: String) {
@@ -307,23 +319,26 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
 
             // if controller.manual.red is empty, then hide textViewRed
             if(controller.manual.red.isEmpty()) {
-                binding.textViewRed.visibility = View.INVISIBLE
+                binding.textViewRed.visibility = View.VISIBLE
+                binding.textViewRed.text = getString(R.string.manual_red_unknown)
             } else {
                 binding.textViewRed.visibility = View.VISIBLE
                 binding.textViewRed.text = controller.manual.red
             }
             if(controller.manual.black.isEmpty()) {
-                binding.textViewBlack.visibility = View.INVISIBLE
+                binding.textViewBlack.visibility = View.VISIBLE
+                binding.textViewBlack.text = getString(R.string.manual_black_unknown)
             } else {
                 binding.textViewBlack.visibility = View.VISIBLE
                 binding.textViewBlack.text = controller.manual.black
             }
-            binding.textViewResult.text = controller.manual.result
-            binding.textViewNote.text = controller.manual.annotation
+            binding.textViewResult.text = controller.manual.result.ifBlank { "·" }
+            showNote(controller.manual.annotation)
 
             hideAllChoiceBts()
             var hint = "棋谱加载成功" + "," + controller.getFirstMoveColor()
             binding.statustv.text = hint
+            updateNavigation()
         } else {
             binding.statustv.text = "棋谱加载失败"
         }
@@ -341,9 +356,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
                 message?.let { setStatusText(it) }
                 soundPlayer.move();
 
-                if(binding.choice1bt.visibility == View.VISIBLE){
-                    hideAllChoiceBts()
-                }
+                hideAllChoiceBts()
             }
             GameStatus.CAPTURE -> {
                 message?.let { setStatusText(it) }
@@ -370,22 +383,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
                 // show message
                 message?.let { setStatusText(it) }
 
-                // show choice buttons
-                if(binding.choice1bt.visibility == View.GONE){
-                    binding.choice1bt.visibility = View.VISIBLE;
-                    if(controller.getMultiPVSize() >= 2){
-                        binding.choice2bt.visibility = View.VISIBLE;
-                    }
-                    if(controller.getMultiPVSize() >= 3){
-                        binding.choice3bt.visibility = View.VISIBLE;
-                    }
-                    if(controller.getMultiPVSize() >= 4){
-                        binding.choice4bt.visibility = View.VISIBLE;
-                    }
-                    if(controller.getMultiPVSize() >= 5){
-                        binding.choice5bt.visibility = View.VISIBLE;
-                    }
-                }
+                showBranches()
 
                 soundPlayer.ready()
             }
@@ -395,14 +393,15 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
             }
         }
 
+        updateNavigation()
         if(controller.manual != null && controller.moveNode != null) {
             // update textViewNote
             if(controller.moveNode.move == null) {
                 // headMove, show manual annotation
-                binding.textViewNote.text = controller.manual.annotation
+                showNote(controller.manual.annotation)
             } else {
                 // show move comment
-                binding.textViewNote.text = controller.moveNode.move.comment
+                showNote(controller.moveNode.move.comment)
             }
         }
     }
@@ -453,6 +452,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
 
     // create fun to handle onbackpressed
     override fun onDestroy() {
+        if (::waitingDialog.isInitialized) waitingDialog.dismiss()
         if (::controller.isInitialized) controller.close()
         if (::soundPlayer.isInitialized) soundPlayer.release()
         super.onDestroy()

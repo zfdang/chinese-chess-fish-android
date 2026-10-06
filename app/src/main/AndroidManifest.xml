@@ -31,6 +31,9 @@
             android:theme="@style/Theme.ChineseChess.Refreshed"
             android:screenOrientation="portrait"
             android:exported="false"/>
+        <activity android:name=".ManualPickerActivity"
+            android:theme="@style/Theme.ChineseChess.Refreshed"
+            android:screenOrientation="portrait" android:exported="false" />
         <activity
             android:name=".ManualActivity"
             android:theme="@style/Theme.ChineseChess.Refreshed"

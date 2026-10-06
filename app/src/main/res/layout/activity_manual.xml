@@ -1,252 +1,255 @@
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/boardbg_repeat"
-    android:theme="@style/ThemeOverlay.ChineseChess.FullscreenContainer"
-    tools:context=".GameActivity">
-
+    android:background="@color/ui_paper"
+    android:fillViewport="true">
     <LinearLayout
+        android:id="@+id/manual_content"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
+        android:paddingHorizontal="16dp"
+        android:paddingBottom="12dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:gravity="center_vertical">
+            <ImageButton
+                android:id="@+id/exitbt"
+                style="@style/Widget.Chess.Action"
+                android:contentDescription="@string/manual_return_home"
+                app:srcCompat="@drawable/arrow_back"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/manual_title"
+                android:textColor="@color/ui_ink"
+                android:textStyle="bold"
+                android:textSize="20sp"/>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/openbt"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="@string/manual_choose"
+                android:textColor="@color/ui_red"
+                app:backgroundTint="@color/ui_surface"
+                app:strokeColor="@color/ui_line"
+                app:strokeWidth="1dp"
+                app:cornerRadius="16dp"/>
+        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
+            android:orientation="vertical"
+            android:background="@drawable/ui_card"
+            android:padding="12dp">
             <TextView
                 android:id="@+id/textViewTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:padding="6dp"
-                android:textSize="16dp"
-                android:text="空棋谱"
-                android:textAlignment="center" />
+                android:text="@string/manual_empty_title"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/ui_ink"
+                android:maxLines="2"
+                android:ellipsize="end"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center_vertical">
+                <TextView
+                    android:id="@+id/textViewRed"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/manual_red"
+                    android:textSize="12sp"
+                    android:textColor="@color/ui_red"
+                    android:maxLines="2"
+                    android:ellipsize="end"/>
+                <TextView
+                    android:id="@+id/textViewResult"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="8dp"
+                    android:text="@string/manual_separator"
+                    android:textSize="12sp"
+                    android:textColor="@color/ui_muted"/>
+                <TextView
+                    android:id="@+id/textViewBlack"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="end"
+                    android:text="@string/manual_black"
+                    android:textSize="12sp"
+                    android:textColor="@color/ui_ink"
+                    android:maxLines="2"
+                    android:ellipsize="end"/>
+            </LinearLayout>
         </LinearLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:padding="8dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/textViewRed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/red_player_background"
-                android:visibility="invisible"
-                android:padding="8dp"
-                android:textSize="14dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/textViewResult"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text=""
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:textSize="16dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
-
-            <TextView
-                android:id="@+id/textViewBlack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/black_player_background"
-                android:padding="8dp"
-                android:visibility="invisible"
-                android:textSize="14dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <FrameLayout
+        <com.zfdang.chess.views.FittedChessLayout
             android:id="@+id/chesslayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:minHeight="200dp">
-
-        </FrameLayout>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:orientation="horizontal"
-            android:paddingTop="8dp"
-            android:paddingBottom="4dp">
-
-            <ImageButton
-                android:id="@+id/openbt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
-                android:background="?android:attr/selectableItemBackground"
-                app:srcCompat="@drawable/manual" />
-
-            <ImageButton
-                android:id="@+id/firstbt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginHorizontal="12dp"
-                android:background="?android:attr/selectableItemBackground"
-                app:srcCompat="@drawable/arrow_first" />
-
-
-            <ImageButton
-                android:id="@+id/backbt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginHorizontal="12dp"
-                android:background="?android:attr/selectableItemBackground"
-                app:srcCompat="@drawable/arrow_back" />
-
-            <ImageButton
-                android:id="@+id/forwardbt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginHorizontal="12dp"
-                android:background="?android:attr/selectableItemBackground"
-                app:srcCompat="@drawable/arrow_forward" />
-
-            <ImageButton
-                android:id="@+id/gamebt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginHorizontal="12dp"
-                android:background="?android:attr/selectableItemBackground"
-                app:srcCompat="@drawable/game" />
-
-
-            <ImageButton
-                android:id="@+id/exitbt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="12dp"
-                android:background="?android:attr/selectableItemBackground"
-                app:srcCompat="@drawable/logout" />
-
-        </LinearLayout>
-
+            android:layout_height="280dp"
+            android:layout_marginVertical="6dp"/>
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:background="@color/game_hint_background"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/statustv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="TextView"
-                    android:textSize="16sp" />
-
-                <ImageButton
-                    android:id="@+id/choice1bt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="2dp"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:visibility="gone"
-                    app:srcCompat="@drawable/looks_1" />
-
-                <ImageButton
-                    android:id="@+id/choice2bt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="2dp"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:visibility="gone"
-                    app:srcCompat="@drawable/looks_2" />
-
-                <ImageButton
-                    android:id="@+id/choice3bt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="2dp"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:visibility="gone"
-                    app:srcCompat="@drawable/looks_3" />
-
-                <ImageButton
-                    android:id="@+id/choice4bt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="2dp"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:visibility="gone"
-                    app:srcCompat="@drawable/looks_4" />
-
-                <ImageButton
-                    android:id="@+id/choice5bt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="2dp"
-                    android:background="?android:attr/selectableItemBackground"
-                    android:visibility="gone"
-                    app:srcCompat="@drawable/looks_5" />
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:baselineAligned="false"
-            android:orientation="horizontal">
-
+            android:layout_height="wrap_content"
+            android:background="@drawable/ui_card"
+            android:padding="6dp"
+            android:gravity="center_vertical">
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center_horizontal"
+                android:gravity="center"
                 android:orientation="vertical">
-
-                <ScrollView
-                    android:id="@+id/notescroll"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/move_history_background">
-
-                    <TextView
-                        android:id="@+id/textViewNote"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="8dp"
-                        android:textSize="16dp"
-                        android:text="" />
-                </ScrollView>
+                <ImageButton
+                    android:id="@+id/firstbt"
+                    style="@style/Widget.Chess.Action"
+                    android:contentDescription="@string/manual_first"
+                    android:tooltipText="@string/manual_first"
+                    app:srcCompat="@drawable/arrow_first"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/manual_first"
+                    android:textSize="11sp"
+                    android:textColor="@color/ui_muted"/>
             </LinearLayout>
-
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageButton
+                    android:id="@+id/backbt"
+                    style="@style/Widget.Chess.Action"
+                    android:contentDescription="@string/manual_previous"
+                    android:tooltipText="@string/manual_previous"
+                    app:srcCompat="@drawable/arrow_back"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/manual_previous"
+                    android:textSize="11sp"
+                    android:textColor="@color/ui_muted"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageButton
+                    android:id="@+id/forwardbt"
+                    style="@style/Widget.Chess.Action"
+                    android:contentDescription="@string/manual_next"
+                    android:tooltipText="@string/manual_next"
+                    app:srcCompat="@drawable/arrow_forward"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/manual_next"
+                    android:textSize="11sp"
+                    android:textColor="@color/ui_muted"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+                <ImageButton
+                    android:id="@+id/gamebt"
+                    style="@style/Widget.Chess.Action"
+                    android:contentDescription="@string/manual_play_position"
+                    android:tooltipText="@string/manual_play_position"
+                    app:srcCompat="@drawable/game"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/manual_play_position"
+                    android:textSize="11sp"
+                    android:textColor="@color/ui_muted"/>
+            </LinearLayout>
         </LinearLayout>
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingVertical="8dp">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical">
+                <TextView
+                    android:id="@+id/statustv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/manual_not_loaded"
+                    android:textSize="13sp"
+                    android:textColor="@color/ui_red"/>
+                <TextView
+                    android:id="@+id/move_counter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="@string/manual_opening"
+                    android:textSize="12sp"
+                    android:textColor="@color/ui_muted"/>
+            </LinearLayout>
+            <HorizontalScrollView
+                android:id="@+id/branch_scroll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:scrollbars="none">
+                <LinearLayout
+                    android:id="@+id/branch_choices"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"/>
+            </HorizontalScrollView>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:orientation="vertical"
+            android:background="@drawable/ui_card"
+            android:padding="14dp">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/manual_annotation_title"
+                android:textStyle="bold"
+                android:textColor="@color/ui_ink"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp"/>
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/notescroll"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:fillViewport="true">
+                <TextView
+                    android:id="@+id/textViewNote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/manual_empty_instructions"
+                    android:textSize="14sp"
+                    android:textColor="@color/ui_muted"
+                    android:lineSpacingExtra="5dp"
+                    android:textIsSelectable="true"/>
+            </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
     </LinearLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
