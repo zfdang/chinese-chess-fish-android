@@ -36,8 +36,8 @@
 
 | 安装包 | 适用设备 |
 | --- | --- |
-| `chessfish-armv8.zip` | ARM64 通用版，不确定设备指令支持时优先选择 |
-| `chessfish-armv8-dotprod.zip` | 支持 ARM dotprod 指令的设备；如无法正常运行，改用通用版 |
+| `chessfish-armv8-dotprod.zip` | 推荐优先安装，需要设备支持 ARM dotprod 指令 |
+| `chessfish-armv8.zip` | ARM64 通用版；dotprod 版无法正常运行时回退到此版本 |
 
 下载 ZIP 后解压，打开其中的 APK，按 Android 提示完成安装。更新时请选择相同版本类型。发布附件中的 AAB 用于应用商店发布，不是可直接安装的 APK。
 
