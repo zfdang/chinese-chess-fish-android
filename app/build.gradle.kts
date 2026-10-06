@@ -127,7 +127,6 @@ dependencies {
     implementation("com.igormaznitsa:jbbp:3.0.0")
     // https://github.com/PhilJay/MPAndroidChart
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    implementation(project(":filepicker"))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

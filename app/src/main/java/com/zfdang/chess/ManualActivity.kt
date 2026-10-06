@@ -18,6 +18,8 @@ import android.widget.Toast
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.view.isGone
 import com.zfdang.chess.utils.CopyAssetsUtil
 import com.zfdang.chess.utils.PathUtil
 import com.zfdang.chess.controllers.ControllerListener
@@ -136,9 +138,10 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
             // create a waiting dialog
             binding.openbt.isEnabled = false
             val builder = MaterialAlertDialogBuilder(this)
+                .setBackground(AppCompatResources.getDrawable(this, R.drawable.ui_dialog_background))
             builder.setCancelable(false)
-            builder.setTitle("初始化中")
-            builder.setMessage("正在准备内置棋谱，完成后即可浏览与研习。请稍候…")
+            builder.setTitle(R.string.manual_initializing_title)
+            builder.setMessage(R.string.manual_initializing_message)
             waitingDialog = builder.create()
             waitingDialog.show()
 
@@ -165,7 +168,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
                     if (isFinishing || isDestroyed) return@runOnUiThread
                     binding.openbt.isEnabled = true
                     waitingDialog.dismiss()
-                    Toast.makeText(this, "初始化完成", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.manual_initializing_done, Toast.LENGTH_SHORT).show()
                 }
             }.start()
         }
@@ -282,7 +285,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
         var fixedHeight = content.paddingTop + content.paddingBottom
         for (i in 0 until content.childCount) {
             val child = content.getChildAt(i)
-            if (child === binding.chesslayout || child.visibility == View.GONE) continue
+            if (child === binding.chesslayout || child.isGone) continue
             val margins = child.layoutParams as ViewGroup.MarginLayoutParams
             fixedHeight += child.measuredHeight + margins.topMargin + margins.bottomMargin
         }

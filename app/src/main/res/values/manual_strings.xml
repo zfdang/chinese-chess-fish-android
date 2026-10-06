@@ -31,4 +31,7 @@
     <string translatable="false" name="manual_no_comment">本步暂无注释，可继续向后研习。</string>
     <string translatable="false" name="manual_red_unknown">红方未署名</string>
     <string translatable="false" name="manual_black_unknown">黑方未署名</string>
+    <string translatable="false" name="manual_initializing_title">初始化中</string>
+    <string translatable="false" name="manual_initializing_message">正在准备内置棋谱，完成后即可浏览与研习。请稍候…</string>
+    <string translatable="false" name="manual_initializing_done">初始化完成</string>
 </resources>

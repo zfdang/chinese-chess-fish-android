@@ -16,12 +16,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:baselineAligned="false">
             <ImageButton
                 android:id="@+id/exitbt"
                 style="@style/Widget.Chess.Action"
                 android:contentDescription="@string/manual_return_home"
-                app:srcCompat="@drawable/arrow_back"/>
+                app:srcCompat="@drawable/logout"/>
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -61,7 +62,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:baselineAligned="false">
                 <TextView
                     android:id="@+id/textViewRed"
                     android:layout_width="0dp"
@@ -103,7 +105,8 @@
             android:layout_height="wrap_content"
             android:background="@drawable/ui_card"
             android:padding="6dp"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:baselineAligned="false">
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -189,7 +192,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:baselineAligned="false">
                 <TextView
                     android:id="@+id/statustv"
                     android:layout_width="0dp"
@@ -217,7 +221,8 @@
                     android:id="@+id/branch_choices"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"/>
+                    android:orientation="horizontal"
+                    android:baselineAligned="false"/>
             </HorizontalScrollView>
         </LinearLayout>
         <LinearLayout

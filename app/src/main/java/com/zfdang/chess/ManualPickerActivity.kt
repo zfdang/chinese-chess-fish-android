@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.content.withStyledAttributes
 import androidx.core.widget.doAfterTextChanged
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -146,9 +147,9 @@ class ManualPickerActivity : AppCompatActivity() {
                 minimumHeight = dp(80)
                 setPadding(dp(14), dp(14), dp(14), dp(14))
                 setBackgroundResource(R.drawable.ui_card)
-                val typed = obtainStyledAttributes(intArrayOf(android.R.attr.selectableItemBackground))
-                foreground = typed.getDrawable(0)
-                typed.recycle()
+                withStyledAttributes(attrs = intArrayOf(android.R.attr.selectableItemBackground)) {
+                    foreground = getDrawable(0)
+                }
                 isClickable = true
                 isFocusable = true
                 layoutParams = RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(8) }
