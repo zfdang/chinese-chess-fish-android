@@ -1,0 +1,7 @@
+{
+    global:
+        JNI_OnLoad;
+        Java_com_zfdang_chess_engine_NativeBridge_*;
+    local:
+        *;
+};
