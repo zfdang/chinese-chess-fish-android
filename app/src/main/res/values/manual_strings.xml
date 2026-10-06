@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="manual_return_home">Return home</string>
+    <string name="manual_title">Study</string>
+    <string name="manual_choose">Choose score</string>
+    <string name="manual_empty_title">Choose a score to begin</string>
+    <string name="manual_red">Red</string>
+    <string name="manual_separator">·</string>
+    <string name="manual_black">Black</string>
+    <string name="manual_first">Start</string>
+    <string name="manual_previous">Previous</string>
+    <string name="manual_next">Next</string>
+    <string name="manual_play_position">Play position</string>
+    <string name="manual_not_loaded">No score loaded</string>
+    <string name="manual_opening">Opening</string>
+    <string name="manual_annotation_title">Commentary</string>
+    <string name="manual_empty_instructions">Tap Choose score to browse the built-in library. Use Previous and Next to study each move and choose among variations.</string>
+    <string name="manual_return_manual">Return to study</string>
+    <string name="manual_picker_subtitle">Classic games, one move at a time</string>
+    <string name="manual_search_hint">Search this folder</string>
+    <string name="manual_search_empty">No scores found\nTry another search or return to the parent folder</string>
+    <string name="manual_branch_label">%1$d · %2$s</string>
+    <string name="manual_step_label">Move %1$d</string>
+    <string name="manual_picker_summary">%1$d folders · %2$d scores · Tap a score to open</string>
+    <string name="manual_picker_loading">Loading scores…</string>
+    <string name="manual_picker_unavailable">Score folder unavailable\nReturn to study and wait for initialization to finish</string>
+    <string name="manual_library">All scores</string>
+    <string name="manual_empty_folder">No scores in this folder</string>
+    <string name="manual_file_hint">XQF score · Tap to open</string>
+    <string name="manual_folder_hint">Folder · Tap to browse</string>
+    <string name="manual_no_comment">No commentary for this move. Continue to the next move.</string>
+    <string name="manual_red_unknown">Red player unknown</string>
+    <string name="manual_black_unknown">Black player unknown</string>
+    <string name="manual_initializing_title">Preparing scores</string>
+    <string name="manual_initializing_message">Preparing the built-in library. Please wait…</string>
+    <string name="manual_initializing_done">Scores ready</string>
+    <string name="manual_initializing_failed">Unable to prepare scores</string>
+    <string name="manual_initializing_retry_message">Check the available storage space and try again.</string>
+    <string name="manual_retry">Retry</string>
+    <string name="manual_load_failed">Unable to load score</string>
+    <string name="manual_load_failed_note">This score could not be read. Please choose another score.</string>
+</resources>
