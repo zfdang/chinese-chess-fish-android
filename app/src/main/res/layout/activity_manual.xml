@@ -199,6 +199,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:maxLines="1"
+                    android:ellipsize="end"
                     android:text="@string/manual_not_loaded"
                     android:textSize="13sp"
                     android:textColor="@color/ui_red"/>
@@ -211,20 +213,22 @@
                     android:textSize="12sp"
                     android:textColor="@color/ui_muted"/>
             </LinearLayout>
-            <HorizontalScrollView
-                android:id="@+id/branch_scroll"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone"
-                android:scrollbars="none">
-                <LinearLayout
-                    android:id="@+id/branch_choices"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:baselineAligned="false"/>
-            </HorizontalScrollView>
+
         </LinearLayout>
+        <HorizontalScrollView
+            android:id="@+id/branch_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            android:scrollbars="none">
+            <LinearLayout
+                android:id="@+id/branch_choices"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:baselineAligned="false"/>
+        </HorizontalScrollView>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="180dp"

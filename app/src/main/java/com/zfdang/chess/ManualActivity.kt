@@ -2,11 +2,7 @@ package com.zfdang.chess
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -20,12 +16,13 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.view.isGone
-import com.zfdang.chess.utils.CopyAssetsUtil
 import com.zfdang.chess.utils.PathUtil
 import com.zfdang.chess.controllers.ControllerListener
 import com.zfdang.chess.controllers.ManualController
 import com.zfdang.chess.databinding.ActivityManualBinding
 import com.zfdang.chess.gamelogic.GameStatus
+import com.zfdang.chess.manuals.ManualLibrary
+import com.zfdang.chess.manuals.ManualLibraryPreparation
 import com.zfdang.chess.manuals.XQFParser
 import com.zfdang.chess.views.ChessView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -38,8 +35,6 @@ import java.io.FileInputStream
 class ManualActivity() : AppCompatActivity(), ControllerListener,
     View.OnClickListener {
 
-    private val PREFS_NAME = "com.zfdang.chess.manual.preferences"
-    private val LAST_LAUNCH_VERSION_NAME = "last_launch_version_name"
     private lateinit var waitingDialog: AlertDialog
 
     private var last_selected_path = ""
@@ -112,7 +107,8 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
         updateNavigation()
 
         // init status text
-        setStatusText("未加载棋谱")
+        setStatusText(getString(R.string.manual_not_loaded))
+        binding.openbt.isEnabled = false
 
         // run initManual() after delaying 500ms
         Handler(Looper.getMainLooper()).postDelayed({
@@ -123,74 +119,43 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
     }
 
     private fun initManual() {
-        val pm: PackageManager = getPackageManager()
-        var currentVersion = ""
-        try {
-            val pi: PackageInfo = pm.getPackageInfo(getPackageName(), 0)
-            currentVersion = pi.versionName.orEmpty()
-        } catch (e: PackageManager.NameNotFoundException) {
-            Log.e("Setting", "isFirstRun: " + Log.getStackTraceString(e))
-        }
-
-        if(isFirstRun(currentVersion)) {
-            Log.d("Setting", "isFirstRun: true")
-
-            // create a waiting dialog
-            binding.openbt.isEnabled = false
-            val builder = MaterialAlertDialogBuilder(this)
-                .setBackground(AppCompatResources.getDrawable(this, R.drawable.ui_dialog_background))
-            builder.setCancelable(false)
-            builder.setTitle(R.string.manual_initializing_title)
-            builder.setMessage(R.string.manual_initializing_message)
-            waitingDialog = builder.create()
-            waitingDialog.show()
-
-            // copy XQF manuals
-            Thread {
-                // copy all XQF files from assets to external storage, when it's the first run of this version
-
-                val destPath = PathUtil.getInternalAppFilesDir(this,"XQF")
-
-                // remove path if exists
-                val file = File(destPath)
-                if(file.exists()) {
-                    if(file.isFile){
-                        file.delete()
-                    } else {
-                        file.deleteRecursively()
+        ManualLibrary.prepare().observe(this) { state ->
+            if (isFinishing || isDestroyed) return@observe
+            when (state) {
+                ManualLibraryPreparation.State.Checking -> binding.openbt.isEnabled = false
+                ManualLibraryPreparation.State.Copying -> {
+                    binding.openbt.isEnabled = false
+                    if (!::waitingDialog.isInitialized || !waitingDialog.isShowing) {
+                        waitingDialog = MaterialAlertDialogBuilder(this)
+                            .setBackground(AppCompatResources.getDrawable(this, R.drawable.ui_dialog_background))
+                            .setCancelable(false)
+                            .setTitle(R.string.manual_initializing_title)
+                            .setMessage(R.string.manual_initializing_message)
+                            .create()
+                        waitingDialog.show()
                     }
                 }
-
-                // copy assets to destPath
-                CopyAssetsUtil.copyAssets(this, "XQF", destPath)
-                runOnUiThread {
-                    setFirstRunVersion(currentVersion)
-                    if (isFinishing || isDestroyed) return@runOnUiThread
+                ManualLibraryPreparation.State.Ready -> {
                     binding.openbt.isEnabled = true
-                    waitingDialog.dismiss()
-                    Toast.makeText(this, R.string.manual_initializing_done, Toast.LENGTH_SHORT).show()
+                    if (::waitingDialog.isInitialized && waitingDialog.isShowing) {
+                        waitingDialog.dismiss()
+                        Toast.makeText(this, R.string.manual_initializing_done, Toast.LENGTH_SHORT).show()
+                    }
                 }
-            }.start()
+                is ManualLibraryPreparation.State.Failed -> {
+                    if (::waitingDialog.isInitialized) waitingDialog.dismiss()
+                    waitingDialog = MaterialAlertDialogBuilder(this)
+                        .setBackground(AppCompatResources.getDrawable(this, R.drawable.ui_dialog_background))
+                        .setTitle(R.string.manual_initializing_failed)
+                        .setMessage(R.string.manual_initializing_retry_message)
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.manual_retry) { _, _ -> ManualLibrary.prepare() }
+                        .setNegativeButton(R.string.manual_return_home) { _, _ -> saveThenExit() }
+                        .create()
+                    waitingDialog.show()
+                }
+            }
         }
-    }
-
-    private fun isFirstRun(currentVersion:String): Boolean {
-        val sharedPreferences: SharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val last_version = sharedPreferences.getString(LAST_LAUNCH_VERSION_NAME, "unknown")
-        Log.d("Setting", "isFirstRun: last_version = $last_version, currentVersion = $currentVersion")
-
-        if(last_version.equals(currentVersion)) {
-            return false
-        } else {
-            return true
-        }
-    }
-
-    private fun setFirstRunVersion(currentVersion:String) {
-        val sharedPreferences: SharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString(LAST_LAUNCH_VERSION_NAME, currentVersion)
-        editor.apply()
     }
 
     // create function to set status text
@@ -285,7 +250,7 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
         var fixedHeight = content.paddingTop + content.paddingBottom
         for (i in 0 until content.childCount) {
             val child = content.getChildAt(i)
-            if (child === binding.chesslayout || child.isGone) continue
+            if (child === binding.chesslayout || child === binding.branchScroll || child.isGone) continue
             val margins = child.layoutParams as ViewGroup.MarginLayoutParams
             fixedHeight += child.measuredHeight + margins.topMargin + margins.bottomMargin
         }
@@ -343,7 +308,19 @@ class ManualActivity() : AppCompatActivity(), ControllerListener,
             binding.statustv.text = hint
             updateNavigation()
         } else {
-            binding.statustv.text = "棋谱加载失败"
+            controller.manual = null
+            controller.moveNode = null
+            controller.game = com.zfdang.chess.gamelogic.Game(true)
+            controller.setSatate(true)
+            hideAllChoiceBts()
+            binding.textViewTitle.setText(R.string.manual_empty_title)
+            binding.textViewRed.setText(R.string.manual_red)
+            binding.textViewBlack.setText(R.string.manual_black)
+            binding.textViewResult.setText(R.string.manual_separator)
+            binding.textViewNote.setText(R.string.manual_load_failed_note)
+            binding.notescroll.scrollTo(0, 0)
+            binding.statustv.setText(R.string.manual_load_failed)
+            updateNavigation()
         }
     }
 

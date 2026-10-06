@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import com.google.android.material.button.MaterialButton
 import com.zfdang.chess.databinding.ActivityManualPickerBinding
+import com.zfdang.chess.manuals.ManualEntry
 import com.zfdang.chess.utils.PathUtil
 import com.zfdang.chess.utils.WindowInsetsUtil
 import java.io.File
@@ -34,7 +35,7 @@ class ManualPickerActivity : AppCompatActivity() {
     private lateinit var directory: File
     private val executor = Executors.newSingleThreadExecutor()
     private var generation = 0
-    private var entries = emptyList<File>()
+    private var entries = emptyList<ManualEntry>()
     private val adapter = ManualAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,8 +100,7 @@ class ManualPickerActivity : AppCompatActivity() {
         binding.breadcrumbScroll.post { binding.breadcrumbScroll.fullScroll(View.FOCUS_RIGHT) }
         executor.execute {
             val files = runCatching {
-                requested.listFiles()?.filter { it.isDirectory || it.extension.equals("xqf", true) }
-                    ?.sortedWith(compareBy<File> { !it.isDirectory }.thenBy(String.CASE_INSENSITIVE_ORDER) { it.name })
+                ManualEntry.readDirectory(requested)
             }.getOrNull()
             runOnUiThread {
                 if (isDestroyed || isFinishing || requestGeneration != generation) return@runOnUiThread
@@ -118,7 +118,7 @@ class ManualPickerActivity : AppCompatActivity() {
         val query = binding.searchManual.text?.toString()?.trim().orEmpty()
         val visible = entries.filter { it.name.contains(query, ignoreCase = true) }
         adapter.submitList(visible) { binding.manualList.scrollToPosition(0) }
-        binding.listSummary.text = getString(R.string.manual_picker_summary, visible.count { it.isDirectory }, visible.count { it.isFile })
+        binding.listSummary.text = getString(R.string.manual_picker_summary, visible.count { it.isDir }, visible.count { !it.isDir })
         binding.emptyList.text = if (query.isEmpty()) getString(R.string.manual_empty_folder) else getString(R.string.manual_search_empty)
         binding.emptyList.visibility = if (visible.isEmpty()) View.VISIBLE else View.GONE
     }
@@ -136,9 +136,9 @@ class ManualPickerActivity : AppCompatActivity() {
 
     private fun dp(value: Int) = (value * resources.displayMetrics.density).toInt()
 
-    private inner class ManualAdapter : ListAdapter<File, ManualRow>(object : DiffUtil.ItemCallback<File>() {
-        override fun areItemsTheSame(oldItem: File, newItem: File) = oldItem.path == newItem.path
-        override fun areContentsTheSame(oldItem: File, newItem: File) = oldItem == newItem
+    private inner class ManualAdapter : ListAdapter<ManualEntry, ManualRow>(object : DiffUtil.ItemCallback<ManualEntry>() {
+        override fun areItemsTheSame(oldItem: ManualEntry, newItem: ManualEntry) = oldItem.file.path == newItem.file.path
+        override fun areContentsTheSame(oldItem: ManualEntry, newItem: ManualEntry) = oldItem == newItem
     }) {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ManualRow {
             val row = LinearLayout(this@ManualPickerActivity).apply {
@@ -175,13 +175,14 @@ class ManualPickerActivity : AppCompatActivity() {
             return ManualRow(row, icon, title, subtitle)
         }
         override fun onBindViewHolder(holder: ManualRow, position: Int) {
-            val file = getItem(position)
-            holder.title.text = if (file.isDirectory) file.name else file.nameWithoutExtension
-            holder.subtitle.text = if (file.isDirectory) getString(R.string.manual_folder_hint) else getString(R.string.manual_file_hint)
-            holder.icon.setImageResource(if (file.isDirectory) R.drawable.ic_manual_folder else R.drawable.manual)
-            holder.icon.setColorFilter(ContextCompat.getColor(this@ManualPickerActivity, if (file.isDirectory) R.color.ui_muted else R.color.ui_red))
+            val entry = getItem(position)
+            val file = entry.file
+            holder.title.text = entry.title
+            holder.subtitle.text = if (entry.isDir) getString(R.string.manual_folder_hint) else getString(R.string.manual_file_hint)
+            holder.icon.setImageResource(if (entry.isDir) R.drawable.ic_manual_folder else R.drawable.manual)
+            holder.icon.setColorFilter(ContextCompat.getColor(this@ManualPickerActivity, if (entry.isDir) R.color.ui_muted else R.color.ui_red))
             holder.itemView.setOnClickListener {
-                if (file.isDirectory) openDirectory(file) else {
+                if (entry.isDir) openDirectory(file) else {
                     setResult(Activity.RESULT_OK, Intent().putExtra(EXTRA_MANUAL, file.path))
                     finish()
                 }
