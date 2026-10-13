@@ -32,14 +32,14 @@
 
 适用于 **Android 8.0（API 26）及以上的 ARM64 设备**。
 
-推荐通过[官网本地下载目录](https://fish.zfdang.com/apk/)下载安装包。也可在 [GitHub Releases](https://github.com/zfdang/chinese-chess-fish-android/releases/latest) 的 Assets 中下载；本地目录更新可能晚于 GitHub。
+推荐通过下方的本站直链下载安装包，无需访问 GitHub。也可在 [GitHub Releases](https://github.com/zfdang/chinese-chess-fish-android/releases/latest) 的 Assets 中下载；本站安装包更新可能晚于 GitHub。
 
 象棋鱼现已上架 [Google Play](https://play.google.com/store/apps/details?id=com.zfdang.chess)，也可以通过商店安装。
 
 | 安装包 | 适用设备 |
 | --- | --- |
-| `chessfish-armv8-dotprod.zip` | 推荐优先安装，需要设备支持 ARM dotprod 指令 |
-| `chessfish-armv8.zip` | ARM64 通用版；dotprod 版无法正常运行时回退到此版本 |
+| [下载 dotprod 版](https://fish.zfdang.com/apk/chessfish-armv8-dotprod.zip) | 推荐优先安装，需要设备支持 ARM dotprod 指令 |
+| [下载普通 armv8 版](https://fish.zfdang.com/apk/chessfish-armv8.zip) | ARM64 通用版；dotprod 版无法正常运行时回退到此版本 |
 
 下载 ZIP 后解压，打开其中的 APK，按 Android 提示完成安装。更新时请选择相同版本类型。发布附件中的 AAB 用于应用商店发布，不是可直接安装的 APK。
 
@@ -77,7 +77,19 @@ APK 位于 `app/build/outputs/apk/`。`./gradlew assembleRelease bundleRelease` 
 python3 -m http.server 8000 --directory docs
 ```
 
-然后访问 `http://localhost:8000/`。`docs/privacy.html` 也会在 Android 构建时打包为离线隐私政策；修改时需保留正文的 `<section>` 和 `<h4>` 结构。
+然后访问 `http://localhost:8000/`。
+
+本地下载镜像使用 `docs/apk/chessfish-armv8-dotprod.zip` 和 `docs/apk/chessfish-armv8.zip` 两个固定文件名。安装包超过 [GitHub 普通仓库的 100 MiB 单文件限制](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github)，已加入 `.gitignore`，不会随 `git push` 上传。
+
+部署网站前，安装 GitHub CLI（`gh`）与 Python 3，完成 `gh auth login`，运行以下命令，从最新 release 下载两个 ZIP 并校验 GitHub 提供的 SHA-256：
+
+```sh
+bash updateApk.sh
+```
+
+可直接在网站服务器的仓库目录运行；若在本机运行，发布时需将生成的 `docs/apk/` 中两个 ZIP 一起同步到服务器。仅执行 `git pull` 不会获得安装包。
+
+`docs/privacy.html` 也会在 Android 构建时打包为离线隐私政策；修改时需保留正文的 `<section>` 和 `<h4>` 结构。
 
 ## 隐私与反馈
 

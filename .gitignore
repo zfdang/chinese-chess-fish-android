@@ -47,3 +47,7 @@ app/src/.omc/
 app/src/main/java/com/zfdang/chess/.omc/
 app/src/main/java/com/zfdang/chess/controllers/.omc/
 
+# Local website download mirrors (deploy separately from Git)
+docs/apk/*.zip
+docs/apk/*.apk
+docs/apk/.downloads-*/
