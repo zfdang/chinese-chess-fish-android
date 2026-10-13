@@ -32,14 +32,14 @@
 
 适用于 **Android 8.0（API 26）及以上的 ARM64 设备**。
 
-推荐通过[官网本地下载目录](https://fish.zfdang.com/apk/)下载安装包。也可在 [GitHub Releases](https://github.com/zfdang/chinese-chess-fish-android/releases/latest) 的 Assets 中下载；本地目录更新可能晚于 GitHub。
+推荐通过下方的本站直链下载安装包，无需访问 GitHub。也可在 [GitHub Releases](https://github.com/zfdang/chinese-chess-fish-android/releases/latest) 的 Assets 中下载；本站安装包更新可能晚于 GitHub。
 
 象棋鱼现已上架 [Google Play](https://play.google.com/store/apps/details?id=com.zfdang.chess)，也可以通过商店安装。
 
 | 安装包 | 适用设备 |
 | --- | --- |
-| `chessfish-armv8-dotprod.zip` | 推荐优先安装，需要设备支持 ARM dotprod 指令 |
-| `chessfish-armv8.zip` | ARM64 通用版；dotprod 版无法正常运行时回退到此版本 |
+| [下载 dotprod 版](https://fish.zfdang.com/apk/chessfish-armv8-dotprod.zip) | 推荐优先安装，需要设备支持 ARM dotprod 指令 |
+| [下载普通 armv8 版](https://fish.zfdang.com/apk/chessfish-armv8.zip) | ARM64 通用版；dotprod 版无法正常运行时回退到此版本 |
 
 下载 ZIP 后解压，打开其中的 APK，按 Android 提示完成安装。更新时请选择相同版本类型。发布附件中的 AAB 用于应用商店发布，不是可直接安装的 APK。
 
@@ -77,7 +77,21 @@ APK 位于 `app/build/outputs/apk/`。`./gradlew assembleRelease bundleRelease` 
 python3 -m http.server 8000 --directory docs
 ```
 
-然后访问 `http://localhost:8000/`。`docs/privacy.html` 也会在 Android 构建时打包为离线隐私政策；修改时需保留正文的 `<section>` 和 `<h4>` 结构。
+然后访问 `http://localhost:8000/`。
+
+本地下载镜像使用 `docs/apk/chessfish-armv8-dotprod.zip` 和 `docs/apk/chessfish-armv8.zip` 两个固定文件名。安装包超过 [GitHub 普通仓库的 100 MiB 单文件限制](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github)，已加入 `.gitignore`，不会随 `git push` 上传。
+
+网站由 GitHub Pages 托管。`.github/workflows/static.yml` 会在发布网页前，从最新 release 下载两个 ZIP，校验大小、SHA-256 与 ZIP 完整性，再把它们和 `docs/` 一起上传为 Pages 部署产物。大文件无需进入 Git 仓库，也无需手动同步服务器。
+
+修改网站文件后，合并到 `master` 会自动发布。合并 PR 的 Android 构建与 release 完成后，`workflow_run` 会再次刷新网站，确保下载文件更新到最新版本；普通 PR 检查不会发布网站。也可在 Actions 中手动运行「Deploy static content to Pages」。
+
+本机预览需要下载文件时，安装 GitHub CLI（`gh`）与 Python 3，完成 `gh auth login`，运行：
+
+```sh
+bash updateApk.sh
+```
+
+`docs/privacy.html` 也会在 Android 构建时打包为离线隐私政策；修改时需保留正文的 `<section>` 和 `<h4>` 结构。
 
 ## 隐私与反馈
 

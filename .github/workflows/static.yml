@@ -8,6 +8,14 @@ on:
     paths:
       - 'docs/**'
       - '.github/workflows/static.yml'
+      - 'scripts/update_local_downloads.py'
+      - 'updateApk.sh'
+
+  # Release creation uses GITHUB_TOKEN, so a release event alone would not trigger deployment.
+  # Wait for the merged-PR build and its release job to finish before mirroring new installers.
+  workflow_run:
+    workflows: ["Build-ChessFish"]
+    types: [completed]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -27,7 +35,11 @@ concurrency:
 jobs:
   # Single deploy job since we're just deploying
   deploy:
-    if: github.ref == 'refs/heads/master'
+    if: >-
+      github.ref == 'refs/heads/master' &&
+      (github.event_name != 'workflow_run' ||
+       (github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.event == 'pull_request_target'))
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -35,12 +47,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          # workflow_run must never check out the triggering PR head or execute its artifacts.
+          ref: master
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Download and verify latest release installers
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash updateApk.sh
+      - name: Check published site size
+        run: |
+          python3 - <<'PYTHON'
+          from pathlib import Path
+          size = sum(path.stat().st_size for path in Path("docs").rglob("*") if path.is_file())
+          if size > 1_000_000_000:
+              raise SystemExit(f"Pages site exceeds 1 GB: {size} bytes")
+          print(f"Website including installers: {size:,} bytes")
+          PYTHON
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
+          # Include downloaded ZIPs in the deployment artifact without tracking them in Git.
           path: './docs/'
       - name: Deploy to GitHub Pages
         id: deployment
