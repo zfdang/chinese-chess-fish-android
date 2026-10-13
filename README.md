@@ -81,13 +81,15 @@ python3 -m http.server 8000 --directory docs
 
 本地下载镜像使用 `docs/apk/chessfish-armv8-dotprod.zip` 和 `docs/apk/chessfish-armv8.zip` 两个固定文件名。安装包超过 [GitHub 普通仓库的 100 MiB 单文件限制](https://docs.github.com/en/repositories/working-with-files/managing-large-files/about-large-files-on-github)，已加入 `.gitignore`，不会随 `git push` 上传。
 
-部署网站前，安装 GitHub CLI（`gh`）与 Python 3，完成 `gh auth login`，运行以下命令，从最新 release 下载两个 ZIP 并校验 GitHub 提供的 SHA-256：
+网站由 GitHub Pages 托管。`.github/workflows/static.yml` 会在发布网页前，从最新 release 下载两个 ZIP，校验大小、SHA-256 与 ZIP 完整性，再把它们和 `docs/` 一起上传为 Pages 部署产物。大文件无需进入 Git 仓库，也无需手动同步服务器。
+
+修改网站文件后，合并到 `master` 会自动发布。合并 PR 的 Android 构建与 release 完成后，`workflow_run` 会再次刷新网站，确保下载文件更新到最新版本；普通 PR 检查不会发布网站。也可在 Actions 中手动运行「Deploy static content to Pages」。
+
+本机预览需要下载文件时，安装 GitHub CLI（`gh`）与 Python 3，完成 `gh auth login`，运行：
 
 ```sh
 bash updateApk.sh
 ```
-
-可直接在网站服务器的仓库目录运行；若在本机运行，发布时需将生成的 `docs/apk/` 中两个 ZIP 一起同步到服务器。仅执行 `git pull` 不会获得安装包。
 
 `docs/privacy.html` 也会在 Android 构建时打包为离线隐私政策；修改时需保留正文的 `<section>` 和 `<h4>` 结构。
 
