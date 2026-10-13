@@ -4,7 +4,7 @@
 
 开源免费的 Android 中国象棋学习工具。与皮卡鱼过招，在经典棋谱中研习，让手机成为随身棋盘。
 
-[项目官网](https://fish.zfdang.com/) · [下载最新版本](https://github.com/zfdang/chinese-chess-fish-android/releases/latest) · [使用帮助](https://fish.zfdang.com/help.html) · [问题反馈](https://github.com/zfdang/chinese-chess-fish-android/issues)
+[项目官网](https://fish.zfdang.com/) · [本地下载](https://fish.zfdang.com/release.html) · [Google Play](https://play.google.com/store/apps/details?id=com.zfdang.chess) · [使用帮助](https://fish.zfdang.com/help.html) · [问题反馈](https://github.com/zfdang/chinese-chess-fish-android/issues)
 
 ## 功能
 
@@ -32,7 +32,9 @@
 
 适用于 **Android 8.0（API 26）及以上的 ARM64 设备**。
 
-在 [GitHub Releases](https://github.com/zfdang/chinese-chess-fish-android/releases/latest) 的 Assets 中选择安装包，或访问[官网本地下载目录](https://fish.zfdang.com/apk/)。本地目录更新可能晚于 GitHub。
+推荐通过[官网本地下载目录](https://fish.zfdang.com/apk/)下载安装包。也可在 [GitHub Releases](https://github.com/zfdang/chinese-chess-fish-android/releases/latest) 的 Assets 中下载；本地目录更新可能晚于 GitHub。
+
+象棋鱼现已上架 [Google Play](https://play.google.com/store/apps/details?id=com.zfdang.chess)，也可以通过商店安装。
 
 | 安装包 | 适用设备 |
 | --- | --- |
